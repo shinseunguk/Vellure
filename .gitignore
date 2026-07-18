@@ -56,3 +56,6 @@ playground.xcworkspace
 # Profiling
 *.gcno
 *.gcda
+
+# Designs
+Designs/
