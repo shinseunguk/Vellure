@@ -1,0 +1,91 @@
+/* Home */
+"home.title" = "メモ";
+"home.new" = "新規";
+
+/* Edit */
+"edit.title.new" = "新規メモ";
+"edit.title.edit" = "メモ編集";
+"edit.cancel" = "キャンセル";
+"edit.save" = "保存";
+"edit.section.content" = "内容";
+"edit.placeholder" = "メモを入力してください";
+"edit.section.type" = "タイプ";
+"edit.section.targetDate" = "目標日";
+"edit.section.targetTime" = "目標時刻";
+"edit.section.checklist" = "チェックリスト";
+"edit.checklist.add" = "項目を追加";
+"edit.section.progress" = "進捗 %d%%";
+"edit.section.displayMode" = "表示モード";
+"edit.mode.pinned" = "固定";
+"edit.mode.autoClear" = "自動消去";
+"edit.section.font" = "フォント";
+"edit.section.color" = "カラー";
+"edit.delete" = "メモを削除";
+
+/* Type Names */
+"type.plain" = "テキスト";
+"type.checklist" = "チェックリスト";
+"type.dday" = "D-day";
+"type.countdown" = "カウントダウン";
+"type.progress" = "プログレス";
+
+/* Font Names */
+"font.system" = "デフォルト";
+"font.rounded" = "ラウンド";
+"font.serif" = "セリフ";
+"font.mono" = "モノ";
+"font.preview" = "あいう ABC 123";
+
+/* Empty State */
+"empty.title" = "メモがありません";
+"empty.description" = "最初のメモを作成して\nロック画面で確認しましょう";
+"empty.cta" = "メモを作成";
+
+/* Onboarding */
+"onboarding.page1.title" = "ロック画面メモ";
+"onboarding.page1.desc" = "メモをロック画面に固定。\n大切な内容をいつでも確認できます。";
+"onboarding.page2.title" = "多彩なコンテンツ";
+"onboarding.page2.desc" = "テキスト、チェックリスト、D-day、\nカウントダウン、プログレスバーに対応。";
+"onboarding.page3.title" = "Siri & ショートカット";
+"onboarding.page3.desc" = "「Vellureにメモを追加」で\n音声ですばやくメモを残せます。";
+"onboarding.next" = "次へ";
+"onboarding.start" = "はじめる";
+"onboarding.skip" = "スキップ";
+
+/* Settings */
+"settings.title" = "設定";
+"settings.done" = "完了";
+"settings.section.lockscreen" = "ロック画面";
+"settings.activity.available" = "利用可能";
+"settings.activity.disabled" = "無効";
+"settings.activity.guide" = "設定 → Vellure → Live Activityをオンにしてください";
+"settings.activity.endAll" = "すべてのLive Activityを終了";
+"settings.section.appInfo" = "アプリ情報";
+"settings.version" = "バージョン";
+"settings.minOS" = "最低OS";
+
+/* Intents */
+"intent.createMemo.title" = "メモを追加";
+"intent.createMemo.content" = "内容";
+"intent.createMemo.startActivity" = "ロック画面に表示";
+"intent.createMemo.fail" = "メモの作成に失敗しました";
+"intent.createMemo.success" = "メモを追加しました: %@";
+"intent.showMemos.title" = "メモ一覧を表示";
+"intent.showMemos.fail" = "メモを読み込めません";
+"intent.showMemos.empty" = "保存されたメモがありません";
+"intent.showMemos.result" = "メモ %d件:\n%@%@";
+"intent.toggle.title" = "チェックリスト項目を切替";
+"intent.toggle.memoId" = "メモID";
+"intent.toggle.itemId" = "項目ID";
+
+/* Live Activity */
+"activity.type.plain" = "メモ";
+"activity.type.checklist" = "チェックリスト";
+"activity.type.dday" = "D-day";
+"activity.type.countdown" = "カウントダウン";
+"activity.type.progress" = "プログレス";
+"activity.more" = "他 %d件";
+
+/* Shortcuts */
+"shortcut.create.title" = "メモを追加";
+"shortcut.show.title" = "メモを表示";

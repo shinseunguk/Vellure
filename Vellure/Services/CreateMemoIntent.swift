@@ -2,13 +2,13 @@ import AppIntents
 import SwiftData
 
 struct CreateMemoIntent: AppIntent {
-    static var title: LocalizedStringResource = "메모 추가"
-    static var description: IntentDescription = "벨루어에 새 메모를 추가합니다"
+    static var title: LocalizedStringResource = "intent.createMemo.title"
+    static var description: IntentDescription = "Add a new memo to Vellure"
 
-    @Parameter(title: "내용")
+    @Parameter(title: "intent.createMemo.content")
     var content: String
 
-    @Parameter(title: "잠금화면에 표시", default: true)
+    @Parameter(title: "intent.createMemo.startActivity", default: true)
     var startActivity: Bool
 
     static var parameterSummary: some ParameterSummary {
@@ -26,7 +26,7 @@ struct CreateMemoIntent: AppIntent {
         )
 
         guard let container = try? ModelContainer(for: schema, configurations: [config]) else {
-            return .result(dialog: "메모 생성에 실패했습니다")
+            return .result(dialog: IntentDialog(stringLiteral: String(localized: "intent.createMemo.fail")))
         }
 
         let context = ModelContext(container)
@@ -41,6 +41,7 @@ struct CreateMemoIntent: AppIntent {
 
         try? context.save()
 
-        return .result(dialog: "메모가 추가되었습니다: \(content)")
+        let message = String(format: String(localized: "intent.createMemo.success"), content)
+        return .result(dialog: IntentDialog(stringLiteral: message))
     }
 }

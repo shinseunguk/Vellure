@@ -55,7 +55,7 @@ struct HomeView: View {
                 Text(Date.now.formatted(.dateTime.month().day().weekday(.wide)))
                     .font(.system(size: 13, weight: .semibold))
                     .foregroundStyle(Theme.textSecondary)
-                Text("메모")
+                Text("home.title")
                     .font(.system(size: 27, weight: .heavy))
                     .foregroundStyle(Theme.textPrimary)
             }
@@ -67,7 +67,7 @@ struct HomeView: View {
                     HStack(spacing: 6) {
                         Image(systemName: "plus")
                             .font(.system(size: 13, weight: .bold))
-                        Text("새 메모")
+                        Text("home.new")
                             .font(.system(size: 13.5, weight: .bold))
                     }
                     .foregroundStyle(.white)

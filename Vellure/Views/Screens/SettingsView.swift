@@ -13,19 +13,20 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             List {
-                // MARK: - Live Activity 상태
                 Section {
                     HStack {
                         Label("Live Activity", systemImage: "square.stack.3d.up")
                         Spacer()
-                        Text(activitySupported ? "사용 가능" : "비활성")
+                        Text(activitySupported
+                            ? String(localized: "settings.activity.available")
+                            : String(localized: "settings.activity.disabled"))
                             .font(.system(size: 14, weight: .medium))
                             .foregroundStyle(activitySupported ? Theme.accent : .red)
                     }
 
                     if !activitySupported {
                         Label {
-                            Text("설정 → Vellure → Live Activity를 켜주세요")
+                            Text("settings.activity.guide")
                                 .font(.system(size: 13))
                                 .foregroundStyle(Theme.textSecondary)
                         } icon: {
@@ -37,37 +38,36 @@ struct SettingsView: View {
                     Button {
                         Task { await LiveActivityService.shared.endAll() }
                     } label: {
-                        Label("모든 Live Activity 종료", systemImage: "stop.circle")
+                        Label("settings.activity.endAll", systemImage: "stop.circle")
                             .foregroundStyle(.red)
                     }
                 } header: {
-                    Text("잠금화면")
+                    Text("settings.section.lockscreen")
                 }
 
-                // MARK: - 앱 정보
                 Section {
                     HStack {
-                        Text("버전")
+                        Text("settings.version")
                         Spacer()
                         Text(appVersion)
                             .foregroundStyle(Theme.textSecondary)
                     }
 
                     HStack {
-                        Text("최소 지원")
+                        Text("settings.minOS")
                         Spacer()
                         Text("iOS 17.0")
                             .foregroundStyle(Theme.textSecondary)
                     }
                 } header: {
-                    Text("앱 정보")
+                    Text("settings.section.appInfo")
                 }
             }
-            .navigationTitle("설정")
+            .navigationTitle(String(localized: "settings.title"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("완료") { dismiss() }
+                    Button("settings.done") { dismiss() }
                 }
             }
         }

@@ -1,0 +1,91 @@
+/* Home */
+"home.title" = "Memos";
+"home.new" = "New";
+
+/* Edit */
+"edit.title.new" = "New Memo";
+"edit.title.edit" = "Edit Memo";
+"edit.cancel" = "Cancel";
+"edit.save" = "Save";
+"edit.section.content" = "Content";
+"edit.placeholder" = "Enter your memo";
+"edit.section.type" = "Type";
+"edit.section.targetDate" = "Target Date";
+"edit.section.targetTime" = "Target Time";
+"edit.section.checklist" = "Checklist";
+"edit.checklist.add" = "Add item";
+"edit.section.progress" = "Progress %d%%";
+"edit.section.displayMode" = "Display Mode";
+"edit.mode.pinned" = "Pinned";
+"edit.mode.autoClear" = "Auto Clear";
+"edit.section.font" = "Font";
+"edit.section.color" = "Color";
+"edit.delete" = "Delete Memo";
+
+/* Type Names */
+"type.plain" = "Plain";
+"type.checklist" = "Checklist";
+"type.dday" = "D-day";
+"type.countdown" = "Countdown";
+"type.progress" = "Progress";
+
+/* Font Names */
+"font.system" = "Default";
+"font.rounded" = "Rounded";
+"font.serif" = "Serif";
+"font.mono" = "Mono";
+"font.preview" = "ABC abc 123";
+
+/* Empty State */
+"empty.title" = "No Memos";
+"empty.description" = "Create your first memo\nand see it on your lock screen";
+"empty.cta" = "Create Memo";
+
+/* Onboarding */
+"onboarding.page1.title" = "Lock Screen Memo";
+"onboarding.page1.desc" = "Pin memos to your lock screen.\nCheck important notes anytime.";
+"onboarding.page2.title" = "Rich Content";
+"onboarding.page2.desc" = "Plain text, checklists, D-day,\ncountdowns, and progress bars.";
+"onboarding.page3.title" = "Siri & Shortcuts";
+"onboarding.page3.desc" = "Say \"Add a memo to Vellure\"\nto quickly create memos by voice.";
+"onboarding.next" = "Next";
+"onboarding.start" = "Get Started";
+"onboarding.skip" = "Skip";
+
+/* Settings */
+"settings.title" = "Settings";
+"settings.done" = "Done";
+"settings.section.lockscreen" = "Lock Screen";
+"settings.activity.available" = "Available";
+"settings.activity.disabled" = "Disabled";
+"settings.activity.guide" = "Go to Settings → Vellure → Turn on Live Activity";
+"settings.activity.endAll" = "End All Live Activities";
+"settings.section.appInfo" = "App Info";
+"settings.version" = "Version";
+"settings.minOS" = "Minimum OS";
+
+/* Intents */
+"intent.createMemo.title" = "Add Memo";
+"intent.createMemo.content" = "Content";
+"intent.createMemo.startActivity" = "Show on Lock Screen";
+"intent.createMemo.fail" = "Failed to create memo";
+"intent.createMemo.success" = "Memo added: %@";
+"intent.showMemos.title" = "View Memos";
+"intent.showMemos.fail" = "Unable to load memos";
+"intent.showMemos.empty" = "No saved memos";
+"intent.showMemos.result" = "%d memo(s):\n%@%@";
+"intent.toggle.title" = "Toggle Checklist Item";
+"intent.toggle.memoId" = "Memo ID";
+"intent.toggle.itemId" = "Item ID";
+
+/* Live Activity */
+"activity.type.plain" = "Memo";
+"activity.type.checklist" = "Checklist";
+"activity.type.dday" = "D-day";
+"activity.type.countdown" = "Countdown";
+"activity.type.progress" = "Progress";
+"activity.more" = "%d more";
+
+/* Shortcuts */
+"shortcut.create.title" = "Add Memo";
+"shortcut.show.title" = "View Memos";

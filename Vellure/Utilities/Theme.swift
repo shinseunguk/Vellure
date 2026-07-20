@@ -1,14 +1,39 @@
 import SwiftUI
+import UIKit
 
 enum Theme {
     static let accent = Color(hex: "1fa97c")
     static let accentHover = Color(hex: "23b98a")
-    static let background = Color(hex: "eef0f4")
-    static let cardBackground = Color(.systemBackground)
-    static let textPrimary = Color(hex: "1b241e")
-    static let textSecondary = Color(hex: "8b95a1")
-    static let divider = Color(hex: "e3e7ec")
-    static let chipBackground = Color(hex: "f2f4f6")
+
+    static let background = Color(
+        light: UIColor(hex: "eef0f4"),
+        dark: UIColor(hex: "1c1c1e")
+    )
+
+    static let cardBackground = Color(
+        light: .white,
+        dark: UIColor(hex: "2c2c2e")
+    )
+
+    static let textPrimary = Color(
+        light: UIColor(hex: "1b241e"),
+        dark: .white
+    )
+
+    static let textSecondary = Color(
+        light: UIColor(hex: "8b95a1"),
+        dark: UIColor(hex: "98989f")
+    )
+
+    static let divider = Color(
+        light: UIColor(hex: "e3e7ec"),
+        dark: UIColor(hex: "38383a")
+    )
+
+    static let chipBackground = Color(
+        light: UIColor(hex: "f2f4f6"),
+        dark: UIColor(hex: "3a3a3c")
+    )
 
     static let memoColors: [String: Color] = [
         "green": Color(hex: "1fa97c"),
@@ -24,6 +49,8 @@ enum Theme {
         memoColors[tag] ?? accent
     }
 }
+
+// MARK: - Color Helpers
 
 extension Color {
     init(hex: String) {
@@ -42,5 +69,31 @@ extension Color {
             (r, g, b) = (0, 0, 0)
         }
         self.init(red: r, green: g, blue: b)
+    }
+
+    init(light: UIColor, dark: UIColor) {
+        self.init(uiColor: UIColor { traits in
+            traits.userInterfaceStyle == .dark ? dark : light
+        })
+    }
+}
+
+extension UIColor {
+    convenience init(hex: String) {
+        let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
+        var int: UInt64 = 0
+        Scanner(string: hex).scanHexInt64(&int)
+        let r, g, b: CGFloat
+        switch hex.count {
+        case 6:
+            (r, g, b) = (
+                CGFloat((int >> 16) & 0xFF) / 255,
+                CGFloat((int >> 8) & 0xFF) / 255,
+                CGFloat(int & 0xFF) / 255
+            )
+        default:
+            (r, g, b) = (0, 0, 0)
+        }
+        self.init(red: r, green: g, blue: b, alpha: 1)
     }
 }

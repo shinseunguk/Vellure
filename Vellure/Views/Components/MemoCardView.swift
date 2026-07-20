@@ -21,11 +21,11 @@ struct MemoCardView: View {
 
     private var typeLabel: String {
         switch memo.renderType {
-        case .plain: "일반"
-        case .checklist: "체크리스트"
-        case .dday: "D-day"
-        case .countdown: "카운트다운"
-        case .progress: "진행바"
+        case .plain: String(localized: "type.plain")
+        case .checklist: String(localized: "type.checklist")
+        case .dday: String(localized: "type.dday")
+        case .countdown: String(localized: "type.countdown")
+        case .progress: String(localized: "type.progress")
         }
     }
 

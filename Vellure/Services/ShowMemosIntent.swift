@@ -2,8 +2,8 @@ import AppIntents
 import SwiftData
 
 struct ShowMemosIntent: AppIntent {
-    static var title: LocalizedStringResource = "메모 목록 보기"
-    static var description: IntentDescription = "벨루어의 메모 목록을 보여줍니다"
+    static var title: LocalizedStringResource = "intent.showMemos.title"
+    static var description: IntentDescription = "View memo list in Vellure"
     static var openAppWhenRun: Bool = false
 
     func perform() async throws -> some IntentResult & ProvidesDialog {
@@ -15,7 +15,7 @@ struct ShowMemosIntent: AppIntent {
         )
 
         guard let container = try? ModelContainer(for: schema, configurations: [config]) else {
-            return .result(dialog: "메모를 불러올 수 없습니다")
+            return .result(dialog: IntentDialog(stringLiteral: String(localized: "intent.showMemos.fail")))
         }
 
         let context = ModelContext(container)
@@ -24,11 +24,12 @@ struct ShowMemosIntent: AppIntent {
         )
 
         guard let memos = try? context.fetch(descriptor), !memos.isEmpty else {
-            return .result(dialog: "저장된 메모가 없습니다")
+            return .result(dialog: IntentDialog(stringLiteral: String(localized: "intent.showMemos.empty")))
         }
 
         let list = memos.prefix(5).map { "• \($0.content)" }.joined(separator: "\n")
-        let suffix = memos.count > 5 ? "\n외 \(memos.count - 5)개" : ""
-        return .result(dialog: "메모 \(memos.count)개:\n\(list)\(suffix)")
+        let suffix = memos.count > 5 ? "\n…+\(memos.count - 5)" : ""
+        let message = String(format: String(localized: "intent.showMemos.result"), memos.count, list, suffix)
+        return .result(dialog: IntentDialog(stringLiteral: message))
     }
 }

@@ -1,0 +1,91 @@
+/* Home */
+"home.title" = "备忘录";
+"home.new" = "新建";
+
+/* Edit */
+"edit.title.new" = "新建备忘录";
+"edit.title.edit" = "编辑备忘录";
+"edit.cancel" = "取消";
+"edit.save" = "保存";
+"edit.section.content" = "内容";
+"edit.placeholder" = "请输入备忘录";
+"edit.section.type" = "类型";
+"edit.section.targetDate" = "目标日期";
+"edit.section.targetTime" = "目标时间";
+"edit.section.checklist" = "清单";
+"edit.checklist.add" = "添加项目";
+"edit.section.progress" = "进度 %d%%";
+"edit.section.displayMode" = "显示模式";
+"edit.mode.pinned" = "固定";
+"edit.mode.autoClear" = "自动清除";
+"edit.section.font" = "字体";
+"edit.section.color" = "颜色";
+"edit.delete" = "删除备忘录";
+
+/* Type Names */
+"type.plain" = "文本";
+"type.checklist" = "清单";
+"type.dday" = "D-day";
+"type.countdown" = "倒计时";
+"type.progress" = "进度条";
+
+/* Font Names */
+"font.system" = "默认";
+"font.rounded" = "圆体";
+"font.serif" = "衬线";
+"font.mono" = "等宽";
+"font.preview" = "你好 ABC 123";
+
+/* Empty State */
+"empty.title" = "暂无备忘录";
+"empty.description" = "创建第一条备忘录\n在锁屏上查看";
+"empty.cta" = "创建备忘录";
+
+/* Onboarding */
+"onboarding.page1.title" = "锁屏备忘录";
+"onboarding.page1.desc" = "将备忘录固定到锁屏。\n随时查看重要内容。";
+"onboarding.page2.title" = "丰富内容";
+"onboarding.page2.desc" = "支持文本、清单、D-day、\n倒计时和进度条。";
+"onboarding.page3.title" = "Siri 和快捷指令";
+"onboarding.page3.desc" = "说「用Vellure添加备忘录」\n即可语音快速创建。";
+"onboarding.next" = "下一步";
+"onboarding.start" = "开始使用";
+"onboarding.skip" = "跳过";
+
+/* Settings */
+"settings.title" = "设置";
+"settings.done" = "完成";
+"settings.section.lockscreen" = "锁屏";
+"settings.activity.available" = "可用";
+"settings.activity.disabled" = "已禁用";
+"settings.activity.guide" = "前往 设置 → Vellure → 开启 Live Activity";
+"settings.activity.endAll" = "结束所有 Live Activity";
+"settings.section.appInfo" = "应用信息";
+"settings.version" = "版本";
+"settings.minOS" = "最低系统";
+
+/* Intents */
+"intent.createMemo.title" = "添加备忘录";
+"intent.createMemo.content" = "内容";
+"intent.createMemo.startActivity" = "在锁屏上显示";
+"intent.createMemo.fail" = "备忘录创建失败";
+"intent.createMemo.success" = "已添加备忘录: %@";
+"intent.showMemos.title" = "查看备忘录";
+"intent.showMemos.fail" = "无法加载备忘录";
+"intent.showMemos.empty" = "没有保存的备忘录";
+"intent.showMemos.result" = "共 %d 条备忘录:\n%@%@";
+"intent.toggle.title" = "切换清单项";
+"intent.toggle.memoId" = "备忘录 ID";
+"intent.toggle.itemId" = "项目 ID";
+
+/* Live Activity */
+"activity.type.plain" = "备忘录";
+"activity.type.checklist" = "清单";
+"activity.type.dday" = "D-day";
+"activity.type.countdown" = "倒计时";
+"activity.type.progress" = "进度条";
+"activity.more" = "另外 %d 项";
+
+/* Shortcuts */
+"shortcut.create.title" = "添加备忘录";
+"shortcut.show.title" = "查看备忘录";

@@ -1,0 +1,91 @@
+/* Home */
+"home.title" = "메모";
+"home.new" = "새 메모";
+
+/* Edit */
+"edit.title.new" = "새 메모";
+"edit.title.edit" = "메모 편집";
+"edit.cancel" = "취소";
+"edit.save" = "저장";
+"edit.section.content" = "내용";
+"edit.placeholder" = "메모를 입력하세요";
+"edit.section.type" = "타입";
+"edit.section.targetDate" = "목표일";
+"edit.section.targetTime" = "목표 시각";
+"edit.section.checklist" = "체크리스트";
+"edit.checklist.add" = "항목 추가";
+"edit.section.progress" = "진행률 %d%%";
+"edit.section.displayMode" = "표시 모드";
+"edit.mode.pinned" = "고정";
+"edit.mode.autoClear" = "자동소멸";
+"edit.section.font" = "폰트";
+"edit.section.color" = "색상";
+"edit.delete" = "메모 삭제";
+
+/* Type Names */
+"type.plain" = "일반";
+"type.checklist" = "체크리스트";
+"type.dday" = "D-day";
+"type.countdown" = "카운트다운";
+"type.progress" = "진행바";
+
+/* Font Names */
+"font.system" = "기본";
+"font.rounded" = "라운드";
+"font.serif" = "세리프";
+"font.mono" = "모노";
+"font.preview" = "가나다 ABC 123";
+
+/* Empty State */
+"empty.title" = "메모가 없습니다";
+"empty.description" = "첫 번째 메모를 작성하고\n잠금화면에서 확인해보세요";
+"empty.cta" = "새 메모 작성";
+
+/* Onboarding */
+"onboarding.page1.title" = "잠금화면 메모";
+"onboarding.page1.desc" = "메모를 잠금화면에 고정하세요.\n중요한 내용을 언제든 확인할 수 있습니다.";
+"onboarding.page2.title" = "다양한 콘텐츠";
+"onboarding.page2.desc" = "일반 메모, 체크리스트, D-day,\n카운트다운, 진행바까지 지원합니다.";
+"onboarding.page3.title" = "Siri & 단축어";
+"onboarding.page3.desc" = "\"벨루어에 메모 추가\"로\n음성으로 빠르게 메모를 남기세요.";
+"onboarding.next" = "다음";
+"onboarding.start" = "시작하기";
+"onboarding.skip" = "건너뛰기";
+
+/* Settings */
+"settings.title" = "설정";
+"settings.done" = "완료";
+"settings.section.lockscreen" = "잠금화면";
+"settings.activity.available" = "사용 가능";
+"settings.activity.disabled" = "비활성";
+"settings.activity.guide" = "설정 → Vellure → Live Activity를 켜주세요";
+"settings.activity.endAll" = "모든 Live Activity 종료";
+"settings.section.appInfo" = "앱 정보";
+"settings.version" = "버전";
+"settings.minOS" = "최소 지원";
+
+/* Intents */
+"intent.createMemo.title" = "메모 추가";
+"intent.createMemo.content" = "내용";
+"intent.createMemo.startActivity" = "잠금화면에 표시";
+"intent.createMemo.fail" = "메모 생성에 실패했습니다";
+"intent.createMemo.success" = "메모가 추가되었습니다: %@";
+"intent.showMemos.title" = "메모 목록 보기";
+"intent.showMemos.fail" = "메모를 불러올 수 없습니다";
+"intent.showMemos.empty" = "저장된 메모가 없습니다";
+"intent.showMemos.result" = "메모 %d개:\n%@%@";
+"intent.toggle.title" = "체크리스트 항목 토글";
+"intent.toggle.memoId" = "메모 ID";
+"intent.toggle.itemId" = "항목 ID";
+
+/* Live Activity */
+"activity.type.plain" = "메모";
+"activity.type.checklist" = "체크리스트";
+"activity.type.dday" = "D-day";
+"activity.type.countdown" = "카운트다운";
+"activity.type.progress" = "진행바";
+"activity.more" = "외 %d개";
+
+/* Shortcuts */
+"shortcut.create.title" = "메모 추가";
+"shortcut.show.title" = "메모 보기";
