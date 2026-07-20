@@ -17,7 +17,7 @@ struct MemoAttributes: ActivityAttributes {
     }
 }
 
-struct LiveChecklistItem: Codable, Hashable {
+struct LiveChecklistItem: Codable, Hashable, Identifiable {
     var id: String
     var title: String
     var done: Bool
