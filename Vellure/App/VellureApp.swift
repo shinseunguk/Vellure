@@ -3,7 +3,10 @@ import SwiftData
 
 @main
 struct VellureApp: App {
+    @Environment(\.scenePhase) private var scenePhase
+
     private let container: ModelContainer
+    private let repository: MemoRepository
 
     init() {
         let schema = Schema([Memo.self])
@@ -18,13 +21,20 @@ struct VellureApp: App {
         } catch {
             fatalError("ModelContainer 생성 실패: \(error)")
         }
+
+        repository = MemoRepository(modelContext: container.mainContext)
     }
 
     var body: some Scene {
         WindowGroup {
             HomeView()
-                .environment(MemoRepository(modelContext: container.mainContext))
+                .environment(repository)
         }
         .modelContainer(container)
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .active {
+                LiveActivityService.shared.cleanupExpired(repository: repository)
+            }
+        }
     }
 }
