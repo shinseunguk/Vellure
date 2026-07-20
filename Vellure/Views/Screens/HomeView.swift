@@ -51,7 +51,7 @@ struct HomeView: View {
     // MARK: - Header
 
     private var header: some View {
-        HStack(alignment: .bottom) {
+        HStack(alignment: .center) {
             VStack(alignment: .leading, spacing: 2) {
                 Text(Date.now.formatted(.dateTime.month().day().weekday(.wide)))
                     .font(.system(size: 13, weight: .semibold))
@@ -61,18 +61,18 @@ struct HomeView: View {
                     .foregroundStyle(Theme.textPrimary)
             }
 
-            Spacer()
+            Spacer(minLength: 12)
 
-            HStack(spacing: 9) {
+            HStack(spacing: 8) {
                 if viewModel?.memos.isEmpty == false {
                     Button {
                         withAnimation { isEditing.toggle() }
                     } label: {
                         Text(isEditing ? "home.done" : "home.edit")
-                            .font(.system(size: 13.5, weight: .bold))
+                            .font(.system(size: 13, weight: .semibold))
                             .foregroundStyle(isEditing ? .white : Theme.textSecondary)
-                            .padding(.horizontal, 14)
-                            .padding(.vertical, 10)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 7)
                             .background(isEditing ? Theme.accent : Theme.chipBackground)
                             .clipShape(Capsule())
                     }
@@ -80,29 +80,25 @@ struct HomeView: View {
 
                 if !isEditing {
                     Button { showNewMemo = true } label: {
-                        HStack(spacing: 6) {
-                            Image(systemName: "plus")
-                                .font(.system(size: 13, weight: .bold))
-                            Text("home.new")
-                                .font(.system(size: 13.5, weight: .bold))
-                        }
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 17)
-                        .padding(.vertical, 10)
-                        .background(Theme.accent)
-                        .clipShape(Capsule())
+                        Image(systemName: "plus")
+                            .font(.system(size: 15, weight: .bold))
+                            .foregroundStyle(.white)
+                            .frame(width: 34, height: 34)
+                            .background(Theme.accent)
+                            .clipShape(Circle())
                     }
 
                     Button { showSettings = true } label: {
                         Image(systemName: "gearshape")
-                            .font(.system(size: 17))
+                            .font(.system(size: 15))
                             .foregroundStyle(Theme.textSecondary)
-                            .frame(width: 38, height: 38)
+                            .frame(width: 34, height: 34)
                             .background(Theme.chipBackground)
                             .clipShape(Circle())
                     }
                 }
             }
+            .fixedSize()
         }
     }
 
