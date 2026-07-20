@@ -15,11 +15,11 @@ struct EmptyStateView: View {
                 }
 
             VStack(spacing: 8) {
-                Text("메모가 없습니다")
+                Text("empty.title")
                     .font(.system(size: 19, weight: .heavy))
                     .foregroundStyle(Theme.textPrimary)
 
-                Text("첫 번째 메모를 작성하고\n잠금화면에서 확인해보세요")
+                Text("empty.description")
                     .font(.system(size: 14))
                     .foregroundStyle(Theme.textSecondary)
                     .multilineTextAlignment(.center)
@@ -27,7 +27,7 @@ struct EmptyStateView: View {
             }
 
             Button(action: onCreateTap) {
-                Text("새 메모 작성")
+                Text("empty.cta")
                     .font(.system(size: 15, weight: .bold))
                     .foregroundStyle(.white)
                     .padding(.horizontal, 28)

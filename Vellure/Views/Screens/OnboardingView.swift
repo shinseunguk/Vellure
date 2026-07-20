@@ -4,22 +4,10 @@ struct OnboardingView: View {
     @State private var currentPage = 0
     let onComplete: () -> Void
 
-    private let pages: [(icon: String, title: String, description: String)] = [
-        (
-            "note.text",
-            "잠금화면 메모",
-            "메모를 잠금화면에 고정하세요.\n중요한 내용을 언제든 확인할 수 있습니다."
-        ),
-        (
-            "checklist",
-            "다양한 콘텐츠",
-            "일반 메모, 체크리스트, D-day,\n카운트다운, 진행바까지 지원합니다."
-        ),
-        (
-            "mic.fill",
-            "Siri & 단축어",
-            "\"벨루어에 메모 추가\"로\n음성으로 빠르게 메모를 남기세요."
-        ),
+    private let pages: [(icon: String, titleKey: String, descKey: String)] = [
+        ("note.text", "onboarding.page1.title", "onboarding.page1.desc"),
+        ("checklist", "onboarding.page2.title", "onboarding.page2.desc"),
+        ("mic.fill", "onboarding.page3.title", "onboarding.page3.desc"),
     ]
 
     var body: some View {
@@ -47,7 +35,7 @@ struct OnboardingView: View {
                     onComplete()
                 }
             } label: {
-                Text(currentPage < pages.count - 1 ? "다음" : "시작하기")
+                Text(currentPage < pages.count - 1 ? "onboarding.next" : "onboarding.start")
                     .font(.system(size: 17, weight: .bold))
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
@@ -59,7 +47,7 @@ struct OnboardingView: View {
             .padding(.bottom, 16)
 
             if currentPage < pages.count - 1 {
-                Button("건너뛰기") {
+                Button("onboarding.skip") {
                     onComplete()
                 }
                 .font(.system(size: 14, weight: .medium))
@@ -72,7 +60,7 @@ struct OnboardingView: View {
         .background(Theme.background)
     }
 
-    private func pageView(_ page: (icon: String, title: String, description: String)) -> some View {
+    private func pageView(_ page: (icon: String, titleKey: String, descKey: String)) -> some View {
         VStack(spacing: 20) {
             RoundedRectangle(cornerRadius: 28)
                 .fill(Theme.accent.opacity(0.12))
@@ -83,11 +71,11 @@ struct OnboardingView: View {
                         .foregroundStyle(Theme.accent)
                 }
 
-            Text(page.title)
+            Text(LocalizedStringKey(page.titleKey))
                 .font(.system(size: 26, weight: .heavy))
                 .foregroundStyle(Theme.textPrimary)
 
-            Text(page.description)
+            Text(LocalizedStringKey(page.descKey))
                 .font(.system(size: 16, weight: .medium))
                 .foregroundStyle(Theme.textSecondary)
                 .multilineTextAlignment(.center)

@@ -10,14 +10,14 @@ enum FontStyle: String, CaseIterable, Identifiable {
 
     var displayName: String {
         switch self {
-        case .system: "기본"
-        case .rounded: "라운드"
-        case .serif: "세리프"
-        case .mono: "모노"
+        case .system: String(localized: "font.system")
+        case .rounded: String(localized: "font.rounded")
+        case .serif: String(localized: "font.serif")
+        case .mono: String(localized: "font.mono")
         }
     }
 
-    var preview: String { "가나다 ABC 123" }
+    var preview: String { String(localized: "font.preview") }
 
     func font(size: CGFloat, weight: Font.Weight = .regular) -> Font {
         switch self {

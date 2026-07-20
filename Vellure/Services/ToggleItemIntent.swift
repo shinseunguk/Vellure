@@ -3,12 +3,12 @@ import ActivityKit
 import SwiftData
 
 struct ToggleItemIntent: LiveActivityIntent {
-    static var title: LocalizedStringResource = "체크리스트 항목 토글"
+    static var title: LocalizedStringResource = "intent.toggle.title"
 
-    @Parameter(title: "메모 ID")
+    @Parameter(title: "intent.toggle.memoId")
     var memoId: String
 
-    @Parameter(title: "항목 ID")
+    @Parameter(title: "intent.toggle.itemId")
     var itemId: String
 
     init() {}

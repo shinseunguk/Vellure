@@ -25,14 +25,16 @@ struct MemoEditView: View {
                     .padding(20)
                 }
                 .background(Theme.background)
-                .navigationTitle(vm.isEditing ? "메모 편집" : "새 메모")
+                .navigationTitle(vm.isEditing
+                    ? String(localized: "edit.title.edit")
+                    : String(localized: "edit.title.new"))
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
-                        Button("취소") { dismiss() }
+                        Button("edit.cancel") { dismiss() }
                     }
                     ToolbarItem(placement: .confirmationAction) {
-                        Button("저장") {
+                        Button("edit.save") {
                             let saved = vm.save()
                             if !vm.isEditing && LiveActivityService.shared.isSupported {
                                 if let activityId = LiveActivityService.shared.start(memo: saved) {
@@ -59,8 +61,8 @@ struct MemoEditView: View {
     @ViewBuilder
     private func contentSection(_ vm: MemoEditViewModel) -> some View {
         VStack(alignment: .leading, spacing: 8) {
-            sectionLabel("내용")
-            TextField("메모를 입력하세요", text: Bindable(vm).content, axis: .vertical)
+            sectionLabel(String(localized: "edit.section.content"))
+            TextField("edit.placeholder", text: Bindable(vm).content, axis: .vertical)
                 .lineLimit(3...8)
                 .focused($contentFocused)
                 .padding(16)
@@ -76,7 +78,7 @@ struct MemoEditView: View {
     @ViewBuilder
     private func typeSection(_ vm: MemoEditViewModel) -> some View {
         VStack(alignment: .leading, spacing: 8) {
-            sectionLabel("타입")
+            sectionLabel(String(localized: "edit.section.type"))
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
                     ForEach(RenderType.allCases, id: \.self) { type in
@@ -94,7 +96,9 @@ struct MemoEditView: View {
         switch vm.renderType {
         case .dday, .countdown:
             VStack(alignment: .leading, spacing: 8) {
-                sectionLabel(vm.renderType == .dday ? "목표일" : "목표 시각")
+                sectionLabel(vm.renderType == .dday
+                    ? String(localized: "edit.section.targetDate")
+                    : String(localized: "edit.section.targetTime"))
                 DatePicker(
                     "",
                     selection: Bindable(vm).targetDate,
@@ -109,7 +113,7 @@ struct MemoEditView: View {
             }
         case .checklist:
             VStack(alignment: .leading, spacing: 8) {
-                sectionLabel("체크리스트")
+                sectionLabel(String(localized: "edit.section.checklist"))
                 VStack(spacing: 0) {
                     ForEach(vm.checklistItems) { item in
                         HStack(spacing: 12) {
@@ -136,7 +140,7 @@ struct MemoEditView: View {
                         Image(systemName: "plus.circle")
                             .font(.system(size: 20))
                             .foregroundStyle(Theme.accent)
-                        TextField("항목 추가", text: $newItemTitle)
+                        TextField("edit.checklist.add", text: $newItemTitle)
                             .onSubmit {
                                 vm.addChecklistItem(title: newItemTitle)
                                 newItemTitle = ""
@@ -154,7 +158,7 @@ struct MemoEditView: View {
             }
         case .progress:
             VStack(alignment: .leading, spacing: 8) {
-                sectionLabel("진행률 \(Int(vm.progress * 100))%")
+                sectionLabel(String(format: String(localized: "edit.section.progress"), Int(vm.progress * 100)))
                 Slider(value: Bindable(vm).progress, in: 0...1, step: 0.05)
                     .tint(Theme.accent)
                     .padding(.horizontal, 16)
@@ -170,10 +174,10 @@ struct MemoEditView: View {
     @ViewBuilder
     private func displayModeSection(_ vm: MemoEditViewModel) -> some View {
         VStack(alignment: .leading, spacing: 8) {
-            sectionLabel("표시 모드")
+            sectionLabel(String(localized: "edit.section.displayMode"))
             Picker("", selection: Bindable(vm).displayMode) {
-                Text("고정").tag(DisplayMode.pinned)
-                Text("자동소멸").tag(DisplayMode.autoClear)
+                Text("edit.mode.pinned").tag(DisplayMode.pinned)
+                Text("edit.mode.autoClear").tag(DisplayMode.autoClear)
             }
             .pickerStyle(.segmented)
         }
@@ -182,7 +186,7 @@ struct MemoEditView: View {
     @ViewBuilder
     private func fontSection(_ vm: MemoEditViewModel) -> some View {
         VStack(alignment: .leading, spacing: 8) {
-            sectionLabel("폰트")
+            sectionLabel(String(localized: "edit.section.font"))
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
                     ForEach(FontStyle.allCases) { style in
@@ -211,7 +215,7 @@ struct MemoEditView: View {
     @ViewBuilder
     private func colorSection(_ vm: MemoEditViewModel) -> some View {
         VStack(alignment: .leading, spacing: 8) {
-            sectionLabel("색상")
+            sectionLabel(String(localized: "edit.section.color"))
             HStack(spacing: 12) {
                 ForEach(Array(Theme.memoColors.keys.sorted()), id: \.self) { key in
                     Button {
@@ -245,7 +249,7 @@ struct MemoEditView: View {
                 }
                 dismiss()
             } label: {
-                Text("메모 삭제")
+                Text("edit.delete")
                     .font(.system(size: 15, weight: .semibold))
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 14)
@@ -289,11 +293,11 @@ struct MemoEditView: View {
 
     private func typeDisplayName(_ type: RenderType) -> String {
         switch type {
-        case .plain: "일반"
-        case .checklist: "체크리스트"
-        case .dday: "D-day"
-        case .countdown: "카운트다운"
-        case .progress: "진행바"
+        case .plain: String(localized: "type.plain")
+        case .checklist: String(localized: "type.checklist")
+        case .dday: String(localized: "type.dday")
+        case .countdown: String(localized: "type.countdown")
+        case .progress: String(localized: "type.progress")
         }
     }
 }
