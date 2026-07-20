@@ -1,7 +1,9 @@
+import AppIntents
 import SwiftUI
 
 struct ExpandedChecklistView: View {
     let items: [LiveChecklistItem]
+    let memoId: String
     let tint: Color
 
     var body: some View {
@@ -19,15 +21,18 @@ struct ExpandedChecklistView: View {
     }
 
     private func checkRow(_ item: LiveChecklistItem) -> some View {
-        HStack(spacing: 8) {
-            Image(systemName: item.done ? "checkmark.circle.fill" : "circle")
-                .font(.system(size: 14))
-                .foregroundStyle(item.done ? tint : .secondary)
-            Text(item.title)
-                .font(.system(size: 13, weight: .medium))
-                .foregroundStyle(item.done ? Color.secondary : Color.white)
-                .strikethrough(item.done)
-                .lineLimit(1)
+        Button(intent: ToggleItemIntent(memoId: memoId, itemId: item.id)) {
+            HStack(spacing: 8) {
+                Image(systemName: item.done ? "checkmark.circle.fill" : "circle")
+                    .font(.system(size: 14))
+                    .foregroundStyle(item.done ? tint : .secondary)
+                Text(item.title)
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundStyle(item.done ? Color.secondary : Color.white)
+                    .strikethrough(item.done)
+                    .lineLimit(1)
+            }
         }
+        .buttonStyle(.plain)
     }
 }

@@ -20,7 +20,7 @@ struct LockScreenView: View {
                 }
 
                 Text(state.content)
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(.system(size: 14, weight: .semibold, design: fontDesign(from: state.font)))
                     .foregroundStyle(.white)
                     .lineLimit(2)
             }
@@ -87,6 +87,15 @@ struct LockScreenView: View {
         if days > 0 { return "D-\(days)" }
         if days == 0 { return "D-Day" }
         return "D+\(abs(days))"
+    }
+
+    private func fontDesign(from fontTag: String) -> Font.Design? {
+        switch fontTag {
+        case "rounded": .rounded
+        case "serif": .serif
+        case "mono": .monospaced
+        default: nil
+        }
     }
 
     private func colorFromTag(_ tag: String) -> Color {
