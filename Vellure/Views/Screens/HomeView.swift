@@ -6,6 +6,7 @@ struct HomeView: View {
     @State private var showNewMemo = false
     @State private var selectedMemo: Memo?
     @State private var showSettings = false
+    @State private var isEditing = false
 
     var body: some View {
         NavigationStack {
@@ -63,27 +64,43 @@ struct HomeView: View {
             Spacer()
 
             HStack(spacing: 9) {
-                Button { showNewMemo = true } label: {
-                    HStack(spacing: 6) {
-                        Image(systemName: "plus")
-                            .font(.system(size: 13, weight: .bold))
-                        Text("home.new")
+                if viewModel?.memos.isEmpty == false {
+                    Button {
+                        withAnimation { isEditing.toggle() }
+                    } label: {
+                        Text(isEditing ? "home.done" : "home.edit")
                             .font(.system(size: 13.5, weight: .bold))
+                            .foregroundStyle(isEditing ? .white : Theme.textSecondary)
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 10)
+                            .background(isEditing ? Theme.accent : Theme.chipBackground)
+                            .clipShape(Capsule())
                     }
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, 17)
-                    .padding(.vertical, 10)
-                    .background(Theme.accent)
-                    .clipShape(Capsule())
                 }
 
-                Button { showSettings = true } label: {
-                    Image(systemName: "gearshape")
-                        .font(.system(size: 17))
-                        .foregroundStyle(Theme.textSecondary)
-                        .frame(width: 38, height: 38)
-                        .background(Theme.chipBackground)
-                        .clipShape(Circle())
+                if !isEditing {
+                    Button { showNewMemo = true } label: {
+                        HStack(spacing: 6) {
+                            Image(systemName: "plus")
+                                .font(.system(size: 13, weight: .bold))
+                            Text("home.new")
+                                .font(.system(size: 13.5, weight: .bold))
+                        }
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 17)
+                        .padding(.vertical, 10)
+                        .background(Theme.accent)
+                        .clipShape(Capsule())
+                    }
+
+                    Button { showSettings = true } label: {
+                        Image(systemName: "gearshape")
+                            .font(.system(size: 17))
+                            .foregroundStyle(Theme.textSecondary)
+                            .frame(width: 38, height: 38)
+                            .background(Theme.chipBackground)
+                            .clipShape(Circle())
+                    }
                 }
             }
         }
@@ -100,18 +117,50 @@ struct HomeView: View {
                     onTap: { selectedMemo = memo },
                     onToggleActivity: { vm.toggleActivity(for: memo) }
                 )
+                .contextMenu {
+                    Button {
+                        vm.toggleActivity(for: memo)
+                    } label: {
+                        Label(
+                            memo.activityId != nil ? "context.stopActivity" : "context.startActivity",
+                            systemImage: memo.activityId != nil ? "stop.circle" : "play.circle"
+                        )
+                    }
+
+                    Button {
+                        selectedMemo = memo
+                    } label: {
+                        Label("context.edit", systemImage: "pencil")
+                    }
+
+                    Divider()
+
+                    Button(role: .destructive) {
+                        if let activityId = memo.activityId {
+                            Task { await LiveActivityService.shared.end(activityId: activityId) }
+                        }
+                        vm.delete(memo)
+                    } label: {
+                        Label("context.delete", systemImage: "trash")
+                    }
+                }
                 .listRowSeparator(.hidden)
                 .listRowBackground(Color.clear)
                 .listRowInsets(EdgeInsets(top: 4, leading: 20, bottom: 4, trailing: 20))
             }
             .onDelete(perform: { indexSet in
                 for index in indexSet {
-                    vm.delete(vm.memos[index])
+                    let memo = vm.memos[index]
+                    if let activityId = memo.activityId {
+                        Task { await LiveActivityService.shared.end(activityId: activityId) }
+                    }
+                    vm.delete(memo)
                 }
             })
             .onMove(perform: vm.reorder)
         }
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
+        .environment(\.editMode, .constant(isEditing ? .active : .inactive))
     }
 }

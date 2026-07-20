@@ -1,6 +1,14 @@
 /* Home */
 "home.title" = "メモ";
 "home.new" = "新規";
+"home.edit" = "編集";
+"home.done" = "完了";
+
+/* Context Menu */
+"context.startActivity" = "ロック画面に表示";
+"context.stopActivity" = "ロック画面から削除";
+"context.edit" = "編集";
+"context.delete" = "削除";
 
 /* Edit */
 "edit.title.new" = "新規メモ";
