@@ -80,12 +80,17 @@ struct HomeView: View {
 
                 if !isEditing {
                     Button { showNewMemo = true } label: {
-                        Image(systemName: "plus")
-                            .font(.system(size: 15, weight: .bold))
-                            .foregroundStyle(.white)
-                            .frame(width: 34, height: 34)
-                            .background(Theme.accent)
-                            .clipShape(Circle())
+                        HStack(spacing: 4) {
+                            Image(systemName: "plus")
+                                .font(.system(size: 12, weight: .bold))
+                            Text("home.new")
+                                .font(.system(size: 13, weight: .bold))
+                        }
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 7)
+                        .background(Theme.accent)
+                        .clipShape(Capsule())
                     }
 
                     Button { showSettings = true } label: {
