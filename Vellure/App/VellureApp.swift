@@ -10,7 +10,7 @@ struct VellureApp: App {
         let config = ModelConfiguration(
             "Vellure",
             schema: schema,
-            groupContainer: .identifier("group.com.uk.Vellure")
+            groupContainer: .identifier(Constants.appGroupId)
         )
 
         do {
@@ -22,7 +22,8 @@ struct VellureApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            HomeView()
+                .environment(MemoRepository(modelContext: container.mainContext))
         }
         .modelContainer(container)
     }
