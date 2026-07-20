@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		B1A00013300B48A300158E78 /* VellureLiveActivity.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B1A00001300B48A300158E78 /* VellureLiveActivity.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		A2FC8348300B48A300158E78 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -50,10 +54,6 @@
 		A2FC8351300B48A300158E78 /* VellureUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VellureUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B1A00001300B48A300158E78 /* VellureLiveActivity.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = VellureLiveActivity.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
-
-/* Begin PBXBuildFile section */
-		B1A00013300B48A300158E78 /* VellureLiveActivity.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B1A00001300B48A300158E78 /* VellureLiveActivity.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-/* End PBXBuildFile section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		A2FC833C300B48A100158E78 /* Vellure */ = {

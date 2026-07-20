@@ -29,7 +29,7 @@ struct VellureLiveActivityWidget: Widget {
                 DynamicIslandExpandedRegion(.bottom) {
                     VStack(alignment: .leading, spacing: 8) {
                         Text(context.state.content)
-                            .font(.system(size: 15, weight: .semibold))
+                            .font(.system(size: 15, weight: .semibold, design: fontDesign(from: context.state.font)))
                             .foregroundStyle(.white)
                             .lineLimit(3)
 
@@ -87,7 +87,7 @@ struct VellureLiveActivityWidget: Widget {
             }
         case "checklist":
             if let items = state.items {
-                ExpandedChecklistView(items: items, tint: tint(context))
+                ExpandedChecklistView(items: items, memoId: context.attributes.memoId, tint: tint(context))
             }
         default:
             EmptyView()
@@ -130,6 +130,15 @@ struct VellureLiveActivityWidget: Widget {
     }
 
     // MARK: - Helpers
+
+    private func fontDesign(from fontTag: String) -> Font.Design? {
+        switch fontTag {
+        case "rounded": .rounded
+        case "serif": .serif
+        case "mono": .monospaced
+        default: nil
+        }
+    }
 
     private func tint(_ context: ActivityViewContext<MemoAttributes>) -> Color {
         colorFromTag(context.state.colorTag)
