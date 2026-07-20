@@ -2,6 +2,7 @@ import SwiftUI
 
 struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
+    @AppStorage("appearanceMode") private var appearanceMode: String = AppearanceMode.system.rawValue
 
     private let activitySupported = LiveActivityService.shared.isSupported
     private let appVersion: String = {
@@ -43,6 +44,18 @@ struct SettingsView: View {
                     }
                 } header: {
                     Text("settings.section.lockscreen")
+                }
+
+                Section {
+                    Picker(selection: $appearanceMode) {
+                        ForEach(AppearanceMode.allCases) { mode in
+                            Text(mode.displayName).tag(mode.rawValue)
+                        }
+                    } label: {
+                        Label("settings.appearance", systemImage: "circle.lefthalf.filled")
+                    }
+                } header: {
+                    Text("settings.section.display")
                 }
 
                 Section {

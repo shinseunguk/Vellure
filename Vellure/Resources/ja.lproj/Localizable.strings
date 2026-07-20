@@ -60,6 +60,11 @@
 "settings.activity.disabled" = "無効";
 "settings.activity.guide" = "設定 → Vellure → Live Activityをオンにしてください";
 "settings.activity.endAll" = "すべてのLive Activityを終了";
+"settings.section.display" = "表示";
+"settings.appearance" = "外観モード";
+"appearance.system" = "システム";
+"appearance.light" = "ライト";
+"appearance.dark" = "ダーク";
 "settings.section.appInfo" = "アプリ情報";
 "settings.version" = "バージョン";
 "settings.minOS" = "最低OS";

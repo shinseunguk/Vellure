@@ -60,6 +60,11 @@
 "settings.activity.disabled" = "Disabled";
 "settings.activity.guide" = "Go to Settings → Vellure → Turn on Live Activity";
 "settings.activity.endAll" = "End All Live Activities";
+"settings.section.display" = "Display";
+"settings.appearance" = "Appearance";
+"appearance.system" = "System";
+"appearance.light" = "Light";
+"appearance.dark" = "Dark";
 "settings.section.appInfo" = "App Info";
 "settings.version" = "Version";
 "settings.minOS" = "Minimum OS";

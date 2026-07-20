@@ -60,6 +60,11 @@
 "settings.activity.disabled" = "已禁用";
 "settings.activity.guide" = "前往 设置 → Vellure → 开启 Live Activity";
 "settings.activity.endAll" = "结束所有 Live Activity";
+"settings.section.display" = "显示";
+"settings.appearance" = "外观模式";
+"appearance.system" = "跟随系统";
+"appearance.light" = "浅色";
+"appearance.dark" = "深色";
 "settings.section.appInfo" = "应用信息";
 "settings.version" = "版本";
 "settings.minOS" = "最低系统";
