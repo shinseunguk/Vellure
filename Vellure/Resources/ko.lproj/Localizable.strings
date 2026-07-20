@@ -60,6 +60,11 @@
 "settings.activity.disabled" = "비활성";
 "settings.activity.guide" = "설정 → Vellure → Live Activity를 켜주세요";
 "settings.activity.endAll" = "모든 Live Activity 종료";
+"settings.section.display" = "화면";
+"settings.appearance" = "화면 모드";
+"appearance.system" = "시스템";
+"appearance.light" = "라이트";
+"appearance.dark" = "다크";
 "settings.section.appInfo" = "앱 정보";
 "settings.version" = "버전";
 "settings.minOS" = "최소 지원";

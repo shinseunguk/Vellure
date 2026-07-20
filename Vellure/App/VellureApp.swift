@@ -5,6 +5,7 @@ import SwiftData
 struct VellureApp: App {
     @Environment(\.scenePhase) private var scenePhase
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
+    @AppStorage("appearanceMode") private var appearanceMode: String = AppearanceMode.system.rawValue
 
     private let container: ModelContainer
     private let repository: MemoRepository
@@ -26,16 +27,23 @@ struct VellureApp: App {
         repository = MemoRepository(modelContext: container.mainContext)
     }
 
+    private var selectedScheme: ColorScheme? {
+        AppearanceMode(rawValue: appearanceMode)?.colorScheme
+    }
+
     var body: some Scene {
         WindowGroup {
-            if hasCompletedOnboarding {
-                HomeView()
-                    .environment(repository)
-            } else {
-                OnboardingView {
-                    hasCompletedOnboarding = true
+            Group {
+                if hasCompletedOnboarding {
+                    HomeView()
+                        .environment(repository)
+                } else {
+                    OnboardingView {
+                        hasCompletedOnboarding = true
+                    }
                 }
             }
+            .preferredColorScheme(selectedScheme)
         }
         .modelContainer(container)
         .onChange(of: scenePhase) { _, newPhase in
