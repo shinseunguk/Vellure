@@ -1,6 +1,14 @@
 /* Home */
 "home.title" = "Memos";
 "home.new" = "New";
+"home.edit" = "Edit";
+"home.done" = "Done";
+
+/* Context Menu */
+"context.startActivity" = "Show on Lock Screen";
+"context.stopActivity" = "Remove from Lock Screen";
+"context.edit" = "Edit";
+"context.delete" = "Delete";
 
 /* Edit */
 "edit.title.new" = "New Memo";

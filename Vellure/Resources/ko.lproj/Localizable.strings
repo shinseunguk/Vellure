@@ -1,6 +1,14 @@
 /* Home */
 "home.title" = "메모";
 "home.new" = "새 메모";
+"home.edit" = "편집";
+"home.done" = "완료";
+
+/* Context Menu */
+"context.startActivity" = "잠금화면에 표시";
+"context.stopActivity" = "잠금화면에서 제거";
+"context.edit" = "편집";
+"context.delete" = "삭제";
 
 /* Edit */
 "edit.title.new" = "새 메모";

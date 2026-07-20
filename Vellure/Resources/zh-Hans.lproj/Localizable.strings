@@ -1,6 +1,14 @@
 /* Home */
 "home.title" = "备忘录";
 "home.new" = "新建";
+"home.edit" = "编辑";
+"home.done" = "完成";
+
+/* Context Menu */
+"context.startActivity" = "显示在锁屏";
+"context.stopActivity" = "从锁屏移除";
+"context.edit" = "编辑";
+"context.delete" = "删除";
 
 /* Edit */
 "edit.title.new" = "新建备忘录";
