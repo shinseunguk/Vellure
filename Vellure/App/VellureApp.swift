@@ -4,6 +4,7 @@ import SwiftData
 @main
 struct VellureApp: App {
     @Environment(\.scenePhase) private var scenePhase
+    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
 
     private let container: ModelContainer
     private let repository: MemoRepository
@@ -27,8 +28,14 @@ struct VellureApp: App {
 
     var body: some Scene {
         WindowGroup {
-            HomeView()
-                .environment(repository)
+            if hasCompletedOnboarding {
+                HomeView()
+                    .environment(repository)
+            } else {
+                OnboardingView {
+                    hasCompletedOnboarding = true
+                }
+            }
         }
         .modelContainer(container)
         .onChange(of: scenePhase) { _, newPhase in

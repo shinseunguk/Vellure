@@ -68,6 +68,9 @@ struct HomeView: View {
                     .environment(repository)
                     .onDisappear { viewModel?.refresh() }
             }
+            .sheet(isPresented: $showSettings) {
+                SettingsView()
+            }
         }
         .onAppear {
             if viewModel == nil {
