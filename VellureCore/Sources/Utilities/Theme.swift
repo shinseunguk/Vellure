@@ -42,7 +42,7 @@ public enum Theme {
         "orange": Color(hex: "f59e0b"),
         "red": Color(hex: "ef4444"),
         "pink": Color(hex: "ec4899"),
-        "teal": Color(hex: "14b8a6"),
+        "teal": Color(hex: "14b8a6")
     ]
 
     public static func memoColor(for tag: String) -> Color {
