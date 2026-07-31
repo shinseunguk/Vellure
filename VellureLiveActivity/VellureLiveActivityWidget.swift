@@ -180,3 +180,39 @@ struct VellureLiveActivityWidget: Widget {
         }
     }
 }
+
+#if DEBUG
+private extension MemoAttributes.ContentState {
+    static var checklist: MemoAttributes.ContentState {
+        MemoAttributes.ContentState(
+            renderType: "checklist",
+            content: "여행 준비물",
+            items: [
+                LiveChecklistItem(id: "1", title: "여권", done: true),
+                LiveChecklistItem(id: "2", title: "충전기", done: false)
+            ],
+            font: "default",
+            colorTag: "green",
+            updatedAt: Date()
+        )
+    }
+
+    static var dday: MemoAttributes.ContentState {
+        MemoAttributes.ContentState(
+            renderType: "dday",
+            content: "프로젝트 마감",
+            targetDate: Calendar.current.date(byAdding: .day, value: 10, to: Date()),
+            font: "default",
+            colorTag: "blue",
+            updatedAt: Date()
+        )
+    }
+}
+
+#Preview("Live Activity", as: .content, using: MemoAttributes(memoId: "preview", displayMode: "pinned")) {
+    VellureLiveActivityWidget()
+} contentStates: {
+    MemoAttributes.ContentState.checklist
+    MemoAttributes.ContentState.dday
+}
+#endif

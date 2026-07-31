@@ -110,3 +110,23 @@ struct MemoCardView: View {
         .buttonStyle(.plain)
     }
 }
+
+#if DEBUG
+#Preview {
+    VStack(spacing: 12) {
+        MemoCardView(
+            memo: PreviewSupport.sampleMemo(renderType: .checklist, content: "여행 준비물"),
+            onTap: {},
+            onToggleActivity: {}
+        )
+        MemoCardView(
+            memo: PreviewSupport.sampleMemo(renderType: .dday, content: "프로젝트 마감", activityId: nil),
+            onTap: {},
+            onToggleActivity: {}
+        )
+    }
+    .padding()
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .background(Theme.background)
+}
+#endif

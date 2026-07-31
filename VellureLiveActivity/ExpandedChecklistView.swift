@@ -37,3 +37,19 @@ struct ExpandedChecklistView: View {
         .buttonStyle(.plain)
     }
 }
+
+#if DEBUG
+#Preview {
+    ExpandedChecklistView(
+        items: [
+            LiveChecklistItem(id: "1", title: "여권", done: true),
+            LiveChecklistItem(id: "2", title: "충전기", done: false),
+            LiveChecklistItem(id: "3", title: "이어폰", done: false)
+        ],
+        memoId: "preview",
+        tint: .green
+    )
+    .padding()
+    .background(.black)
+}
+#endif

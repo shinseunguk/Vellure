@@ -39,3 +39,11 @@ struct EmptyStateView: View {
         }
     }
 }
+
+#if DEBUG
+#Preview {
+    EmptyStateView(onCreateTap: {})
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Theme.background)
+}
+#endif

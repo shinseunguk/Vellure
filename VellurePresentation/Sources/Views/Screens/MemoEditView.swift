@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 import VellureCore
 import VellureData
 
@@ -318,3 +319,21 @@ struct MemoEditView: View {
         }
     }
 }
+
+#if DEBUG
+#Preview("새 메모") {
+    if let preview = PreviewSupport.makeRepository(seeded: false) {
+        MemoEditView(memo: nil)
+            .environment(preview.repository)
+            .modelContainer(preview.container)
+    }
+}
+
+#Preview("메모 편집") {
+    if let preview = PreviewSupport.makeRepository(seeded: false) {
+        MemoEditView(memo: PreviewSupport.sampleMemo())
+            .environment(preview.repository)
+            .modelContainer(preview.container)
+    }
+}
+#endif

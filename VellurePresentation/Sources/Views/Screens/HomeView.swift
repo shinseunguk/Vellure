@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 import VellureCore
 import VellureData
 
@@ -169,3 +170,21 @@ public struct HomeView: View {
         .environment(\.editMode, .constant(isEditing ? .active : .inactive))
     }
 }
+
+#if DEBUG
+#Preview("메모 목록") {
+    if let preview = PreviewSupport.makeRepository() {
+        HomeView()
+            .environment(preview.repository)
+            .modelContainer(preview.container)
+    }
+}
+
+#Preview("빈 상태") {
+    if let preview = PreviewSupport.makeRepository(seeded: false) {
+        HomeView()
+            .environment(preview.repository)
+            .modelContainer(preview.container)
+    }
+}
+#endif

@@ -106,3 +106,9 @@ public struct OnboardingView: View {
         }
     }
 }
+
+#if DEBUG
+#Preview {
+    OnboardingView(onComplete: {})
+}
+#endif
