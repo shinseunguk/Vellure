@@ -1,5 +1,6 @@
 import AppIntents
 import SwiftUI
+import VellureCore
 
 struct ExpandedChecklistView: View {
     let items: [LiveChecklistItem]

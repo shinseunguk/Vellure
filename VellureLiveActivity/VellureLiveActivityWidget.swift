@@ -1,6 +1,7 @@
 import ActivityKit
 import WidgetKit
 import SwiftUI
+import VellureCore
 
 struct VellureLiveActivityWidget: Widget {
     var body: some WidgetConfiguration {

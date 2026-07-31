@@ -2,14 +2,15 @@ import AppIntents
 import ActivityKit
 import SwiftData
 import VellureCore
+import VellureData
 
 struct ToggleItemIntent: LiveActivityIntent {
-    static var title: LocalizedStringResource = "체크리스트 항목 토글"
+    static var title: LocalizedStringResource = "intent.toggle.title"
 
-    @Parameter(title: "메모 ID")
+    @Parameter(title: "intent.toggle.memoId")
     var memoId: String
 
-    @Parameter(title: "항목 ID")
+    @Parameter(title: "intent.toggle.itemId")
     var itemId: String
 
     init() {}
@@ -54,22 +55,7 @@ struct ToggleItemIntent: LiveActivityIntent {
             try? context.save()
 
             if let activityId = memo.activityId {
-                let state = MemoAttributes.ContentState(
-                    renderType: memo.renderType.rawValue,
-                    content: memo.content,
-                    items: memo.items?.map {
-                        LiveChecklistItem(id: $0.id.uuidString, title: $0.title, done: $0.done)
-                    },
-                    targetDate: memo.targetDate,
-                    progress: memo.progress,
-                    font: memo.font,
-                    colorTag: memo.colorTag,
-                    updatedAt: Date()
-                )
-                let content = ActivityContent(state: state, staleDate: nil)
-                for activity in Activity<MemoAttributes>.activities where activity.id == activityId {
-                    await activity.update(content)
-                }
+                await LiveActivityService.shared.update(activityId: activityId, memo: memo)
             }
         }
 
