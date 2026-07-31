@@ -1,6 +1,11 @@
 default_platform(:ios)
 
 platform :ios do
+  desc "Tuist 프로젝트 생성"
+  lane :generate do
+    sh("tuist generate --no-open")
+  end
+
   desc "SwiftLint 실행"
   lane :lint do
     swiftlint(
@@ -12,8 +17,9 @@ platform :ios do
 
   desc "개발 빌드"
   lane :build do
+    generate
     build_app(
-      project: "Vellure.xcodeproj",
+      workspace: "Vellure.xcworkspace",
       scheme: "Vellure",
       configuration: "Debug",
       skip_codesigning: true,
@@ -23,8 +29,9 @@ platform :ios do
 
   desc "테스트 실행"
   lane :test do
+    generate
     run_tests(
-      project: "Vellure.xcodeproj",
+      workspace: "Vellure.xcworkspace",
       scheme: "Vellure",
       device: "iPhone 16",
       clean: true
@@ -33,9 +40,10 @@ platform :ios do
 
   desc "TestFlight 배포"
   lane :beta do
+    generate
     increment_build_number
     build_app(
-      project: "Vellure.xcodeproj",
+      workspace: "Vellure.xcworkspace",
       scheme: "Vellure",
       configuration: "Release"
     )
@@ -44,9 +52,10 @@ platform :ios do
 
   desc "App Store 배포"
   lane :release do
+    generate
     increment_build_number
     build_app(
-      project: "Vellure.xcodeproj",
+      workspace: "Vellure.xcworkspace",
       scheme: "Vellure",
       configuration: "Release"
     )

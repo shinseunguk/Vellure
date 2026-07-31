@@ -1,5 +1,6 @@
 import SwiftUI
 import WidgetKit
+import VellureCore
 
 struct LockScreenView: View {
     let context: ActivityViewContext<MemoAttributes>

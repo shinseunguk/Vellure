@@ -1,5 +1,8 @@
 import SwiftUI
 import SwiftData
+import VellureCore
+import VellureData
+import VellurePresentation
 
 @main
 struct VellureApp: App {
