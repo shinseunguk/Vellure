@@ -9,7 +9,7 @@ struct ExpandedChecklistView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            if items.count > 0 { checkRow(items[0]) }
+            if !items.isEmpty { checkRow(items[0]) }
             if items.count > 1 { checkRow(items[1]) }
             if items.count > 2 { checkRow(items[2]) }
             if items.count > 3 { checkRow(items[3]) }

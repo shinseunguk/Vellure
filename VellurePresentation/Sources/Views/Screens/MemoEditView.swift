@@ -97,79 +97,94 @@ struct MemoEditView: View {
     private func dynamicSection(_ vm: MemoEditViewModel) -> some View {
         switch vm.renderType {
         case .dday, .countdown:
-            VStack(alignment: .leading, spacing: 8) {
-                sectionLabel(vm.renderType == .dday
-                    ? String(localized: "edit.section.targetDate")
-                    : String(localized: "edit.section.targetTime"))
-                DatePicker(
-                    "",
-                    selection: Bindable(vm).targetDate,
-                    in: Date()...,
-                    displayedComponents: vm.renderType == .dday ? [.date] : [.date, .hourAndMinute]
-                )
-                .datePickerStyle(.graphical)
-                .tint(Theme.accent)
-                .padding(16)
-                .background(Theme.cardBackground)
-                .clipShape(RoundedRectangle(cornerRadius: 16))
-            }
+            dateSection(vm)
         case .checklist:
-            VStack(alignment: .leading, spacing: 8) {
-                sectionLabel(String(localized: "edit.section.checklist"))
-                VStack(spacing: 0) {
-                    ForEach(vm.checklistItems) { item in
-                        HStack(spacing: 12) {
-                            Button {
-                                vm.toggleChecklistItem(item)
-                            } label: {
-                                Image(systemName: item.done ? "checkmark.circle.fill" : "circle")
-                                    .font(.system(size: 20))
-                                    .foregroundStyle(item.done ? Theme.accent : Theme.textSecondary)
-                            }
-                            Text(item.title)
-                                .strikethrough(item.done)
-                                .foregroundStyle(item.done ? Theme.textSecondary : Theme.textPrimary)
-                            Spacer()
-                        }
-                        .padding(.vertical, 10)
-                        .padding(.horizontal, 16)
-                        if item.id != vm.checklistItems.last?.id {
-                            Divider().padding(.leading, 48)
-                        }
-                    }
+            checklistSection(vm)
+        case .progress:
+            progressSection(vm)
+        case .plain:
+            EmptyView()
+        }
+    }
 
+    @ViewBuilder
+    private func dateSection(_ vm: MemoEditViewModel) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            sectionLabel(vm.renderType == .dday
+                ? String(localized: "edit.section.targetDate")
+                : String(localized: "edit.section.targetTime"))
+            DatePicker(
+                "",
+                selection: Bindable(vm).targetDate,
+                in: Date()...,
+                displayedComponents: vm.renderType == .dday ? [.date] : [.date, .hourAndMinute]
+            )
+            .datePickerStyle(.graphical)
+            .tint(Theme.accent)
+            .padding(16)
+            .background(Theme.cardBackground)
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+        }
+    }
+
+    @ViewBuilder
+    private func checklistSection(_ vm: MemoEditViewModel) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            sectionLabel(String(localized: "edit.section.checklist"))
+            VStack(spacing: 0) {
+                ForEach(vm.checklistItems) { item in
                     HStack(spacing: 12) {
-                        Image(systemName: "plus.circle")
-                            .font(.system(size: 20))
-                            .foregroundStyle(Theme.accent)
-                        TextField("edit.checklist.add", text: $newItemTitle)
-                            .onSubmit {
-                                vm.addChecklistItem(title: newItemTitle)
-                                newItemTitle = ""
-                            }
+                        Button {
+                            vm.toggleChecklistItem(item)
+                        } label: {
+                            Image(systemName: item.done ? "checkmark.circle.fill" : "circle")
+                                .font(.system(size: 20))
+                                .foregroundStyle(item.done ? Theme.accent : Theme.textSecondary)
+                        }
+                        Text(item.title)
+                            .strikethrough(item.done)
+                            .foregroundStyle(item.done ? Theme.textSecondary : Theme.textPrimary)
+                        Spacer()
                     }
                     .padding(.vertical, 10)
                     .padding(.horizontal, 16)
+                    if item.id != vm.checklistItems.last?.id {
+                        Divider().padding(.leading, 48)
+                    }
                 }
+
+                HStack(spacing: 12) {
+                    Image(systemName: "plus.circle")
+                        .font(.system(size: 20))
+                        .foregroundStyle(Theme.accent)
+                    TextField("edit.checklist.add", text: $newItemTitle)
+                        .onSubmit {
+                            vm.addChecklistItem(title: newItemTitle)
+                            newItemTitle = ""
+                        }
+                }
+                .padding(.vertical, 10)
+                .padding(.horizontal, 16)
+            }
+            .background(Theme.cardBackground)
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .overlay(
+                RoundedRectangle(cornerRadius: 16)
+                    .stroke(Theme.divider, lineWidth: 1)
+            )
+        }
+    }
+
+    @ViewBuilder
+    private func progressSection(_ vm: MemoEditViewModel) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            sectionLabel(String(format: String(localized: "edit.section.progress"), Int(vm.progress * 100)))
+            Slider(value: Bindable(vm).progress, in: 0...1, step: 0.05)
+                .tint(Theme.accent)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 12)
                 .background(Theme.cardBackground)
                 .clipShape(RoundedRectangle(cornerRadius: 16))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 16)
-                        .stroke(Theme.divider, lineWidth: 1)
-                )
-            }
-        case .progress:
-            VStack(alignment: .leading, spacing: 8) {
-                sectionLabel(String(format: String(localized: "edit.section.progress"), Int(vm.progress * 100)))
-                Slider(value: Bindable(vm).progress, in: 0...1, step: 0.05)
-                    .tint(Theme.accent)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 12)
-                    .background(Theme.cardBackground)
-                    .clipShape(RoundedRectangle(cornerRadius: 16))
-            }
-        case .plain:
-            EmptyView()
         }
     }
 

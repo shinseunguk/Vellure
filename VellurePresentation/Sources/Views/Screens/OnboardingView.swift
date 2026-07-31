@@ -2,13 +2,19 @@ import SwiftUI
 import VellureCore
 
 public struct OnboardingView: View {
+    private struct Page {
+        let icon: String
+        let titleKey: String
+        let descKey: String
+    }
+
     @State private var currentPage = 0
     let onComplete: () -> Void
 
-    private let pages: [(icon: String, titleKey: String, descKey: String)] = [
-        ("note.text", "onboarding.page1.title", "onboarding.page1.desc"),
-        ("checklist", "onboarding.page2.title", "onboarding.page2.desc"),
-        ("mic.fill", "onboarding.page3.title", "onboarding.page3.desc"),
+    private let pages: [Page] = [
+        Page(icon: "note.text", titleKey: "onboarding.page1.title", descKey: "onboarding.page1.desc"),
+        Page(icon: "checklist", titleKey: "onboarding.page2.title", descKey: "onboarding.page2.desc"),
+        Page(icon: "mic.fill", titleKey: "onboarding.page3.title", descKey: "onboarding.page3.desc")
     ]
 
     public init(onComplete: @escaping () -> Void) {
@@ -65,7 +71,7 @@ public struct OnboardingView: View {
         .background(Theme.background)
     }
 
-    private func pageView(_ page: (icon: String, titleKey: String, descKey: String)) -> some View {
+    private func pageView(_ page: Page) -> some View {
         VStack(spacing: 20) {
             RoundedRectangle(cornerRadius: 28)
                 .fill(Theme.accent.opacity(0.12))

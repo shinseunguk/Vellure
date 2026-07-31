@@ -32,7 +32,7 @@ public enum FontStyle: String, CaseIterable, Identifiable {
         }
     }
 
-    public static func from(_ rawValue: String) -> FontStyle {
-        FontStyle(rawValue: rawValue) ?? .system
+    public static func from(_ rawValue: String) -> Self {
+        Self(rawValue: rawValue) ?? .system
     }
 }

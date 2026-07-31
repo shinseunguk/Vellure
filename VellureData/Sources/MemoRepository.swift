@@ -66,10 +66,18 @@ public final class MemoRepository {
 
     // MARK: - Update
 
-    public func update(_ memo: Memo, content: String? = nil, renderType: RenderType? = nil,
-                       items: [ChecklistItem]? = nil, targetDate: Date? = nil,
-                       progress: Double? = nil, displayMode: DisplayMode? = nil,
-                       font: String? = nil, colorTag: String? = nil, activityId: String? = nil) {
+    public func update(
+        _ memo: Memo,
+        content: String? = nil,
+        renderType: RenderType? = nil,
+        items: [ChecklistItem]? = nil,
+        targetDate: Date? = nil,
+        progress: Double? = nil,
+        displayMode: DisplayMode? = nil,
+        font: String? = nil,
+        colorTag: String? = nil,
+        activityId: String? = nil
+    ) {
         if let content { memo.content = content }
         if let renderType { memo.renderType = renderType }
         if let items { memo.items = items }

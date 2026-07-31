@@ -92,7 +92,7 @@ public final class LiveActivityService {
         switch memo.displayMode {
         case .autoClear:
             if let targetDate = memo.targetDate,
-               (memo.renderType == .countdown || memo.renderType == .dday) {
+               memo.renderType == .countdown || memo.renderType == .dday {
                 return targetDate
             }
             return Date().addingTimeInterval(Constants.activityMaxDuration)
