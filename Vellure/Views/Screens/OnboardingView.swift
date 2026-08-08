@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct OnboardingView: View {
+    @Environment(MemoRepository.self) private var repository
     @State private var currentPage = 0
     @State private var firstMemoText = ""
     let onComplete: () -> Void
@@ -31,6 +32,7 @@ struct OnboardingView: View {
                 if currentPage < totalPages - 1 {
                     withAnimation { currentPage += 1 }
                 } else {
+                    publishFirstMemo()
                     onComplete()
                 }
             } label: {
@@ -67,6 +69,23 @@ struct OnboardingView: View {
         case 2: String(localized: "onboarding.cta.siri")
         case 3: String(localized: "onboarding.cta.publish")
         default: ""
+        }
+    }
+
+    private func publishFirstMemo() {
+        let trimmed = firstMemoText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+
+        let memo = repository.create(
+            content: trimmed,
+            displayMode: .autoClear,
+            clearTrigger: .hours,
+            clearAfterHours: 12
+        )
+
+        if LiveActivityService.shared.isSupported,
+           let activityId = LiveActivityService.shared.start(memo: memo) {
+            repository.update(memo, activityId: activityId)
         }
     }
 

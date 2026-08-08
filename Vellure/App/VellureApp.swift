@@ -41,6 +41,7 @@ struct VellureApp: App {
                     OnboardingView {
                         hasCompletedOnboarding = true
                     }
+                    .environment(repository)
                 }
             }
             .preferredColorScheme(selectedScheme)
