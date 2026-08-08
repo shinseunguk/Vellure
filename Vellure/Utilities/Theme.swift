@@ -37,12 +37,9 @@ enum Theme {
 
     static let memoColors: [String: Color] = [
         "green": Color(hex: "1fa97c"),
-        "blue": Color(hex: "3b82f6"),
-        "purple": Color(hex: "8b5cf6"),
-        "orange": Color(hex: "f59e0b"),
-        "red": Color(hex: "ef4444"),
-        "pink": Color(hex: "ec4899"),
-        "teal": Color(hex: "14b8a6"),
+        "gold": Color(hex: "ef9645"),
+        "blue": Color(hex: "4b96f3"),
+        "rose": Color(hex: "ee7ba2"),
     ]
 
     static func memoColor(for tag: String) -> Color {

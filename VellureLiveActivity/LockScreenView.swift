@@ -1,3 +1,4 @@
+import AppIntents
 import SwiftUI
 import WidgetKit
 
@@ -8,30 +9,36 @@ struct LockScreenView: View {
     private var tint: Color { colorFromTag(state.colorTag) }
 
     var body: some View {
-        HStack(alignment: .top, spacing: 12) {
-            VStack(alignment: .leading, spacing: 6) {
-                HStack(spacing: 6) {
-                    Circle()
-                        .fill(tint)
-                        .frame(width: 6, height: 6)
-                    Text("Vellure · \(typeLabel)")
-                        .font(.system(size: 10, weight: .heavy))
-                        .foregroundStyle(tint)
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack(spacing: 6) {
+                        Circle()
+                            .fill(tint)
+                            .frame(width: 6, height: 6)
+                        Text("Vellure · \(typeLabel)")
+                            .font(.system(size: 10, weight: .heavy))
+                            .foregroundStyle(tint)
+                    }
+
+                    Text(state.content)
+                        .font(.system(size: 14, weight: .semibold, design: fontDesign(from: state.font)))
+                        .foregroundStyle(.white)
+                        .lineLimit(2)
                 }
 
-                Text(state.content)
-                    .font(.system(size: 14, weight: .semibold, design: fontDesign(from: state.font)))
-                    .foregroundStyle(.white)
-                    .lineLimit(2)
+                Spacer()
+
+                dynamicValue
             }
 
-            Spacer()
-
-            dynamicValue
+            lockScreenExtraContent
         }
         .padding(14)
         .activityBackgroundTint(.black.opacity(0.85))
     }
+
+    // MARK: - Dynamic Value (right side)
 
     @ViewBuilder
     private var dynamicValue: some View {
@@ -51,25 +58,102 @@ struct LockScreenView: View {
                     .monospacedDigit()
                     .multilineTextAlignment(.trailing)
             }
-        case "progress":
-            if let progress = state.progress {
-                Text("\(Int(progress * 100))%")
-                    .font(.system(size: 22, weight: .heavy))
-                    .foregroundStyle(tint)
-                    .monospacedDigit()
-            }
+        default:
+            EmptyView()
+        }
+    }
+
+    // MARK: - Extra Content (checklist / progress)
+
+    @ViewBuilder
+    private var lockScreenExtraContent: some View {
+        switch state.renderType {
         case "checklist":
             if let items = state.items {
-                let done = items.filter(\.done).count
-                Text("\(done)/\(items.count)")
-                    .font(.system(size: 18, weight: .heavy))
-                    .foregroundStyle(tint)
-                    .monospacedDigit()
+                VStack(alignment: .leading, spacing: 8) {
+                    ForEach(items.prefix(4), id: \.id) { item in
+                        Button(intent: ToggleItemIntent(
+                            memoId: context.attributes.memoId,
+                            itemId: item.id
+                        )) {
+                            HStack(spacing: 10) {
+                                Image(systemName: item.done ? "checkmark.square.fill" : "square")
+                                    .font(.system(size: 16))
+                                    .foregroundStyle(item.done ? tint : .white.opacity(0.6))
+                                Text(item.title)
+                                    .font(.system(size: 14))
+                                    .foregroundStyle(item.done ? .white.opacity(0.45) : .white)
+                                    .strikethrough(item.done)
+                                    .lineLimit(1)
+                            }
+                        }
+                        .buttonStyle(.plain)
+                    }
+                    if items.count > 4 {
+                        Text("외 \(items.count - 4)개")
+                            .font(.system(size: 11, weight: .medium))
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .padding(.top, 2)
+            }
+        case "progress":
+            if let progress = state.progress {
+                VStack(spacing: 6) {
+                    HStack {
+                        Text("\(Int(progress * 100))%")
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundStyle(.white.opacity(0.6))
+                        Spacer()
+                    }
+                    HStack(spacing: 10) {
+                        Button(intent: StepProgressIntent(
+                            memoId: context.attributes.memoId,
+                            delta: -0.1
+                        )) {
+                            Image(systemName: "minus")
+                                .font(.system(size: 13, weight: .bold))
+                                .foregroundStyle(.white)
+                                .frame(width: 30, height: 30)
+                                .background(.white.opacity(0.12))
+                                .clipShape(Circle())
+                        }
+                        .buttonStyle(.plain)
+
+                        GeometryReader { geo in
+                            Capsule()
+                                .fill(.white.opacity(0.14))
+                                .frame(height: 8)
+                                .overlay(alignment: .leading) {
+                                    Capsule()
+                                        .fill(tint)
+                                        .frame(width: geo.size.width * progress, height: 8)
+                                }
+                        }
+                        .frame(height: 8)
+
+                        Button(intent: StepProgressIntent(
+                            memoId: context.attributes.memoId,
+                            delta: 0.1
+                        )) {
+                            Image(systemName: "plus")
+                                .font(.system(size: 13, weight: .bold))
+                                .foregroundStyle(.white)
+                                .frame(width: 30, height: 30)
+                                .background(.white.opacity(0.12))
+                                .clipShape(Circle())
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding(.top, 3)
             }
         default:
             EmptyView()
         }
     }
+
+    // MARK: - Helpers
 
     private var typeLabel: String {
         switch state.renderType {
@@ -101,12 +185,9 @@ struct LockScreenView: View {
     private func colorFromTag(_ tag: String) -> Color {
         switch tag {
         case "green": Color(red: 31/255, green: 169/255, blue: 124/255)
-        case "blue": Color(red: 59/255, green: 130/255, blue: 246/255)
-        case "purple": Color(red: 139/255, green: 92/255, blue: 246/255)
-        case "orange": Color(red: 245/255, green: 158/255, blue: 11/255)
-        case "red": Color(red: 239/255, green: 68/255, blue: 68/255)
-        case "pink": Color(red: 236/255, green: 72/255, blue: 153/255)
-        case "teal": Color(red: 20/255, green: 184/255, blue: 166/255)
+        case "gold": Color(red: 239/255, green: 150/255, blue: 69/255)
+        case "blue": Color(red: 75/255, green: 150/255, blue: 243/255)
+        case "rose": Color(red: 238/255, green: 123/255, blue: 162/255)
         default: Color(red: 31/255, green: 169/255, blue: 124/255)
         }
     }

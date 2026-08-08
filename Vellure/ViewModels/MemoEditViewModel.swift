@@ -8,6 +8,7 @@ final class MemoEditViewModel {
     var content: String = ""
     var renderType: RenderType = .plain
     var displayMode: DisplayMode = .pinned
+    var clearTrigger: ClearTrigger = .hours
     var font: String = "default"
     var colorTag: String = "green"
     var targetDate: Date = Calendar.current.date(byAdding: .day, value: 7, to: Date()) ?? Date()
@@ -23,6 +24,7 @@ final class MemoEditViewModel {
             self.content = memo.content
             self.renderType = memo.renderType
             self.displayMode = memo.displayMode
+            self.clearTrigger = memo.clearTrigger ?? ClearTrigger.available(for: memo.renderType).first ?? .hours
             self.font = memo.font
             self.colorTag = memo.colorTag
             self.targetDate = memo.targetDate ?? self.targetDate
@@ -31,13 +33,24 @@ final class MemoEditViewModel {
         }
     }
 
-    func addChecklistItem(title: String) {
-        guard !title.isEmpty else { return }
-        checklistItems.append(ChecklistItem(title: title))
+    @discardableResult
+    func addChecklistItem(title: String) -> ChecklistItem {
+        let item = ChecklistItem(title: title)
+        checklistItems.append(item)
+        return item
     }
 
     func removeChecklistItem(at offsets: IndexSet) {
         checklistItems.remove(atOffsets: offsets)
+    }
+
+    func updateChecklistItemTitle(_ item: ChecklistItem, title: String) {
+        guard let index = checklistItems.firstIndex(where: { $0.id == item.id }) else { return }
+        checklistItems[index].title = title
+    }
+
+    func removeChecklistItem(_ item: ChecklistItem) {
+        checklistItems.removeAll { $0.id == item.id }
     }
 
     func toggleChecklistItem(_ item: ChecklistItem) {
@@ -47,9 +60,12 @@ final class MemoEditViewModel {
     }
 
     func save() -> Memo {
-        let items: [ChecklistItem]? = renderType == .checklist ? checklistItems : nil
+        let items: [ChecklistItem]? = renderType == .checklist
+            ? checklistItems.filter { !$0.title.trimmingCharacters(in: .whitespaces).isEmpty }
+            : nil
         let target: Date? = (renderType == .dday || renderType == .countdown) ? targetDate : nil
         let prog: Double? = renderType == .progress ? progress : nil
+        let trigger: ClearTrigger? = displayMode == .autoClear ? clearTrigger : nil
 
         if let memo = existingMemo {
             repository.update(
@@ -60,6 +76,7 @@ final class MemoEditViewModel {
                 targetDate: target,
                 progress: prog,
                 displayMode: displayMode,
+                clearTrigger: trigger,
                 font: font,
                 colorTag: colorTag
             )
@@ -79,6 +96,7 @@ final class MemoEditViewModel {
                 targetDate: target,
                 progress: prog,
                 displayMode: displayMode,
+                clearTrigger: trigger,
                 font: font,
                 colorTag: colorTag
             )

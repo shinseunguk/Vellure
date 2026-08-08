@@ -112,56 +112,97 @@ struct HomeView: View {
     @ViewBuilder
     private func memoList(_ vm: MemoListViewModel) -> some View {
         List {
-            ForEach(vm.memos) { memo in
-                MemoCardView(
-                    memo: memo,
-                    onTap: { selectedMemo = memo },
-                    onToggleActivity: { vm.toggleActivity(for: memo) }
-                )
-                .contextMenu {
-                    Button {
-                        vm.toggleActivity(for: memo)
-                    } label: {
-                        Label(
-                            memo.activityId != nil ? "context.stopActivity" : "context.startActivity",
-                            systemImage: memo.activityId != nil ? "stop.circle" : "play.circle"
-                        )
-                    }
+            ForEach(RenderType.allCases, id: \.self) { type in
+                let group = vm.memos(ofType: type)
+                if !group.isEmpty {
+                    Section {
+                        ForEach(group) { memo in
+                            MemoCardView(
+                                memo: memo,
+                                onTap: { selectedMemo = memo },
+                                onToggleActivity: { vm.toggleActivity(for: memo) },
+                                onDelete: {
+                                    if let activityId = memo.activityId {
+                                        Task { await LiveActivityService.shared.end(activityId: activityId) }
+                                    }
+                                    vm.delete(memo)
+                                }
+                            )
+                            .contextMenu {
+                                Button {
+                                    vm.toggleActivity(for: memo)
+                                } label: {
+                                    Label(
+                                        memo.activityId != nil ? "context.stopActivity" : "context.startActivity",
+                                        systemImage: memo.activityId != nil ? "stop.circle" : "play.circle"
+                                    )
+                                }
 
-                    Button {
-                        selectedMemo = memo
-                    } label: {
-                        Label("context.edit", systemImage: "pencil")
-                    }
+                                Button {
+                                    selectedMemo = memo
+                                } label: {
+                                    Label("context.edit", systemImage: "pencil")
+                                }
 
-                    Divider()
+                                Divider()
 
-                    Button(role: .destructive) {
-                        if let activityId = memo.activityId {
-                            Task { await LiveActivityService.shared.end(activityId: activityId) }
+                                Button(role: .destructive) {
+                                    if let activityId = memo.activityId {
+                                        Task { await LiveActivityService.shared.end(activityId: activityId) }
+                                    }
+                                    vm.delete(memo)
+                                } label: {
+                                    Label("context.delete", systemImage: "trash")
+                                }
+                            }
+                            .listRowSeparator(.hidden)
+                            .listRowBackground(Color.clear)
+                            .listRowInsets(EdgeInsets(top: 13, leading: 20, bottom: 4, trailing: 20))
                         }
-                        vm.delete(memo)
-                    } label: {
-                        Label("context.delete", systemImage: "trash")
+                        .onDelete { offsets in vm.delete(type: type, at: offsets) }
+                        .onMove { source, destination in vm.reorder(type: type, from: source, to: destination) }
+                    } header: {
+                        sectionHeader(type, count: group.count)
                     }
                 }
-                .listRowSeparator(.hidden)
-                .listRowBackground(Color.clear)
-                .listRowInsets(EdgeInsets(top: 4, leading: 20, bottom: 4, trailing: 20))
             }
-            .onDelete(perform: { indexSet in
-                for index in indexSet {
-                    let memo = vm.memos[index]
-                    if let activityId = memo.activityId {
-                        Task { await LiveActivityService.shared.end(activityId: activityId) }
-                    }
-                    vm.delete(memo)
-                }
-            })
-            .onMove(perform: vm.reorder)
         }
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
         .environment(\.editMode, .constant(isEditing ? .active : .inactive))
+    }
+
+    private func sectionHeader(_ type: RenderType, count: Int) -> some View {
+        HStack(spacing: 5) {
+            Image(systemName: typeIconName(type))
+                .font(.system(size: 11, weight: .semibold))
+            Text(typeDisplayName(type))
+                .font(.system(size: 13, weight: .bold))
+            Text("\(count)")
+                .font(.system(size: 12, weight: .semibold))
+        }
+        .foregroundStyle(Theme.textSecondary)
+        .textCase(nil)
+        .listRowInsets(EdgeInsets(top: 14, leading: 20, bottom: 2, trailing: 20))
+    }
+
+    private func typeIconName(_ type: RenderType) -> String {
+        switch type {
+        case .plain: "note.text"
+        case .checklist: "checklist"
+        case .dday: "calendar"
+        case .countdown: "timer"
+        case .progress: "chart.bar.fill"
+        }
+    }
+
+    private func typeDisplayName(_ type: RenderType) -> String {
+        switch type {
+        case .plain: String(localized: "type.plain")
+        case .checklist: String(localized: "type.checklist")
+        case .dday: String(localized: "type.dday")
+        case .countdown: String(localized: "type.countdown")
+        case .progress: String(localized: "type.progress")
+        }
     }
 }

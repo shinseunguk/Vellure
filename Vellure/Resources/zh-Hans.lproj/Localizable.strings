@@ -4,6 +4,9 @@
 "home.edit" = "编辑";
 "home.done" = "完成";
 
+/* Card */
+"card.onLock" = "显示中";
+
 /* Context Menu */
 "context.startActivity" = "显示在锁屏";
 "context.stopActivity" = "从锁屏移除";
@@ -22,12 +25,22 @@
 "edit.section.targetTime" = "目标时间";
 "edit.section.checklist" = "清单";
 "edit.checklist.add" = "添加项目";
+"edit.checklist.placeholder" = "待办事项";
 "edit.section.progress" = "进度 %d%%";
 "edit.section.displayMode" = "显示模式";
 "edit.mode.pinned" = "固定";
 "edit.mode.autoClear" = "自动清除";
+"trigger.target" = "目标时间到达时";
+"trigger.target.desc" = "D-day或倒计时结束后自动移除";
+"trigger.hours" = "N小时后";
+"trigger.hours.desc" = "发布后经过指定时间自动移除";
+"trigger.done" = "全部完成时";
+"trigger.done.desc" = "清单全部完成后自动移除";
+"trigger.full" = "达到100%时";
+"trigger.full.desc" = "进度达到100%时自动移除";
 "edit.section.font" = "字体";
 "edit.section.color" = "颜色";
+"edit.save.cta" = "显示到锁屏";
 "edit.delete" = "删除备忘录";
 
 /* Type Names */
@@ -50,32 +63,70 @@
 "empty.cta" = "创建备忘录";
 
 /* Onboarding */
-"onboarding.page1.title" = "锁屏备忘录";
-"onboarding.page1.desc" = "将备忘录固定到锁屏。\n随时查看重要内容。";
-"onboarding.page2.title" = "丰富内容";
-"onboarding.page2.desc" = "支持文本、清单、D-day、\n倒计时和进度条。";
-"onboarding.page3.title" = "Siri 和快捷指令";
-"onboarding.page3.desc" = "说「用Vellure添加备忘录」\n即可语音快速创建。";
-"onboarding.next" = "下一步";
-"onboarding.start" = "开始使用";
+"onboarding.page1.title" = "备忘录在锁屏上\n活起来了";
+"onboarding.page1.desc" = "无需打开应用，备忘录直接显示在锁屏。\nD-day、倒计时、进度条自动更新。";
+"onboarding.page2.title" = "需要实时活动\n权限";
+"onboarding.page2.desc" = "在锁屏和灵动岛上\n显示备忘录需要授予权限。";
+"onboarding.page3.title" = "对Siri说就能\n立刻发布";
+"onboarding.page3.desc" = "说「Vellure备忘录，买牛奶」\n无需打开应用即可保存和发布。";
+"onboarding.page4.title" = "发布你的\n第一条备忘录？";
+"onboarding.page4.desc" = "随便写点什么。\n它会在锁屏上显示12小时。";
+"onboarding.cta.start" = "开始使用";
+"onboarding.cta.allow" = "允许";
+"onboarding.cta.siri" = "添加到Siri";
+"onboarding.cta.publish" = "发布到锁屏";
 "onboarding.skip" = "跳过";
+"onboarding.hero.date" = "7月20日 星期日";
+"onboarding.hero.dday" = "济州岛旅行";
+"onboarding.hero.countdown" = "团队会议倒计时";
+"onboarding.perm.title" = "「Vellure」想要显示\n实时活动";
+"onboarding.perm.body" = "备忘录将显示在\n锁屏和灵动岛上。";
+"onboarding.perm.deny" = "不允许";
+"onboarding.perm.allow" = "允许";
+"onboarding.siri.bubble" = "「Vellure备忘录，买牛奶」";
+"onboarding.siri.done" = "无需打开应用即发布到锁屏";
+"onboarding.preview.placeholder" = "写下你的第一条备忘录";
+"onboarding.input.placeholder" = "写下你的第一条备忘录";
 
 /* Settings */
 "settings.title" = "设置";
 "settings.done" = "完成";
-"settings.section.lockscreen" = "锁屏";
+"settings.section.diagnostics" = "显示诊断";
+"settings.diag.ready" = "显示准备就绪";
+"settings.diag.warn" = "需要检查";
+"settings.diag.liveActivity" = "允许实时活动";
+"settings.diag.hint" = "如果实时活动未显示，请检查权限、专注模式和设置。";
 "settings.activity.available" = "可用";
 "settings.activity.disabled" = "已禁用";
-"settings.activity.guide" = "前往 设置 → Vellure → 开启 Live Activity";
 "settings.activity.endAll" = "结束所有 Live Activity";
-"settings.section.display" = "显示";
+"settings.section.siri" = "Siri · 快捷指令";
+"settings.siri.phrases" = "已注册的唤起短语";
+"settings.siri.phrase1" = "Vellure备忘录 买牛奶";
+"settings.siri.phrase2" = "锁屏记事";
+"settings.siri.phrase3" = "给Vellure添加D-day";
+"settings.section.automation" = "快捷指令自动化";
+"settings.auto.home.title" = "主屏幕按钮";
+"settings.auto.home.desc" = "点击快捷指令图标立即打开输入界面";
+"settings.auto.night.title" = "每晚10点自动发布";
+"settings.auto.night.desc" = "在设定时间将\"明日待办\"备忘录推送到锁屏";
+"settings.auto.location.title" = "到达公司时推送工作备忘录";
+"settings.auto.location.desc" = "位置自动化在到达时发布工作清单";
+"settings.auto.note" = "在快捷指令应用中，可以将Vellure操作（创建备忘录·创建D-day·移除备忘录）与内容、类型、显示时间组合使用。";
 "settings.appearance" = "外观模式";
 "appearance.system" = "跟随系统";
 "appearance.light" = "浅色";
 "appearance.dark" = "深色";
-"settings.section.appInfo" = "应用信息";
-"settings.version" = "版本";
-"settings.minOS" = "最低系统";
+"settings.feedback" = "反馈";
+"settings.feedback.dest" = "App Store 评价";
+"settings.terms" = "条款与隐私";
+"settings.priceFree" = "完全免费";
+"terms.s1.title" = "服务使用";
+"terms.s1.body" = "Vellure免费提供，将备忘录显示为锁屏实时活动。根据iOS规定，实时活动最多显示12小时后自动结束。";
+"terms.s2.title" = "隐私政策";
+"terms.s2.body" = "所有备忘录和设置仅存储在本设备上，无需注册。不会向服务器传输数据，删除应用将同时删除所有数据。";
+"terms.s3.title" = "Siri与语音输入";
+"terms.s3.body" = "语音识别由Apple处理，Vellure仅接收识别后的文本保存为备忘录。我们不会收集或存储音频数据。";
+"terms.updated" = "最后更新 · 2026年6月30日";
 
 /* Intents */
 "intent.createMemo.title" = "添加备忘录";

@@ -165,12 +165,9 @@ struct VellureLiveActivityWidget: Widget {
     private func colorFromTag(_ tag: String) -> Color {
         switch tag {
         case "green": Color(red: 31/255, green: 169/255, blue: 124/255)
-        case "blue": Color(red: 59/255, green: 130/255, blue: 246/255)
-        case "purple": Color(red: 139/255, green: 92/255, blue: 246/255)
-        case "orange": Color(red: 245/255, green: 158/255, blue: 11/255)
-        case "red": Color(red: 239/255, green: 68/255, blue: 68/255)
-        case "pink": Color(red: 236/255, green: 72/255, blue: 153/255)
-        case "teal": Color(red: 20/255, green: 184/255, blue: 166/255)
+        case "gold": Color(red: 239/255, green: 150/255, blue: 69/255)
+        case "blue": Color(red: 75/255, green: 150/255, blue: 243/255)
+        case "rose": Color(red: 238/255, green: 123/255, blue: 162/255)
         default: Color(red: 31/255, green: 169/255, blue: 124/255)
         }
     }

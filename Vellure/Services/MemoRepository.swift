@@ -19,6 +19,7 @@ final class MemoRepository {
         targetDate: Date? = nil,
         progress: Double? = nil,
         displayMode: DisplayMode = .pinned,
+        clearTrigger: ClearTrigger? = nil,
         font: String = "default",
         colorTag: String = "green"
     ) -> Memo {
@@ -30,6 +31,7 @@ final class MemoRepository {
             targetDate: targetDate,
             progress: progress,
             displayMode: displayMode,
+            clearTrigger: clearTrigger,
             font: font,
             colorTag: colorTag,
             sortOrder: maxOrder
@@ -68,6 +70,7 @@ final class MemoRepository {
     func update(_ memo: Memo, content: String? = nil, renderType: RenderType? = nil,
                 items: [ChecklistItem]? = nil, targetDate: Date? = nil,
                 progress: Double? = nil, displayMode: DisplayMode? = nil,
+                clearTrigger: ClearTrigger? = nil,
                 font: String? = nil, colorTag: String? = nil, activityId: String? = nil) {
         if let content { memo.content = content }
         if let renderType { memo.renderType = renderType }
@@ -75,6 +78,7 @@ final class MemoRepository {
         if let targetDate { memo.targetDate = targetDate }
         if let progress { memo.progress = progress }
         if let displayMode { memo.displayMode = displayMode }
+        memo.clearTrigger = clearTrigger
         if let font { memo.font = font }
         if let colorTag { memo.colorTag = colorTag }
         if let activityId { memo.activityId = activityId }

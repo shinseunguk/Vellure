@@ -4,7 +4,7 @@ struct MemoEditView: View {
     @Environment(MemoRepository.self) private var repository
     @Environment(\.dismiss) private var dismiss
     @State private var viewModel: MemoEditViewModel?
-    @State private var newItemTitle = ""
+    @FocusState private var focusedItemId: UUID?
     @FocusState private var contentFocused: Bool
 
     let memo: Memo?
@@ -12,17 +12,43 @@ struct MemoEditView: View {
     var body: some View {
         NavigationStack {
             if let vm = viewModel {
-                ScrollView {
-                    VStack(spacing: 20) {
-                        contentSection(vm)
-                        typeSection(vm)
-                        dynamicSection(vm)
-                        displayModeSection(vm)
-                        fontSection(vm)
-                        colorSection(vm)
-                        actionSection(vm)
+                VStack(spacing: 0) {
+                    ScrollView {
+                        VStack(spacing: 20) {
+                            typeSection(vm)
+                            contentSection(vm)
+                            dynamicSection(vm)
+                            displayModeSection(vm)
+                            fontSection(vm)
+                            colorSection(vm)
+                            actionSection(vm)
+                        }
+                        .padding(20)
                     }
-                    .padding(20)
+
+                    Divider()
+                    Button {
+                        let saved = vm.save()
+                        if !vm.isEditing && LiveActivityService.shared.isSupported {
+                            if let activityId = LiveActivityService.shared.start(memo: saved) {
+                                repository.update(saved, activityId: activityId)
+                            }
+                        }
+                        dismiss()
+                    } label: {
+                        Text("edit.save.cta")
+                            .font(.system(size: 15, weight: .bold))
+                            .foregroundStyle(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 16)
+                            .background(vm.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                                ? Theme.accent.opacity(0.4) : Theme.accent)
+                            .clipShape(RoundedRectangle(cornerRadius: 14))
+                    }
+                    .disabled(vm.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    .padding(.horizontal, 20)
+                    .padding(.top, 14)
+                    .padding(.bottom, 26)
                 }
                 .background(Theme.background)
                 .navigationTitle(vm.isEditing
@@ -32,19 +58,6 @@ struct MemoEditView: View {
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
                         Button("edit.cancel") { dismiss() }
-                    }
-                    ToolbarItem(placement: .confirmationAction) {
-                        Button("edit.save") {
-                            let saved = vm.save()
-                            if !vm.isEditing && LiveActivityService.shared.isSupported {
-                                if let activityId = LiveActivityService.shared.start(memo: saved) {
-                                    repository.update(saved, activityId: activityId)
-                                }
-                            }
-                            dismiss()
-                        }
-                        .font(.system(size: 16, weight: .bold))
-                        .disabled(vm.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                     }
                 }
             }
@@ -77,13 +90,16 @@ struct MemoEditView: View {
 
     @ViewBuilder
     private func typeSection(_ vm: MemoEditViewModel) -> some View {
+        let columns = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
         VStack(alignment: .leading, spacing: 8) {
             sectionLabel(String(localized: "edit.section.type"))
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
-                    ForEach(RenderType.allCases, id: \.self) { type in
-                        typeChip(type, selected: vm.renderType == type) {
-                            vm.renderType = type
+            LazyVGrid(columns: columns, spacing: 8) {
+                ForEach(RenderType.allCases, id: \.self) { type in
+                    typeChip(type, selected: vm.renderType == type) {
+                        vm.renderType = type
+                        let available = ClearTrigger.available(for: type)
+                        if !available.contains(vm.clearTrigger) {
+                            vm.clearTrigger = available.first ?? .hours
                         }
                     }
                 }
@@ -114,47 +130,18 @@ struct MemoEditView: View {
         case .checklist:
             VStack(alignment: .leading, spacing: 8) {
                 sectionLabel(String(localized: "edit.section.checklist"))
-                VStack(spacing: 0) {
-                    ForEach(vm.checklistItems) { item in
-                        HStack(spacing: 12) {
-                            Button {
-                                vm.toggleChecklistItem(item)
-                            } label: {
-                                Image(systemName: item.done ? "checkmark.circle.fill" : "circle")
-                                    .font(.system(size: 20))
-                                    .foregroundStyle(item.done ? Theme.accent : Theme.textSecondary)
-                            }
-                            Text(item.title)
-                                .strikethrough(item.done)
-                                .foregroundStyle(item.done ? Theme.textSecondary : Theme.textPrimary)
-                            Spacer()
-                        }
-                        .padding(.vertical, 10)
-                        .padding(.horizontal, 16)
-                        if item.id != vm.checklistItems.last?.id {
-                            Divider().padding(.leading, 48)
-                        }
-                    }
-
-                    HStack(spacing: 12) {
-                        Image(systemName: "plus.circle")
-                            .font(.system(size: 20))
-                            .foregroundStyle(Theme.accent)
-                        TextField("edit.checklist.add", text: $newItemTitle)
-                            .onSubmit {
-                                vm.addChecklistItem(title: newItemTitle)
-                                newItemTitle = ""
-                            }
-                    }
-                    .padding(.vertical, 10)
-                    .padding(.horizontal, 16)
+                ForEach(vm.checklistItems) { item in
+                    checklistItemCard(vm, item: item)
                 }
-                .background(Theme.cardBackground)
-                .clipShape(RoundedRectangle(cornerRadius: 16))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 16)
-                        .stroke(Theme.divider, lineWidth: 1)
-                )
+                Button {
+                    let newItem = vm.addChecklistItem(title: "")
+                    focusedItemId = newItem.id
+                } label: {
+                    Text("+ \(String(localized: "edit.checklist.add"))")
+                        .font(.system(size: 13, weight: .bold))
+                        .foregroundStyle(Theme.accent)
+                }
+                .padding(.top, 4)
             }
         case .progress:
             VStack(alignment: .leading, spacing: 8) {
@@ -175,11 +162,33 @@ struct MemoEditView: View {
     private func displayModeSection(_ vm: MemoEditViewModel) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             sectionLabel(String(localized: "edit.section.displayMode"))
-            Picker("", selection: Bindable(vm).displayMode) {
-                Text("edit.mode.pinned").tag(DisplayMode.pinned)
-                Text("edit.mode.autoClear").tag(DisplayMode.autoClear)
+            HStack(spacing: 8) {
+                modeButton(
+                    title: String(localized: "edit.mode.pinned"),
+                    selected: vm.displayMode == .pinned
+                ) { vm.displayMode = .pinned }
+                modeButton(
+                    title: String(localized: "edit.mode.autoClear"),
+                    selected: vm.displayMode == .autoClear
+                ) { vm.displayMode = .autoClear }
             }
-            .pickerStyle(.segmented)
+            if vm.displayMode == .autoClear {
+                VStack(spacing: 2) {
+                    let triggers = ClearTrigger.available(for: vm.renderType)
+                    ForEach(triggers, id: \.self) { trigger in
+                        triggerRow(trigger, selected: vm.clearTrigger == trigger) {
+                            vm.clearTrigger = trigger
+                        }
+                    }
+                }
+                .padding(6)
+                .background(Theme.cardBackground)
+                .clipShape(RoundedRectangle(cornerRadius: 14))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 14)
+                        .stroke(Theme.divider, lineWidth: 1)
+                )
+            }
         }
     }
 
@@ -212,18 +221,20 @@ struct MemoEditView: View {
         }
     }
 
+    private let colorOrder = ["green", "gold", "blue", "rose"]
+
     @ViewBuilder
     private func colorSection(_ vm: MemoEditViewModel) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             sectionLabel(String(localized: "edit.section.color"))
-            HStack(spacing: 12) {
-                ForEach(Array(Theme.memoColors.keys.sorted()), id: \.self) { key in
+            HStack(spacing: 14) {
+                ForEach(colorOrder, id: \.self) { key in
                     Button {
                         vm.colorTag = key
                     } label: {
                         Circle()
                             .fill(Theme.memoColors[key] ?? Theme.accent)
-                            .frame(width: 32, height: 32)
+                            .frame(width: 40, height: 40)
                             .overlay {
                                 if vm.colorTag == key {
                                     Image(systemName: "checkmark")
@@ -231,6 +242,12 @@ struct MemoEditView: View {
                                         .foregroundStyle(.white)
                                 }
                             }
+                            .scaleEffect(vm.colorTag == key ? 1.12 : 1.0)
+                            .overlay(
+                                Circle()
+                                    .stroke(vm.colorTag == key ? Theme.textPrimary : Color.clear, lineWidth: 3)
+                            )
+                            .animation(.spring(response: 0.3, dampingFraction: 0.6), value: vm.colorTag == key)
                     }
                 }
             }
@@ -273,12 +290,111 @@ struct MemoEditView: View {
                 Text(typeDisplayName(type))
                     .font(.system(size: 13, weight: .semibold))
             }
-            .padding(.horizontal, 14)
+            .frame(maxWidth: .infinity)
             .padding(.vertical, 8)
             .background(selected ? Theme.accent : Theme.chipBackground)
             .foregroundStyle(selected ? .white : Theme.textPrimary)
             .clipShape(Capsule())
         }
+    }
+
+    private func modeButton(title: String, selected: Bool, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(title)
+                .font(.system(size: 13, weight: .semibold))
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+                .background(selected ? Theme.accent : Theme.chipBackground)
+                .foregroundStyle(selected ? .white : Theme.textPrimary)
+                .clipShape(RoundedRectangle(cornerRadius: 14))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 14)
+                        .stroke(selected ? Color.clear : Theme.divider, lineWidth: 1)
+                )
+        }
+    }
+
+    private func triggerRow(_ trigger: ClearTrigger, selected: Bool, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack(spacing: 10) {
+                Circle()
+                    .strokeBorder(selected ? Theme.accent : Theme.textSecondary, lineWidth: 2)
+                    .frame(width: 18, height: 18)
+                    .overlay {
+                        if selected {
+                            Circle()
+                                .fill(Theme.accent)
+                                .frame(width: 8, height: 8)
+                        }
+                    }
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(triggerLabel(trigger))
+                        .font(.system(size: 13.5, weight: .semibold))
+                        .foregroundStyle(Theme.textPrimary)
+                    Text(triggerDesc(trigger))
+                        .font(.system(size: 11.5))
+                        .foregroundStyle(Theme.textSecondary)
+                }
+                Spacer()
+            }
+            .padding(.horizontal, 11)
+            .padding(.vertical, 10)
+            .background(selected ? Theme.accent.opacity(0.08) : Color.clear)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+        }
+    }
+
+    private func triggerLabel(_ trigger: ClearTrigger) -> String {
+        switch trigger {
+        case .target: String(localized: "trigger.target")
+        case .hours: String(localized: "trigger.hours")
+        case .done: String(localized: "trigger.done")
+        case .full: String(localized: "trigger.full")
+        }
+    }
+
+    private func triggerDesc(_ trigger: ClearTrigger) -> String {
+        switch trigger {
+        case .target: String(localized: "trigger.target.desc")
+        case .hours: String(localized: "trigger.hours.desc")
+        case .done: String(localized: "trigger.done.desc")
+        case .full: String(localized: "trigger.full.desc")
+        }
+    }
+
+    private func checklistItemCard(_ vm: MemoEditViewModel, item: ChecklistItem) -> some View {
+        HStack(spacing: 10) {
+            Button {
+                vm.toggleChecklistItem(item)
+            } label: {
+                Image(systemName: item.done ? "checkmark.circle.fill" : "circle")
+                    .font(.system(size: 22))
+                    .foregroundStyle(item.done ? Theme.accent : Theme.textSecondary)
+            }
+            TextField("edit.checklist.placeholder", text: Binding(
+                get: { item.title },
+                set: { vm.updateChecklistItemTitle(item, title: $0) }
+            ))
+            .font(.system(size: 15))
+            .foregroundStyle(item.done ? Theme.textSecondary : Theme.textPrimary)
+            .strikethrough(item.done)
+            .focused($focusedItemId, equals: item.id)
+            Button {
+                vm.removeChecklistItem(item)
+            } label: {
+                Image(systemName: "xmark")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(Theme.textSecondary)
+            }
+        }
+        .padding(.horizontal, 13)
+        .padding(.vertical, 11)
+        .background(Theme.cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Theme.divider, lineWidth: 1)
+        )
     }
 
     private func typeIconName(_ type: RenderType) -> String {

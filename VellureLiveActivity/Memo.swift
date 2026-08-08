@@ -14,6 +14,13 @@ enum DisplayMode: String, Codable, CaseIterable {
     case autoClear
 }
 
+enum ClearTrigger: String, Codable, CaseIterable {
+    case target
+    case hours
+    case done
+    case full
+}
+
 @Model
 final class Memo {
     var id: UUID
@@ -23,6 +30,7 @@ final class Memo {
     var targetDate: Date?
     var progress: Double?
     var displayMode: DisplayMode
+    var clearTrigger: ClearTrigger?
     var font: String
     var colorTag: String
     var activityId: String?
@@ -38,6 +46,7 @@ final class Memo {
         targetDate: Date? = nil,
         progress: Double? = nil,
         displayMode: DisplayMode = .pinned,
+        clearTrigger: ClearTrigger? = nil,
         font: String = "default",
         colorTag: String = "green",
         activityId: String? = nil,
@@ -50,6 +59,7 @@ final class Memo {
         self.targetDate = targetDate
         self.progress = progress
         self.displayMode = displayMode
+        self.clearTrigger = clearTrigger
         self.font = font
         self.colorTag = colorTag
         self.activityId = activityId
