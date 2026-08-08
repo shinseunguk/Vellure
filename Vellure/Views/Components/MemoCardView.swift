@@ -83,6 +83,20 @@ struct MemoCardView: View {
                                 .background(tintColor.opacity(0.12))
                                 .clipShape(Capsule())
                         }
+                        if isActive, let clearDate = memo.clearDate, clearDate > .now {
+                            HStack(spacing: 3) {
+                                Image(systemName: "timer")
+                                    .font(.system(size: 9, weight: .semibold))
+                                Text(timerInterval: Date.now...clearDate, countsDown: true)
+                                    .font(.system(size: 10, weight: .heavy))
+                                    .monospacedDigit()
+                            }
+                            .foregroundStyle(Theme.textSecondary)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 2)
+                            .background(Theme.chipBackground)
+                            .clipShape(Capsule())
+                        }
                     }
                     Text(memo.content)
                         .font(.system(size: 15.5, weight: .bold))

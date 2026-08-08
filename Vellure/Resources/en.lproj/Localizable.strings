@@ -30,10 +30,12 @@
 "edit.section.displayMode" = "Display Mode";
 "edit.mode.pinned" = "Pinned";
 "edit.mode.autoClear" = "Auto Clear";
+"edit.autoClear.countdownPrefix" = "Clears in";
 "trigger.target" = "At target time";
 "trigger.target.desc" = "Clears when the D-day or countdown ends";
 "trigger.hours" = "After N hours";
 "trigger.hours.desc" = "Clears a set number of hours after posting";
+"trigger.hours.value" = "After %d hours";
 "trigger.done" = "When all checked";
 "trigger.done.desc" = "Clears once every checklist item is done";
 "trigger.full" = "At 100%";

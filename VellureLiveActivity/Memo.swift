@@ -31,6 +31,7 @@ final class Memo {
     var progress: Double?
     var displayMode: DisplayMode
     var clearTrigger: ClearTrigger?
+    var clearAfterHours: Int = 12
     var font: String
     var colorTag: String
     var activityId: String?
@@ -47,6 +48,7 @@ final class Memo {
         progress: Double? = nil,
         displayMode: DisplayMode = .pinned,
         clearTrigger: ClearTrigger? = nil,
+        clearAfterHours: Int = 12,
         font: String = "default",
         colorTag: String = "green",
         activityId: String? = nil,
@@ -60,11 +62,21 @@ final class Memo {
         self.progress = progress
         self.displayMode = displayMode
         self.clearTrigger = clearTrigger
+        self.clearAfterHours = clearAfterHours
         self.font = font
         self.colorTag = colorTag
         self.activityId = activityId
         self.createdAt = Date()
         self.updatedAt = Date()
         self.sortOrder = sortOrder
+    }
+
+    var clearDate: Date? {
+        guard displayMode == .autoClear else { return nil }
+        switch clearTrigger {
+        case .target: return targetDate
+        case .hours, .none: return updatedAt.addingTimeInterval(TimeInterval(clearAfterHours) * 3600)
+        case .done, .full: return nil
+        }
     }
 }

@@ -33,7 +33,9 @@ struct LockScreenView: View {
             }
 
             lockScreenExtraContent
+            clearCountdownRow
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .padding(14)
         .activityBackgroundTint(.black.opacity(0.85))
     }
@@ -60,6 +62,23 @@ struct LockScreenView: View {
             }
         default:
             EmptyView()
+        }
+    }
+
+    // MARK: - Auto-clear Countdown (bottom-right)
+
+    @ViewBuilder
+    private var clearCountdownRow: some View {
+        if let clearDate = state.clearDate, clearDate > .now {
+            HStack(spacing: 4) {
+                Image(systemName: "timer")
+                    .font(.system(size: 10, weight: .semibold))
+                (Text(timerInterval: Date.now...clearDate, countsDown: true) + Text(" 후 소멸"))
+                    .font(.system(size: 12, weight: .bold))
+                    .monospacedDigit()
+            }
+            .foregroundStyle(tint)
+            .frame(maxWidth: .infinity, alignment: .trailing)
         }
     }
 

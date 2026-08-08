@@ -19,8 +19,7 @@ final class LiveActivityService {
         )
 
         let state = buildState(from: memo)
-        let staleDate = calculateStaleDate(for: memo)
-        let content = ActivityContent(state: state, staleDate: staleDate)
+        let content = ActivityContent(state: state, staleDate: memo.clearDate)
 
         do {
             let activity = try Activity.request(
@@ -37,8 +36,7 @@ final class LiveActivityService {
 
     func update(activityId: String, memo: Memo) async {
         let state = buildState(from: memo)
-        let staleDate = calculateStaleDate(for: memo)
-        let content = ActivityContent(state: state, staleDate: staleDate)
+        let content = ActivityContent(state: state, staleDate: memo.clearDate)
 
         for activity in Activity<MemoAttributes>.activities where activity.id == activityId {
             await activity.update(content)
@@ -83,20 +81,8 @@ final class LiveActivityService {
             progress: memo.progress,
             font: memo.font,
             colorTag: memo.colorTag,
-            updatedAt: Date()
+            updatedAt: Date(),
+            clearDate: memo.clearDate
         )
-    }
-
-    private func calculateStaleDate(for memo: Memo) -> Date? {
-        switch memo.displayMode {
-        case .autoClear:
-            if let targetDate = memo.targetDate,
-               (memo.renderType == .countdown || memo.renderType == .dday) {
-                return targetDate
-            }
-            return Date().addingTimeInterval(Constants.activityMaxDuration)
-        case .pinned:
-            return nil
-        }
     }
 }

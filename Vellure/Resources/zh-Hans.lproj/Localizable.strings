@@ -30,10 +30,12 @@
 "edit.section.displayMode" = "显示模式";
 "edit.mode.pinned" = "固定";
 "edit.mode.autoClear" = "自动清除";
+"edit.autoClear.countdownPrefix" = "距自动清除";
 "trigger.target" = "目标时间到达时";
 "trigger.target.desc" = "D-day或倒计时结束后自动移除";
 "trigger.hours" = "N小时后";
 "trigger.hours.desc" = "发布后经过指定时间自动移除";
+"trigger.hours.value" = "%d小时后";
 "trigger.done" = "全部完成时";
 "trigger.done.desc" = "清单全部完成后自动移除";
 "trigger.full" = "达到100%时";

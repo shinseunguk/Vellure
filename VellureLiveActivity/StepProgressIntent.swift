@@ -56,9 +56,10 @@ struct StepProgressIntent: LiveActivityIntent {
                 progress: memo.progress,
                 font: memo.font,
                 colorTag: memo.colorTag,
-                updatedAt: Date()
+                updatedAt: Date(),
+                clearDate: memo.clearDate
             )
-            let content = ActivityContent(state: state, staleDate: nil)
+            let content = ActivityContent(state: state, staleDate: memo.clearDate)
             for activity in Activity<MemoAttributes>.activities where activity.id == activityId {
                 await activity.update(content)
             }

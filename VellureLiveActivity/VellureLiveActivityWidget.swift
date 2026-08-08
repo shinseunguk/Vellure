@@ -34,7 +34,9 @@ struct VellureLiveActivityWidget: Widget {
                             .lineLimit(3)
 
                         expandedDynamicContent(context)
+                        clearCountdownRow(context)
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.top, 4)
                 }
             } compactLeading: {
@@ -91,6 +93,23 @@ struct VellureLiveActivityWidget: Widget {
             }
         default:
             EmptyView()
+        }
+    }
+
+    // MARK: - Auto-clear Countdown (bottom-right)
+
+    @ViewBuilder
+    private func clearCountdownRow(_ context: ActivityViewContext<MemoAttributes>) -> some View {
+        if let clearDate = context.state.clearDate, clearDate > .now {
+            HStack(spacing: 4) {
+                Image(systemName: "timer")
+                    .font(.system(size: 10, weight: .semibold))
+                (Text(timerInterval: Date.now...clearDate, countsDown: true) + Text(" 후 소멸"))
+                    .font(.system(size: 11, weight: .bold))
+                    .monospacedDigit()
+            }
+            .foregroundStyle(tint(context))
+            .frame(maxWidth: .infinity, alignment: .trailing)
         }
     }
 

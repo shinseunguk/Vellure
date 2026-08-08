@@ -14,6 +14,7 @@ struct MemoAttributes: ActivityAttributes {
         var font: String
         var colorTag: String
         var updatedAt: Date
+        var clearDate: Date?
     }
 }
 

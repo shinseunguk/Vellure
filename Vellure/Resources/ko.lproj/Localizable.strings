@@ -30,10 +30,12 @@
 "edit.section.displayMode" = "표시 모드";
 "edit.mode.pinned" = "고정";
 "edit.mode.autoClear" = "자동소멸";
+"edit.autoClear.countdownPrefix" = "자동소멸까지";
 "trigger.target" = "목표 시각 도달 시";
 "trigger.target.desc" = "D-day·카운트다운이 끝나면 자동으로 내려가요";
 "trigger.hours" = "N시간 경과 후";
 "trigger.hours.desc" = "게시 후 지정한 시간이 지나면 내려가요";
+"trigger.hours.value" = "%d시간 후";
 "trigger.done" = "체크 완료 시";
 "trigger.done.desc" = "체크리스트를 전부 완료하면 내려가요";
 "trigger.full" = "100% 도달 시";
