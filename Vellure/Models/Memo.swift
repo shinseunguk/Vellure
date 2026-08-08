@@ -80,12 +80,26 @@ final class Memo {
         self.sortOrder = sortOrder
     }
 
+    /// Live Activity는 iOS 정책상 활성화 후 최대 12시간(활성 8시간 + 소멸 4시간)이 지나면
+    /// 앱 설정과 무관하게 시스템이 강제로 종료한다. 어떤 트리거를 고르든 이 시각을 넘길 수 없다.
+    private static let systemMaxDuration: TimeInterval = 12 * 60 * 60
+
     var clearDate: Date? {
-        guard displayMode == .autoClear else { return nil }
-        switch clearTrigger {
-        case .target: return targetDate
-        case .hours, .none: return updatedAt.addingTimeInterval(TimeInterval(clearAfterHours) * 3600)
-        case .done, .full: return nil
+        let systemCap = updatedAt.addingTimeInterval(Memo.systemMaxDuration)
+        switch displayMode {
+        case .pinned:
+            return systemCap
+        case .autoClear:
+            switch clearTrigger {
+            case .target:
+                guard let targetDate else { return systemCap }
+                return min(targetDate, systemCap)
+            case .hours, .none:
+                let requested = updatedAt.addingTimeInterval(TimeInterval(clearAfterHours) * 3600)
+                return min(requested, systemCap)
+            case .done, .full:
+                return systemCap
+            }
         }
     }
 }

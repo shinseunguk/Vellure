@@ -172,6 +172,9 @@ struct MemoEditView: View {
                     selected: vm.displayMode == .autoClear
                 ) { vm.displayMode = .autoClear }
             }
+            Text("edit.mode.systemCapNotice")
+                .font(.system(size: 11))
+                .foregroundStyle(Theme.textSecondary)
             if vm.displayMode == .autoClear {
                 VStack(spacing: 2) {
                     let triggers = ClearTrigger.available(for: vm.renderType)
@@ -191,19 +194,19 @@ struct MemoEditView: View {
                     RoundedRectangle(cornerRadius: 14)
                         .stroke(Theme.divider, lineWidth: 1)
                 )
-                if let clearDate = memo?.clearDate, memo?.activityId != nil, clearDate > .now {
-                    HStack(spacing: 5) {
-                        Image(systemName: "timer")
-                            .font(.system(size: 11, weight: .semibold))
-                        Text("edit.autoClear.countdownPrefix")
-                            .font(.system(size: 12.5, weight: .semibold))
-                        Text(timerInterval: Date.now...clearDate, countsDown: true)
-                            .font(.system(size: 12.5, weight: .semibold))
-                            .monospacedDigit()
-                    }
-                    .foregroundStyle(Theme.textSecondary)
-                    .padding(.horizontal, 4)
+            }
+            if let clearDate = memo?.clearDate, memo?.activityId != nil, clearDate > .now {
+                HStack(spacing: 5) {
+                    Image(systemName: "timer")
+                        .font(.system(size: 11, weight: .semibold))
+                    Text("edit.autoClear.countdownPrefix")
+                        .font(.system(size: 12.5, weight: .semibold))
+                    Text(timerInterval: Date.now...clearDate, countsDown: true)
+                        .font(.system(size: 12.5, weight: .semibold))
+                        .monospacedDigit()
                 }
+                .foregroundStyle(Theme.textSecondary)
+                .padding(.horizontal, 4)
             }
         }
     }
@@ -366,7 +369,7 @@ struct MemoEditView: View {
                 get: { vm.clearAfterHours },
                 set: { vm.clearAfterHours = $0 }
             ),
-            in: 1...72
+            in: 1...12
         ) {
             Text(String(format: String(localized: "trigger.hours.value"), vm.clearAfterHours))
                 .font(.system(size: 13, weight: .semibold))

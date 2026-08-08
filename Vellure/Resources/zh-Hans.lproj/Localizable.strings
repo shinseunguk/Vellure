@@ -30,6 +30,7 @@
 "edit.section.displayMode" = "显示模式";
 "edit.mode.pinned" = "固定";
 "edit.mode.autoClear" = "自动清除";
+"edit.mode.systemCapNotice" = "受iOS限制，锁屏显示最多保留12小时";
 "edit.autoClear.countdownPrefix" = "距自动清除";
 "trigger.target" = "目标时间到达时";
 "trigger.target.desc" = "D-day或倒计时结束后自动移除";

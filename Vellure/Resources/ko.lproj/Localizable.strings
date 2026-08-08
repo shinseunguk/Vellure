@@ -30,6 +30,7 @@
 "edit.section.displayMode" = "표시 모드";
 "edit.mode.pinned" = "고정";
 "edit.mode.autoClear" = "자동소멸";
+"edit.mode.systemCapNotice" = "iOS 특성상 잠금화면 표시는 최대 12시간까지만 유지돼요";
 "edit.autoClear.countdownPrefix" = "자동소멸까지";
 "trigger.target" = "목표 시각 도달 시";
 "trigger.target.desc" = "D-day·카운트다운이 끝나면 자동으로 내려가요";

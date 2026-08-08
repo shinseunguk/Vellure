@@ -71,12 +71,24 @@ final class Memo {
         self.sortOrder = sortOrder
     }
 
+    private static let systemMaxDuration: TimeInterval = 12 * 60 * 60
+
     var clearDate: Date? {
-        guard displayMode == .autoClear else { return nil }
-        switch clearTrigger {
-        case .target: return targetDate
-        case .hours, .none: return updatedAt.addingTimeInterval(TimeInterval(clearAfterHours) * 3600)
-        case .done, .full: return nil
+        let systemCap = updatedAt.addingTimeInterval(Memo.systemMaxDuration)
+        switch displayMode {
+        case .pinned:
+            return systemCap
+        case .autoClear:
+            switch clearTrigger {
+            case .target:
+                guard let targetDate else { return systemCap }
+                return min(targetDate, systemCap)
+            case .hours, .none:
+                let requested = updatedAt.addingTimeInterval(TimeInterval(clearAfterHours) * 3600)
+                return min(requested, systemCap)
+            case .done, .full:
+                return systemCap
+            }
         }
     }
 }

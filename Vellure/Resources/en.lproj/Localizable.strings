@@ -30,6 +30,7 @@
 "edit.section.displayMode" = "Display Mode";
 "edit.mode.pinned" = "Pinned";
 "edit.mode.autoClear" = "Auto Clear";
+"edit.mode.systemCapNotice" = "iOS keeps Live Activities on the Lock Screen for at most 12 hours";
 "edit.autoClear.countdownPrefix" = "Clears in";
 "trigger.target" = "At target time";
 "trigger.target.desc" = "Clears when the D-day or countdown ends";

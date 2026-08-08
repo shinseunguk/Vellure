@@ -30,6 +30,7 @@
 "edit.section.displayMode" = "表示モード";
 "edit.mode.pinned" = "固定";
 "edit.mode.autoClear" = "自動消去";
+"edit.mode.systemCapNotice" = "iOSの仕様上、ロック画面表示は最大12時間までです";
 "edit.autoClear.countdownPrefix" = "自動消去まで";
 "trigger.target" = "目標時刻到達時";
 "trigger.target.desc" = "D-dayやカウントダウンが終了すると自動で終了します";
