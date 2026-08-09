@@ -1,6 +1,7 @@
 import AppIntents
 import SwiftUI
 import WidgetKit
+import VellureCore
 
 struct LockScreenView: View {
     let context: ActivityViewContext<MemoAttributes>
@@ -186,7 +187,11 @@ struct LockScreenView: View {
     }
 
     private func ddayString(_ target: Date) -> String {
-        let days = Calendar.current.dateComponents([.day], from: Calendar.current.startOfDay(for: .now), to: Calendar.current.startOfDay(for: target)).day ?? 0
+        let days = Calendar.current.dateComponents(
+            [.day],
+            from: Calendar.current.startOfDay(for: .now),
+            to: Calendar.current.startOfDay(for: target)
+        ).day ?? 0
         if days > 0 { return "D-\(days)" }
         if days == 0 { return "D-Day" }
         return "D+\(abs(days))"
@@ -203,11 +208,11 @@ struct LockScreenView: View {
 
     private func colorFromTag(_ tag: String) -> Color {
         switch tag {
-        case "green": Color(red: 31/255, green: 169/255, blue: 124/255)
-        case "gold": Color(red: 239/255, green: 150/255, blue: 69/255)
-        case "blue": Color(red: 75/255, green: 150/255, blue: 243/255)
-        case "rose": Color(red: 238/255, green: 123/255, blue: 162/255)
-        default: Color(red: 31/255, green: 169/255, blue: 124/255)
+        case "green": Color(red: 31 / 255, green: 169 / 255, blue: 124 / 255)
+        case "gold": Color(red: 239 / 255, green: 150 / 255, blue: 69 / 255)
+        case "blue": Color(red: 75 / 255, green: 150 / 255, blue: 243 / 255)
+        case "rose": Color(red: 238 / 255, green: 123 / 255, blue: 162 / 255)
+        default: Color(red: 31 / 255, green: 169 / 255, blue: 124 / 255)
         }
     }
 }

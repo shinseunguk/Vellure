@@ -1,6 +1,7 @@
 import AppIntents
 import ActivityKit
 import SwiftData
+import VellureCore
 
 struct StepProgressIntent: LiveActivityIntent {
     static var title: LocalizedStringResource = "진행률 조절"

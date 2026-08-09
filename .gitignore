@@ -1,3 +1,12 @@
+# Tuist (generated)
+*.xcodeproj
+*.xcworkspace
+Derived/
+.tuist/
+Tuist/.build/
+graph.png
+graph.json
+
 # Xcode
 build/
 DerivedData/

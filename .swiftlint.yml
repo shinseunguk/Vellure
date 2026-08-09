@@ -2,6 +2,10 @@
 
 included:
   - Vellure
+  - VellureCore
+  - VellureData
+  - VellurePresentation
+  - VellureLiveActivity
 
 excluded:
   - DerivedData
@@ -89,6 +93,9 @@ identifier_name:
     - i
     - j
     - k
+    - r
+    - g
+    - b
 
 trailing_comma:
   mandatory_comma: false
