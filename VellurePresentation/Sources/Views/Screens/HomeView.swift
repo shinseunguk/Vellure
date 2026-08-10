@@ -1,8 +1,10 @@
 import SwiftUI
+import UIKit
 import SwiftData
 import VellureCore
 import VellureData
 
+// swiftlint:disable:next type_body_length
 public struct HomeView: View {
     @Environment(MemoRepository.self) private var repository
     @Environment(\.scenePhase) private var scenePhase
@@ -10,6 +12,12 @@ public struct HomeView: View {
     @State private var showNewMemo = false
     @State private var selectedMemo: Memo?
     @State private var showSettings = false
+    @State private var isReordering = false
+    @State private var reorderHaptic = UISelectionFeedbackGenerator()
+    @State private var draggingId: UUID?
+    @State private var dragOffsetY: CGFloat = 0
+    @State private var dropTargetIndex: Int?
+    @State private var activeCardMidYs: [UUID: CGFloat] = [:]
 
     public init() {}
 
@@ -74,27 +82,55 @@ public struct HomeView: View {
             Spacer(minLength: 12)
 
             HStack(spacing: 8) {
-                Button { showNewMemo = true } label: {
-                    HStack(spacing: 4) {
-                        Image(systemName: "plus")
-                            .font(.system(size: 12, weight: .bold))
-                        Text("home.new")
+                if isReordering {
+                    Button {
+                        withAnimation { isReordering = false }
+                    } label: {
+                        Text("home.done")
                             .font(.system(size: 13, weight: .bold))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 7)
+                            .background(Theme.accent)
+                            .clipShape(Capsule())
                     }
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 7)
-                    .background(Theme.accent)
-                    .clipShape(Capsule())
-                }
+                } else {
+                    if viewModel?.memos.isEmpty == false {
+                        Button {
+                            reorderHaptic.prepare()
+                            withAnimation { isReordering = true }
+                        } label: {
+                            Image(systemName: "arrow.up.arrow.down")
+                                .font(.system(size: 14, weight: .bold))
+                                .foregroundStyle(Theme.textSecondary)
+                                .frame(width: 34, height: 34)
+                                .background(Theme.chipBackground)
+                                .clipShape(Circle())
+                        }
+                    }
 
-                Button { showSettings = true } label: {
-                    Image(systemName: "gearshape")
-                        .font(.system(size: 15))
-                        .foregroundStyle(Theme.textSecondary)
-                        .frame(width: 34, height: 34)
-                        .background(Theme.chipBackground)
-                        .clipShape(Circle())
+                    Button { showNewMemo = true } label: {
+                        HStack(spacing: 4) {
+                            Image(systemName: "plus")
+                                .font(.system(size: 12, weight: .bold))
+                            Text("home.new")
+                                .font(.system(size: 13, weight: .bold))
+                        }
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 7)
+                        .background(Theme.accent)
+                        .clipShape(Capsule())
+                    }
+
+                    Button { showSettings = true } label: {
+                        Image(systemName: "gearshape")
+                            .font(.system(size: 15))
+                            .foregroundStyle(Theme.textSecondary)
+                            .frame(width: 34, height: 34)
+                            .background(Theme.chipBackground)
+                            .clipShape(Circle())
+                    }
                 }
             }
             .fixedSize()
@@ -139,24 +175,30 @@ public struct HomeView: View {
     @ViewBuilder
     private func memoList(_ vm: MemoListViewModel) -> some View {
         List {
+            let active = vm.activeMemos
+            if !active.isEmpty {
+                Section {
+                    reorderableSection(active, matches: { $0.activityId != nil }, vm: vm)
+                        .listRowSeparator(.hidden)
+                        .listRowBackground(Color.clear)
+                        .listRowInsets(EdgeInsets())
+                } header: {
+                    activeSectionHeader(count: active.count)
+                }
+            }
+
             ForEach(RenderType.allCases, id: \.self) { type in
-                let group = vm.memos(ofType: type)
+                let group = vm.inactiveMemos(ofType: type)
                 if !group.isEmpty {
                     Section {
-                        ForEach(group) { memo in
-                            MemoCardView(
-                                memo: memo,
-                                onTap: { selectedMemo = memo },
-                                onToggleActivity: { vm.toggleActivity(for: memo) },
-                                onDelete: { deleteMemo(memo, vm: vm) }
-                            )
-                            .contextMenu { memoContextMenu(for: memo, vm: vm) }
-                            .listRowSeparator(.hidden)
-                            .listRowBackground(Color.clear)
-                            .listRowInsets(EdgeInsets(top: 13, leading: 20, bottom: 4, trailing: 20))
-                        }
-                        .onDelete { offsets in vm.delete(type: type, at: offsets) }
-                        .onMove { source, destination in vm.reorder(type: type, from: source, to: destination) }
+                        reorderableSection(
+                            group,
+                            matches: { $0.activityId == nil && $0.renderType == type },
+                            vm: vm
+                        )
+                        .listRowSeparator(.hidden)
+                        .listRowBackground(Color.clear)
+                        .listRowInsets(EdgeInsets())
                     } header: {
                         sectionHeader(type, count: group.count)
                     }
@@ -165,6 +207,106 @@ public struct HomeView: View {
         }
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
+        .coordinateSpace(name: "reorder")
+        .onPreferenceChange(CardMidYKey.self) { activeCardMidYs = $0 }
+    }
+
+    // MARK: - Reorderable Section (custom drag)
+
+    @ViewBuilder
+    private func reorderableSection(
+        _ items: [Memo],
+        matches: @escaping (Memo) -> Bool,
+        vm: MemoListViewModel
+    ) -> some View {
+        VStack(spacing: 8) {
+            ForEach(items) { memo in
+                HStack(spacing: 4) {
+                    if isReordering {
+                        Image(systemName: "line.3.horizontal")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundStyle(Theme.textSecondary)
+                            .frame(width: 24, height: 44)
+                            .contentShape(Rectangle())
+                            .highPriorityGesture(reorderGesture(memo: memo, items: items, matches: matches, vm: vm))
+                    }
+
+                    MemoCardView(
+                        memo: memo,
+                        onTap: { selectedMemo = memo },
+                        onToggleActivity: { vm.toggleActivity(for: memo) },
+                        onDelete: { deleteMemo(memo, vm: vm) }
+                    )
+                    .contextMenu { memoContextMenu(for: memo, vm: vm) }
+                }
+                .background(
+                    GeometryReader { geo in
+                        Color.clear.preference(
+                            key: CardMidYKey.self,
+                            value: [memo.id: geo.frame(in: .named("reorder")).midY]
+                        )
+                    }
+                )
+                .offset(y: draggingId == memo.id ? dragOffsetY : 0)
+                .zIndex(draggingId == memo.id ? 1 : 0)
+                .shadow(color: draggingId == memo.id ? .black.opacity(0.18) : .clear, radius: 8, y: 4)
+            }
+        }
+        .padding(.horizontal, 20)
+        .padding(.top, 6)
+        .padding(.bottom, 8)
+        .animation(.snappy(duration: 0.22), value: draggingId)
+    }
+
+    private func reorderGesture(
+        memo: Memo,
+        items: [Memo],
+        matches: @escaping (Memo) -> Bool,
+        vm: MemoListViewModel
+    ) -> some Gesture {
+        DragGesture(minimumDistance: 2, coordinateSpace: .named("reorder"))
+            .onChanged { value in
+                if draggingId != memo.id {
+                    draggingId = memo.id
+                    dropTargetIndex = items.firstIndex { $0.id == memo.id }
+                    reorderHaptic.prepare()
+                }
+                dragOffsetY = value.translation.height
+                let baseMidY = activeCardMidYs[memo.id] ?? value.startLocation.y
+                let centerY = baseMidY + dragOffsetY
+                let newIndex = items
+                    .filter { $0.id != memo.id && (activeCardMidYs[$0.id] ?? 0) < centerY }
+                    .count
+                if newIndex != dropTargetIndex {
+                    dropTargetIndex = newIndex
+                    reorderHaptic.selectionChanged()
+                    reorderHaptic.prepare()
+                }
+            }
+            .onEnded { _ in
+                if let from = items.firstIndex(where: { $0.id == memo.id }),
+                   let target = dropTargetIndex, from != target {
+                    vm.moveInGroup(items, fromIndex: from, toIndex: target, matches: matches)
+                    vm.commitReorder()
+                }
+                draggingId = nil
+                dragOffsetY = 0
+                dropTargetIndex = nil
+            }
+    }
+
+    private func activeSectionHeader(count: Int) -> some View {
+        HStack(spacing: 5) {
+            Image(systemName: "lock.fill")
+                .font(.system(size: 11, weight: .semibold))
+            Text("home.section.active")
+                .font(.system(size: 13, weight: .bold))
+            Text("\(count)")
+                .font(.system(size: 12, weight: .semibold))
+        }
+        .foregroundStyle(Theme.accent)
+        .textCase(nil)
+        .listRowInsets(EdgeInsets(top: 14, leading: 20, bottom: 2, trailing: 20))
     }
 
     private func sectionHeader(_ type: RenderType, count: Int) -> some View {
@@ -199,6 +341,13 @@ public struct HomeView: View {
         case .countdown: String(localized: "type.countdown")
         case .progress: String(localized: "type.progress")
         }
+    }
+}
+
+private struct CardMidYKey: PreferenceKey {
+    static let defaultValue: [UUID: CGFloat] = [:]
+    static func reduce(value: inout [UUID: CGFloat], nextValue: () -> [UUID: CGFloat]) {
+        value.merge(nextValue()) { _, new in new }
     }
 }
 

@@ -20,7 +20,11 @@ public final class LiveActivityService {
         )
 
         let state = buildState(from: memo)
-        let content = ActivityContent(state: state, staleDate: memo.clearDate)
+        let content = ActivityContent(
+            state: state,
+            staleDate: memo.clearDate,
+            relevanceScore: relevanceScore(for: memo)
+        )
 
         do {
             let activity = try Activity.request(
@@ -37,7 +41,11 @@ public final class LiveActivityService {
 
     public func update(activityId: String, memo: Memo) async {
         let state = buildState(from: memo)
-        let content = ActivityContent(state: state, staleDate: memo.clearDate)
+        let content = ActivityContent(
+            state: state,
+            staleDate: memo.clearDate,
+            relevanceScore: relevanceScore(for: memo)
+        )
 
         for activity in Activity<MemoAttributes>.activities where activity.id == activityId {
             await activity.update(content)
@@ -47,11 +55,29 @@ public final class LiveActivityService {
     /// 저장된 activityId가 어긋나도 동작하도록 attributes의 memoId로 매칭해 갱신한다.
     public func update(memoId: String, memo: Memo) async {
         let state = buildState(from: memo)
-        let content = ActivityContent(state: state, staleDate: memo.clearDate)
+        let content = ActivityContent(
+            state: state,
+            staleDate: memo.clearDate,
+            relevanceScore: relevanceScore(for: memo)
+        )
 
         for activity in Activity<MemoAttributes>.activities where activity.attributes.memoId == memoId {
             await activity.update(content)
         }
+    }
+
+    /// 순서(sortOrder)가 바뀌었을 때 실행 중인 LA들의 relevanceScore를 갱신해
+    /// 잠금화면 정렬에 반영한다.
+    public func refreshOrder(memos: [Memo]) async {
+        let activeIds = Set(Activity<MemoAttributes>.activities.map { $0.attributes.memoId })
+        for memo in memos where activeIds.contains(memo.id.uuidString) {
+            await update(memoId: memo.id.uuidString, memo: memo)
+        }
+    }
+
+    /// sortOrder가 작을수록(리스트 위) 높은 점수 → 잠금화면에서 우선 정렬된다.
+    private func relevanceScore(for memo: Memo) -> Double {
+        Double(max(0, 1000 - memo.sortOrder))
     }
 
     public func end(activityId: String) async {
