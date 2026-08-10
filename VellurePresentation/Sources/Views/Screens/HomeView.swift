@@ -10,7 +10,6 @@ public struct HomeView: View {
     @State private var showNewMemo = false
     @State private var selectedMemo: Memo?
     @State private var showSettings = false
-    @State private var isEditing = false
 
     public init() {}
 
@@ -75,43 +74,27 @@ public struct HomeView: View {
             Spacer(minLength: 12)
 
             HStack(spacing: 8) {
-                if viewModel?.memos.isEmpty == false {
-                    Button {
-                        withAnimation { isEditing.toggle() }
-                    } label: {
-                        Text(isEditing ? "home.done" : "home.edit")
-                            .font(.system(size: 13, weight: .semibold))
-                            .foregroundStyle(isEditing ? .white : Theme.textSecondary)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 7)
-                            .background(isEditing ? Theme.accent : Theme.chipBackground)
-                            .clipShape(Capsule())
+                Button { showNewMemo = true } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: "plus")
+                            .font(.system(size: 12, weight: .bold))
+                        Text("home.new")
+                            .font(.system(size: 13, weight: .bold))
                     }
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 7)
+                    .background(Theme.accent)
+                    .clipShape(Capsule())
                 }
 
-                if !isEditing {
-                    Button { showNewMemo = true } label: {
-                        HStack(spacing: 4) {
-                            Image(systemName: "plus")
-                                .font(.system(size: 12, weight: .bold))
-                            Text("home.new")
-                                .font(.system(size: 13, weight: .bold))
-                        }
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 7)
-                        .background(Theme.accent)
-                        .clipShape(Capsule())
-                    }
-
-                    Button { showSettings = true } label: {
-                        Image(systemName: "gearshape")
-                            .font(.system(size: 15))
-                            .foregroundStyle(Theme.textSecondary)
-                            .frame(width: 34, height: 34)
-                            .background(Theme.chipBackground)
-                            .clipShape(Circle())
-                    }
+                Button { showSettings = true } label: {
+                    Image(systemName: "gearshape")
+                        .font(.system(size: 15))
+                        .foregroundStyle(Theme.textSecondary)
+                        .frame(width: 34, height: 34)
+                        .background(Theme.chipBackground)
+                        .clipShape(Circle())
                 }
             }
             .fixedSize()
@@ -182,7 +165,6 @@ public struct HomeView: View {
         }
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
-        .environment(\.editMode, .constant(isEditing ? .active : .inactive))
     }
 
     private func sectionHeader(_ type: RenderType, count: Int) -> some View {
