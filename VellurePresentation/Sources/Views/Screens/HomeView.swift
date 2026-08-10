@@ -120,6 +120,39 @@ public struct HomeView: View {
 
     // MARK: - Memo List
 
+    private func deleteMemo(_ memo: Memo, vm: MemoListViewModel) {
+        if let activityId = memo.activityId {
+            Task { await LiveActivityService.shared.end(activityId: activityId) }
+        }
+        vm.delete(memo)
+    }
+
+    @ViewBuilder
+    private func memoContextMenu(for memo: Memo, vm: MemoListViewModel) -> some View {
+        Button {
+            vm.toggleActivity(for: memo)
+        } label: {
+            Label(
+                memo.activityId != nil ? "context.stopActivity" : "context.startActivity",
+                systemImage: memo.activityId != nil ? "stop.circle" : "play.circle"
+            )
+        }
+
+        Button {
+            selectedMemo = memo
+        } label: {
+            Label("context.edit", systemImage: "pencil")
+        }
+
+        Divider()
+
+        Button(role: .destructive) {
+            deleteMemo(memo, vm: vm)
+        } label: {
+            Label("context.delete", systemImage: "trash")
+        }
+    }
+
     @ViewBuilder
     private func memoList(_ vm: MemoListViewModel) -> some View {
         List {
@@ -132,40 +165,9 @@ public struct HomeView: View {
                                 memo: memo,
                                 onTap: { selectedMemo = memo },
                                 onToggleActivity: { vm.toggleActivity(for: memo) },
-                                onDelete: {
-                                    if let activityId = memo.activityId {
-                                        Task { await LiveActivityService.shared.end(activityId: activityId) }
-                                    }
-                                    vm.delete(memo)
-                                }
+                                onDelete: { deleteMemo(memo, vm: vm) }
                             )
-                            .contextMenu {
-                                Button {
-                                    vm.toggleActivity(for: memo)
-                                } label: {
-                                    Label(
-                                        memo.activityId != nil ? "context.stopActivity" : "context.startActivity",
-                                        systemImage: memo.activityId != nil ? "stop.circle" : "play.circle"
-                                    )
-                                }
-
-                                Button {
-                                    selectedMemo = memo
-                                } label: {
-                                    Label("context.edit", systemImage: "pencil")
-                                }
-
-                                Divider()
-
-                                Button(role: .destructive) {
-                                    if let activityId = memo.activityId {
-                                        Task { await LiveActivityService.shared.end(activityId: activityId) }
-                                    }
-                                    vm.delete(memo)
-                                } label: {
-                                    Label("context.delete", systemImage: "trash")
-                                }
-                            }
+                            .contextMenu { memoContextMenu(for: memo, vm: vm) }
                             .listRowSeparator(.hidden)
                             .listRowBackground(Color.clear)
                             .listRowInsets(EdgeInsets(top: 13, leading: 20, bottom: 4, trailing: 20))

@@ -51,7 +51,7 @@ final class MemoListViewModel {
         group.move(fromOffsets: source, toOffset: destination)
         var iterator = group.makeIterator()
         let reordered = memos.map { memo in
-            memo.renderType == type ? iterator.next()! : memo
+            memo.renderType == type ? (iterator.next() ?? memo) : memo
         }
         repository.reorder(reordered)
         refresh()

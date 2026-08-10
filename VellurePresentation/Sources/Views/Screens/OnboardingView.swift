@@ -2,6 +2,7 @@ import SwiftUI
 import VellureCore
 import VellureData
 
+// swiftlint:disable:next type_body_length
 public struct OnboardingView: View {
     @Environment(MemoRepository.self) private var repository
     @State private var currentPage = 0
@@ -24,10 +25,10 @@ public struct OnboardingView: View {
 
             // Pages
             TabView(selection: $currentPage) {
-                page1_LockScreen.tag(0)
-                page2_Permission.tag(1)
-                page3_Siri.tag(2)
-                page4_FirstMemo.tag(3)
+                page1LockScreen.tag(0)
+                page2Permission.tag(1)
+                page3Siri.tag(2)
+                page4FirstMemo.tag(3)
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
             .ignoresSafeArea(.keyboard, edges: .bottom)
@@ -111,7 +112,7 @@ public struct OnboardingView: View {
 
     // MARK: - Page 1: Lock Screen Hero
 
-    private var page1_LockScreen: some View {
+    private var page1LockScreen: some View {
         VStack(spacing: 24) {
             // Lock screen mockup
             VStack(spacing: 14) {
@@ -146,7 +147,11 @@ public struct OnboardingView: View {
                 RoundedRectangle(cornerRadius: 28)
                     .fill(
                         RadialGradient(
-                            colors: [Color(red: 0.11, green: 0.23, blue: 0.18), Color(red: 0.05, green: 0.12, blue: 0.08), Color(red: 0.03, green: 0.08, blue: 0.06)],
+                            colors: [
+                                Color(red: 0.11, green: 0.23, blue: 0.18),
+                                Color(red: 0.05, green: 0.12, blue: 0.08),
+                                Color(red: 0.03, green: 0.08, blue: 0.06)
+                            ],
                             center: UnitPoint(x: 0.5, y: -0.1),
                             startRadius: 0,
                             endRadius: 300
@@ -206,7 +211,7 @@ public struct OnboardingView: View {
 
     // MARK: - Page 2: Permission
 
-    private var page2_Permission: some View {
+    private var page2Permission: some View {
         VStack(spacing: 24) {
             // Permission dialog mockup
             VStack(spacing: 0) {
@@ -278,7 +283,7 @@ public struct OnboardingView: View {
 
     // MARK: - Page 3: Siri
 
-    private var page3_Siri: some View {
+    private var page3Siri: some View {
         VStack(spacing: 24) {
             // Siri voice demo
             VStack(spacing: 12) {
@@ -312,7 +317,10 @@ public struct OnboardingView: View {
                 RoundedRectangle(cornerRadius: 24)
                     .fill(
                         RadialGradient(
-                            colors: [Color(red: 0.11, green: 0.23, blue: 0.18), Color(red: 0.05, green: 0.12, blue: 0.08)],
+                            colors: [
+                                Color(red: 0.11, green: 0.23, blue: 0.18),
+                                Color(red: 0.05, green: 0.12, blue: 0.08)
+                            ],
                             center: UnitPoint(x: 0.5, y: -0.1),
                             startRadius: 0,
                             endRadius: 250
@@ -342,7 +350,7 @@ public struct OnboardingView: View {
 
     // MARK: - Page 4: First Memo
 
-    private var page4_FirstMemo: some View {
+    private var page4FirstMemo: some View {
         VStack(spacing: 24) {
             // Live preview card
             VStack(alignment: .leading, spacing: 6) {
@@ -366,7 +374,10 @@ public struct OnboardingView: View {
                 RoundedRectangle(cornerRadius: 24)
                     .fill(
                         RadialGradient(
-                            colors: [Color(red: 0.11, green: 0.23, blue: 0.18), Color(red: 0.05, green: 0.12, blue: 0.08)],
+                            colors: [
+                                Color(red: 0.11, green: 0.23, blue: 0.18),
+                                Color(red: 0.05, green: 0.12, blue: 0.08)
+                            ],
                             center: UnitPoint(x: 0.5, y: -0.1),
                             startRadius: 0,
                             endRadius: 250

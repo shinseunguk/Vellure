@@ -41,10 +41,12 @@ struct MemoCardView: View {
             guard let target = memo.targetDate else { return nil }
             let remaining = target.timeIntervalSince(.now)
             if remaining <= 0 { return "00:00" }
-            let h = Int(remaining) / 3600
-            let m = (Int(remaining) % 3600) / 60
-            let s = Int(remaining) % 60
-            return h > 0 ? String(format: "%02d:%02d:%02d", h, m, s) : String(format: "%02d:%02d", m, s)
+            let hours = Int(remaining) / 3600
+            let minutes = (Int(remaining) % 3600) / 60
+            let seconds = Int(remaining) % 60
+            return hours > 0
+                ? String(format: "%02d:%02d:%02d", hours, minutes, seconds)
+                : String(format: "%02d:%02d", minutes, seconds)
         case .checklist:
             let total = memo.items?.count ?? 0
             let done = memo.items?.filter(\.done).count ?? 0

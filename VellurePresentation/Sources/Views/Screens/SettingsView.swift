@@ -154,7 +154,7 @@ struct SettingsView: View {
         [
             String(localized: "settings.siri.phrase1"),
             String(localized: "settings.siri.phrase2"),
-            String(localized: "settings.siri.phrase3"),
+            String(localized: "settings.siri.phrase3")
         ]
     }
 
@@ -164,11 +164,23 @@ struct SettingsView: View {
         VStack(alignment: .leading, spacing: 9) {
             sectionLabel(String(localized: "settings.section.automation"))
             VStack(spacing: 0) {
-                autoRow(icon: "house.fill", title: String(localized: "settings.auto.home.title"), desc: String(localized: "settings.auto.home.desc"))
+                autoRow(
+                    icon: "house.fill",
+                    title: String(localized: "settings.auto.home.title"),
+                    desc: String(localized: "settings.auto.home.desc")
+                )
                 Divider().padding(.leading, 57)
-                autoRow(icon: "moon.fill", title: String(localized: "settings.auto.night.title"), desc: String(localized: "settings.auto.night.desc"))
+                autoRow(
+                    icon: "moon.fill",
+                    title: String(localized: "settings.auto.night.title"),
+                    desc: String(localized: "settings.auto.night.desc")
+                )
                 Divider().padding(.leading, 57)
-                autoRow(icon: "mappin", title: String(localized: "settings.auto.location.title"), desc: String(localized: "settings.auto.location.desc"))
+                autoRow(
+                    icon: "mappin",
+                    title: String(localized: "settings.auto.location.title"),
+                    desc: String(localized: "settings.auto.location.desc")
+                )
                 Divider()
                 Text("settings.auto.note")
                     .font(.system(size: 11.5))

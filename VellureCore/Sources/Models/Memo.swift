@@ -20,7 +20,7 @@ public enum ClearTrigger: String, Codable, CaseIterable {
     case done     // 체크 완료 시
     case full     // 100% 도달 시
 
-    public static func available(for type: RenderType) -> [ClearTrigger] {
+    public static func available(for type: RenderType) -> [Self] {
         switch type {
         case .plain: [.hours]
         case .checklist: [.hours, .done]
@@ -85,7 +85,7 @@ public final class Memo {
     private static let systemMaxDuration: TimeInterval = 12 * 60 * 60
 
     public var clearDate: Date? {
-        let systemCap = updatedAt.addingTimeInterval(Memo.systemMaxDuration)
+        let systemCap = updatedAt.addingTimeInterval(Self.systemMaxDuration)
         switch displayMode {
         case .pinned:
             return systemCap

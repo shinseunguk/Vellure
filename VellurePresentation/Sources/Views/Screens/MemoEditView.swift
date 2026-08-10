@@ -3,6 +3,7 @@ import SwiftData
 import VellureCore
 import VellureData
 
+// swiftlint:disable:next type_body_length
 struct MemoEditView: View {
     @Environment(MemoRepository.self) private var repository
     @Environment(\.dismiss) private var dismiss
