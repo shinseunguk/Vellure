@@ -204,12 +204,14 @@ struct MemoCardView: View {
         MemoCardView(
             memo: PreviewSupport.sampleMemo(renderType: .checklist, content: "여행 준비물"),
             onTap: {},
-            onToggleActivity: {}
+            onToggleActivity: {},
+            onDelete: {}
         )
         MemoCardView(
             memo: PreviewSupport.sampleMemo(renderType: .dday, content: "프로젝트 마감", activityId: nil),
             onTap: {},
-            onToggleActivity: {}
+            onToggleActivity: {},
+            onDelete: {}
         )
     }
     .padding()
