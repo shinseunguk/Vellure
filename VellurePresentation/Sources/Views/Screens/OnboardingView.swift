@@ -30,6 +30,7 @@ public struct OnboardingView: View {
                 page4_FirstMemo.tag(3)
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
+            .ignoresSafeArea(.keyboard, edges: .bottom)
 
             Spacer()
 
