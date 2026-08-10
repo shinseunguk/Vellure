@@ -7,7 +7,6 @@ struct MemoEditView: View {
     @Environment(MemoRepository.self) private var repository
     @Environment(\.dismiss) private var dismiss
     @State private var viewModel: MemoEditViewModel?
-    @State private var newItemTitle = ""
     @FocusState private var contentFocused: Bool
 
     let memo: Memo?
@@ -158,30 +157,36 @@ struct MemoEditView: View {
                                 .font(.system(size: 20))
                                 .foregroundStyle(item.done ? Theme.accent : Theme.textSecondary)
                         }
-                        Text(item.title)
+                        TextField(String(localized: "edit.checklist.placeholder"), text: titleBinding(vm, item))
                             .strikethrough(item.done)
                             .foregroundStyle(item.done ? Theme.textSecondary : Theme.textPrimary)
+                        Button {
+                            vm.removeChecklistItem(item)
+                        } label: {
+                            Image(systemName: "minus.circle.fill")
+                                .font(.system(size: 20))
+                                .foregroundStyle(Theme.textSecondary)
+                        }
+                    }
+                    .padding(.vertical, 10)
+                    .padding(.horizontal, 16)
+                    Divider().padding(.leading, 48)
+                }
+
+                Button {
+                    vm.addChecklistItem(title: "")
+                } label: {
+                    HStack(spacing: 12) {
+                        Image(systemName: "plus.circle.fill")
+                            .font(.system(size: 20))
+                            .foregroundStyle(Theme.accent)
+                        Text("edit.checklist.add")
+                            .foregroundStyle(Theme.accent)
                         Spacer()
                     }
                     .padding(.vertical, 10)
                     .padding(.horizontal, 16)
-                    if item.id != vm.checklistItems.last?.id {
-                        Divider().padding(.leading, 48)
-                    }
                 }
-
-                HStack(spacing: 12) {
-                    Image(systemName: "plus.circle")
-                        .font(.system(size: 20))
-                        .foregroundStyle(Theme.accent)
-                    TextField("edit.checklist.add", text: $newItemTitle)
-                        .onSubmit {
-                            vm.addChecklistItem(title: newItemTitle)
-                            newItemTitle = ""
-                        }
-                }
-                .padding(.vertical, 10)
-                .padding(.horizontal, 16)
             }
             .background(Theme.cardBackground)
             .clipShape(RoundedRectangle(cornerRadius: 16))
@@ -190,6 +195,13 @@ struct MemoEditView: View {
                     .stroke(Theme.divider, lineWidth: 1)
             )
         }
+    }
+
+    private func titleBinding(_ vm: MemoEditViewModel, _ item: ChecklistItem) -> Binding<String> {
+        Binding(
+            get: { vm.checklistItems.first(where: { $0.id == item.id })?.title ?? item.title },
+            set: { vm.updateChecklistItemTitle(item, title: $0) }
+        )
     }
 
     @ViewBuilder
