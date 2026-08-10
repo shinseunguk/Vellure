@@ -14,19 +14,7 @@ struct VellureApp: App {
     private let repository: MemoRepository
 
     init() {
-        let schema = Schema([Memo.self])
-        let config = ModelConfiguration(
-            "Vellure",
-            schema: schema,
-            groupContainer: .identifier(Constants.appGroupId)
-        )
-
-        do {
-            container = try ModelContainer(for: schema, configurations: [config])
-        } catch {
-            fatalError("ModelContainer 생성 실패: \(error)")
-        }
-
+        container = AppModelContainer.shared
         repository = MemoRepository(modelContext: container.mainContext)
     }
 

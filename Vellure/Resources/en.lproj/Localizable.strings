@@ -144,6 +144,8 @@
 "intent.toggle.title" = "Toggle Checklist Item";
 "intent.toggle.memoId" = "Memo ID";
 "intent.toggle.itemId" = "Item ID";
+"intent.stepProgress.title" = "Adjust Progress";
+"intent.stepProgress.direction" = "Direction";
 
 /* Live Activity */
 "activity.type.plain" = "Memo";

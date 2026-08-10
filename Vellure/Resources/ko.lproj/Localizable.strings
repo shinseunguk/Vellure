@@ -144,6 +144,8 @@
 "intent.toggle.title" = "체크리스트 항목 토글";
 "intent.toggle.memoId" = "메모 ID";
 "intent.toggle.itemId" = "항목 ID";
+"intent.stepProgress.title" = "진행률 조절";
+"intent.stepProgress.direction" = "방향";
 
 /* Live Activity */
 "activity.type.plain" = "메모";

@@ -144,6 +144,8 @@
 "intent.toggle.title" = "チェックリスト項目を切替";
 "intent.toggle.memoId" = "メモID";
 "intent.toggle.itemId" = "項目ID";
+"intent.stepProgress.title" = "進捗を調整";
+"intent.stepProgress.direction" = "方向";
 
 /* Live Activity */
 "activity.type.plain" = "メモ";

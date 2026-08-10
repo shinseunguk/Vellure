@@ -1,15 +1,16 @@
 import AppIntents
 import ActivityKit
+import Foundation
 import SwiftData
 import VellureCore
 
 struct ToggleItemIntent: LiveActivityIntent {
-    static var title: LocalizedStringResource = "체크리스트 항목 토글"
+    static var title: LocalizedStringResource = "intent.toggle.title"
 
-    @Parameter(title: "메모 ID")
+    @Parameter(title: "intent.toggle.memoId")
     var memoId: String
 
-    @Parameter(title: "항목 ID")
+    @Parameter(title: "intent.toggle.itemId")
     var itemId: String
 
     init() {}
@@ -20,18 +21,7 @@ struct ToggleItemIntent: LiveActivityIntent {
     }
 
     func perform() async throws -> some IntentResult {
-        let schema = Schema([Memo.self])
-        let config = ModelConfiguration(
-            "Vellure",
-            schema: schema,
-            groupContainer: .identifier(Constants.appGroupId)
-        )
-
-        guard let container = try? ModelContainer(for: schema, configurations: [config]) else {
-            return .result()
-        }
-
-        let context = ModelContext(container)
+        let context = ModelContext(AppModelContainer.shared)
         let memoUUID = UUID(uuidString: memoId) ?? UUID()
         let descriptor = FetchDescriptor<Memo>(
             predicate: #Predicate { $0.id == memoUUID }
@@ -53,24 +43,22 @@ struct ToggleItemIntent: LiveActivityIntent {
 
             try? context.save()
 
-            if let activityId = memo.activityId {
-                let state = MemoAttributes.ContentState(
-                    renderType: memo.renderType.rawValue,
-                    content: memo.content,
-                    items: memo.items?.map {
-                        LiveChecklistItem(id: $0.id.uuidString, title: $0.title, done: $0.done)
-                    },
-                    targetDate: memo.targetDate,
-                    progress: memo.progress,
-                    font: memo.font,
-                    colorTag: memo.colorTag,
-                    updatedAt: Date(),
-                    clearDate: memo.clearDate
-                )
-                let content = ActivityContent(state: state, staleDate: memo.clearDate)
-                for activity in Activity<MemoAttributes>.activities where activity.id == activityId {
-                    await activity.update(content)
-                }
+            let state = MemoAttributes.ContentState(
+                renderType: memo.renderType.rawValue,
+                content: memo.content,
+                items: memo.items?.map {
+                    LiveChecklistItem(id: $0.id.uuidString, title: $0.title, done: $0.done)
+                },
+                targetDate: memo.targetDate,
+                progress: memo.progress,
+                font: memo.font,
+                colorTag: memo.colorTag,
+                updatedAt: Date(),
+                clearDate: memo.clearDate
+            )
+            let content = ActivityContent(state: state, staleDate: memo.clearDate)
+            for activity in Activity<MemoAttributes>.activities where activity.attributes.memoId == memoId {
+                await activity.update(content)
             }
         }
 

@@ -44,6 +44,16 @@ public final class LiveActivityService {
         }
     }
 
+    /// 저장된 activityId가 어긋나도 동작하도록 attributes의 memoId로 매칭해 갱신한다.
+    public func update(memoId: String, memo: Memo) async {
+        let state = buildState(from: memo)
+        let content = ActivityContent(state: state, staleDate: memo.clearDate)
+
+        for activity in Activity<MemoAttributes>.activities where activity.attributes.memoId == memoId {
+            await activity.update(content)
+        }
+    }
+
     public func end(activityId: String) async {
         for activity in Activity<MemoAttributes>.activities where activity.id == activityId {
             await activity.end(nil, dismissalPolicy: .immediate)

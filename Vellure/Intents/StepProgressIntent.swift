@@ -1,8 +1,8 @@
 import AppIntents
 import ActivityKit
-import Foundation
 import SwiftData
 import VellureCore
+import VellureData
 
 struct StepProgressIntent: LiveActivityIntent {
     static var title: LocalizedStringResource = "intent.stepProgress.title"
@@ -37,23 +37,7 @@ struct StepProgressIntent: LiveActivityIntent {
         memo.updatedAt = Date()
         try? context.save()
 
-        let state = MemoAttributes.ContentState(
-            renderType: memo.renderType.rawValue,
-            content: memo.content,
-            items: memo.items?.map {
-                LiveChecklistItem(id: $0.id.uuidString, title: $0.title, done: $0.done)
-            },
-            targetDate: memo.targetDate,
-            progress: memo.progress,
-            font: memo.font,
-            colorTag: memo.colorTag,
-            updatedAt: Date(),
-            clearDate: memo.clearDate
-        )
-        let content = ActivityContent(state: state, staleDate: memo.clearDate)
-        for activity in Activity<MemoAttributes>.activities where activity.attributes.memoId == memoId {
-            await activity.update(content)
-        }
+        await LiveActivityService.shared.update(memoId: memoId, memo: memo)
 
         return .result()
     }

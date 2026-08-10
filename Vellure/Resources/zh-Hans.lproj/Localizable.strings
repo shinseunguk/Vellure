@@ -144,6 +144,8 @@
 "intent.toggle.title" = "切换清单项";
 "intent.toggle.memoId" = "备忘录 ID";
 "intent.toggle.itemId" = "项目 ID";
+"intent.stepProgress.title" = "调整进度";
+"intent.stepProgress.direction" = "方向";
 
 /* Live Activity */
 "activity.type.plain" = "备忘录";

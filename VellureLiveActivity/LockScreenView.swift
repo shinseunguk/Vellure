@@ -129,7 +129,7 @@ struct LockScreenView: View {
                     HStack(spacing: 10) {
                         Button(intent: StepProgressIntent(
                             memoId: context.attributes.memoId,
-                            delta: -0.1
+                            direction: "down"
                         )) {
                             Image(systemName: "minus")
                                 .font(.system(size: 13, weight: .bold))
@@ -140,21 +140,14 @@ struct LockScreenView: View {
                         }
                         .buttonStyle(.plain)
 
-                        GeometryReader { geo in
-                            Capsule()
-                                .fill(.white.opacity(0.14))
-                                .frame(height: 8)
-                                .overlay(alignment: .leading) {
-                                    Capsule()
-                                        .fill(tint)
-                                        .frame(width: geo.size.width * progress, height: 8)
-                                }
-                        }
-                        .frame(height: 8)
+                        ProgressView(value: progress)
+                            .progressViewStyle(.linear)
+                            .tint(tint)
+                            .frame(maxWidth: .infinity)
 
                         Button(intent: StepProgressIntent(
                             memoId: context.attributes.memoId,
-                            delta: 0.1
+                            direction: "up"
                         )) {
                             Image(systemName: "plus")
                                 .font(.system(size: 13, weight: .bold))
