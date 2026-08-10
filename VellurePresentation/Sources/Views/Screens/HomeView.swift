@@ -5,6 +5,7 @@ import VellureData
 
 public struct HomeView: View {
     @Environment(MemoRepository.self) private var repository
+    @Environment(\.scenePhase) private var scenePhase
     @State private var viewModel: MemoListViewModel?
     @State private var showNewMemo = false
     @State private var selectedMemo: Memo?
@@ -49,6 +50,11 @@ public struct HomeView: View {
         .onAppear {
             if viewModel == nil {
                 viewModel = MemoListViewModel(repository: repository)
+            }
+        }
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active {
+                viewModel?.refresh()
             }
         }
     }
