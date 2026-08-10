@@ -1,6 +1,7 @@
 import ActivityKit
 import WidgetKit
 import SwiftUI
+import VellureCore
 
 struct VellureLiveActivityWidget: Widget {
     var body: some WidgetConfiguration {
@@ -34,7 +35,9 @@ struct VellureLiveActivityWidget: Widget {
                             .lineLimit(3)
 
                         expandedDynamicContent(context)
+                        clearCountdownRow(context)
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.top, 4)
                 }
             } compactLeading: {
@@ -91,6 +94,23 @@ struct VellureLiveActivityWidget: Widget {
             }
         default:
             EmptyView()
+        }
+    }
+
+    // MARK: - Auto-clear Countdown (bottom-right)
+
+    @ViewBuilder
+    private func clearCountdownRow(_ context: ActivityViewContext<MemoAttributes>) -> some View {
+        if let clearDate = context.state.clearDate, clearDate > .now {
+            HStack(spacing: 4) {
+                Image(systemName: "timer")
+                    .font(.system(size: 10, weight: .semibold))
+                (Text(timerInterval: Date.now...clearDate, countsDown: true) + Text(" 후 소멸"))
+                    .font(.system(size: 11, weight: .bold))
+                    .monospacedDigit()
+            }
+            .foregroundStyle(tint(context))
+            .frame(maxWidth: .infinity, alignment: .trailing)
         }
     }
 
@@ -156,7 +176,11 @@ struct VellureLiveActivityWidget: Widget {
     }
 
     private func ddayString(_ target: Date) -> String {
-        let days = Calendar.current.dateComponents([.day], from: Calendar.current.startOfDay(for: .now), to: Calendar.current.startOfDay(for: target)).day ?? 0
+        let days = Calendar.current.dateComponents(
+            [.day],
+            from: Calendar.current.startOfDay(for: .now),
+            to: Calendar.current.startOfDay(for: target)
+        ).day ?? 0
         if days > 0 { return "D-\(days)" }
         if days == 0 { return "D-Day" }
         return "D+\(abs(days))"
@@ -164,14 +188,47 @@ struct VellureLiveActivityWidget: Widget {
 
     private func colorFromTag(_ tag: String) -> Color {
         switch tag {
-        case "green": Color(red: 31/255, green: 169/255, blue: 124/255)
-        case "blue": Color(red: 59/255, green: 130/255, blue: 246/255)
-        case "purple": Color(red: 139/255, green: 92/255, blue: 246/255)
-        case "orange": Color(red: 245/255, green: 158/255, blue: 11/255)
-        case "red": Color(red: 239/255, green: 68/255, blue: 68/255)
-        case "pink": Color(red: 236/255, green: 72/255, blue: 153/255)
-        case "teal": Color(red: 20/255, green: 184/255, blue: 166/255)
-        default: Color(red: 31/255, green: 169/255, blue: 124/255)
+        case "green": Color(red: 31 / 255, green: 169 / 255, blue: 124 / 255)
+        case "gold": Color(red: 239 / 255, green: 150 / 255, blue: 69 / 255)
+        case "blue": Color(red: 75 / 255, green: 150 / 255, blue: 243 / 255)
+        case "rose": Color(red: 238 / 255, green: 123 / 255, blue: 162 / 255)
+        default: Color(red: 31 / 255, green: 169 / 255, blue: 124 / 255)
         }
     }
 }
+
+#if DEBUG
+private extension MemoAttributes.ContentState {
+    static var checklist: MemoAttributes.ContentState {
+        MemoAttributes.ContentState(
+            renderType: "checklist",
+            content: "여행 준비물",
+            items: [
+                LiveChecklistItem(id: "1", title: "여권", done: true),
+                LiveChecklistItem(id: "2", title: "충전기", done: false)
+            ],
+            font: "default",
+            colorTag: "green",
+            updatedAt: Date()
+        )
+    }
+
+    static var dday: MemoAttributes.ContentState {
+        MemoAttributes.ContentState(
+            renderType: "dday",
+            content: "프로젝트 마감",
+            targetDate: Calendar.current.date(byAdding: .day, value: 10, to: Date()),
+            font: "default",
+            colorTag: "blue",
+            updatedAt: Date()
+        )
+    }
+}
+
+#Preview("Live Activity", as: .content, using: MemoAttributes(memoId: "preview", displayMode: "pinned")) {
+    VellureLiveActivityWidget()
+} contentStates: {
+    MemoAttributes.ContentState.checklist
+    MemoAttributes.ContentState.dday
+}
+#endif

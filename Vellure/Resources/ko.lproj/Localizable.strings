@@ -1,0 +1,160 @@
+/* Home */
+"home.title" = "메모";
+"home.new" = "새 메모";
+"home.edit" = "편집";
+"home.done" = "완료";
+
+/* Card */
+"card.onLock" = "표시 중";
+
+/* Context Menu */
+"context.startActivity" = "잠금화면에 표시";
+"context.stopActivity" = "잠금화면에서 제거";
+"context.edit" = "편집";
+"context.delete" = "삭제";
+
+/* Edit */
+"edit.title.new" = "새 메모";
+"edit.title.edit" = "메모 편집";
+"edit.cancel" = "취소";
+"edit.save" = "저장";
+"edit.section.content" = "내용";
+"edit.placeholder" = "메모를 입력하세요";
+"edit.section.type" = "타입";
+"edit.section.targetDate" = "목표일";
+"edit.section.targetTime" = "목표 시각";
+"edit.section.checklist" = "체크리스트";
+"edit.checklist.add" = "항목 추가";
+"edit.checklist.placeholder" = "할 일";
+"edit.section.progress" = "진행률 %d%%";
+"edit.section.displayMode" = "표시 모드";
+"edit.mode.pinned" = "고정";
+"edit.mode.autoClear" = "자동소멸";
+"edit.mode.systemCapNotice" = "iOS 특성상 잠금화면 표시는 최대 12시간까지만 유지돼요";
+"edit.autoClear.countdownPrefix" = "자동소멸까지";
+"trigger.target" = "목표 시각 도달 시";
+"trigger.target.desc" = "D-day·카운트다운이 끝나면 자동으로 내려가요";
+"trigger.hours" = "N시간 경과 후";
+"trigger.hours.desc" = "게시 후 지정한 시간이 지나면 내려가요";
+"trigger.hours.value" = "%d시간 후";
+"trigger.done" = "체크 완료 시";
+"trigger.done.desc" = "체크리스트를 전부 완료하면 내려가요";
+"trigger.full" = "100% 도달 시";
+"trigger.full.desc" = "진행률이 100%가 되면 내려가요";
+"edit.section.font" = "폰트";
+"edit.section.color" = "색상";
+"edit.save.cta" = "잠금화면에 올리기";
+"edit.delete" = "메모 삭제";
+
+/* Type Names */
+"type.plain" = "일반";
+"type.checklist" = "체크리스트";
+"type.dday" = "D-day";
+"type.countdown" = "카운트다운";
+"type.progress" = "진행바";
+
+/* Font Names */
+"font.system" = "기본";
+"font.rounded" = "라운드";
+"font.serif" = "세리프";
+"font.mono" = "모노";
+"font.preview" = "가나다 ABC 123";
+
+/* Empty State */
+"empty.title" = "메모가 없습니다";
+"empty.description" = "첫 번째 메모를 작성하고\n잠금화면에서 확인해보세요";
+"empty.cta" = "새 메모 작성";
+
+/* Onboarding */
+"onboarding.page1.title" = "메모가 잠금화면에서\n살아 움직여요";
+"onboarding.page1.desc" = "앱을 열지 않아도 메모가 잠금화면에 뜹니다.\nD-day·카운트다운·진행바가 스스로 갱신돼요.";
+"onboarding.page2.title" = "실시간 액티비티\n권한이 필요해요";
+"onboarding.page2.desc" = "잠금화면과 다이나믹 아일랜드에\n메모를 표시하려면 권한을 허용해 주세요.";
+"onboarding.page3.title" = "Siri한테 말만 하면\n바로 올라가요";
+"onboarding.page3.desc" = "\"벨루어 메모 우유 사기\"라고 말하면\n앱을 열지 않고 저장·게시됩니다.";
+"onboarding.page4.title" = "첫 메모를\n올려볼까요?";
+"onboarding.page4.desc" = "무엇이든 적어보세요.\n12시간 동안 잠금화면에 떠 있어요.";
+"onboarding.cta.start" = "시작하기";
+"onboarding.cta.allow" = "허용하기";
+"onboarding.cta.siri" = "Siri에 추가";
+"onboarding.cta.publish" = "잠금화면에 올리기";
+"onboarding.skip" = "건너뛰기";
+"onboarding.hero.date" = "7월 20일 일요일";
+"onboarding.hero.dday" = "제주도 여행";
+"onboarding.hero.countdown" = "팀 회의까지";
+"onboarding.perm.title" = "\"Vellure\"이(가) 실시간\n액티비티를 표시하려고 합니다";
+"onboarding.perm.body" = "메모가 잠금화면과\n다이나믹 아일랜드에 표시됩니다.";
+"onboarding.perm.deny" = "허용 안 함";
+"onboarding.perm.allow" = "허용";
+"onboarding.siri.bubble" = "\"벨루어 메모, 우유 사기\"";
+"onboarding.siri.done" = "앱 안 열고 잠금화면에 게시됨";
+"onboarding.preview.placeholder" = "첫 메모를 적어보세요";
+"onboarding.input.placeholder" = "첫 메모를 적어보세요";
+
+/* Settings */
+"settings.title" = "설정";
+"settings.done" = "완료";
+"settings.section.diagnostics" = "표시 진단";
+"settings.diag.ready" = "표시 준비 완료";
+"settings.diag.warn" = "점검이 필요합니다";
+"settings.diag.liveActivity" = "실시간 액티비티 허용";
+"settings.diag.hint" = "실시간 액티비티가 안 보이면 권한·집중 모드·설정을 점검하세요.";
+"settings.activity.available" = "사용 가능";
+"settings.activity.disabled" = "비활성";
+"settings.activity.endAll" = "모든 Live Activity 종료";
+"settings.section.siri" = "Siri · 단축어";
+"settings.siri.phrases" = "등록된 호출 문구";
+"settings.siri.phrase1" = "벨루어 메모 우유 사기";
+"settings.siri.phrase2" = "잠금 메모해";
+"settings.siri.phrase3" = "벨루어에 D-day 추가";
+"settings.section.automation" = "단축어 자동화 활용";
+"settings.auto.home.title" = "홈 화면 버튼";
+"settings.auto.home.desc" = "단축어 아이콘을 탭하면 바로 입력창이 열려요";
+"settings.auto.night.title" = "매일 밤 10시 자동 게시";
+"settings.auto.night.desc" = "\"내일 할 일\" 메모를 정해진 시각에 잠금화면으로";
+"settings.auto.location.title" = "회사 도착 시 업무 메모";
+"settings.auto.location.desc" = "위치 자동화로 도착하면 업무 체크리스트 게시";
+"settings.auto.note" = "단축어 앱에서 Vellure 동작(메모 만들기·D-day 만들기·메모 내리기)에 내용·타입·표시시간을 조합할 수 있어요.";
+"settings.appearance" = "화면 모드";
+"appearance.system" = "시스템";
+"appearance.light" = "라이트";
+"appearance.dark" = "다크";
+"settings.feedback" = "피드백";
+"settings.feedback.dest" = "App Store 리뷰";
+"settings.terms" = "약관 및 개인정보";
+"settings.priceFree" = "순수 무료";
+"terms.s1.title" = "서비스 이용";
+"terms.s1.body" = "Vellure은 무료로 제공되며, 메모를 잠금화면 실시간 액티비티로 표시합니다. iOS 정책상 실시간 액티비티는 최대 12시간 동안 표시된 후 자동 종료됩니다.";
+"terms.s2.title" = "개인정보 처리방침";
+"terms.s2.body" = "모든 메모와 설정은 회원가입 없이 이 기기에만 저장됩니다. 서버로 전송되는 데이터가 없으며, 앱을 삭제하면 모든 데이터가 함께 삭제됩니다.";
+"terms.s3.title" = "Siri 및 음성 입력";
+"terms.s3.body" = "Siri 음성 인식은 Apple이 처리하며, Vellure은 인식된 텍스트만 전달받아 메모로 저장합니다. 음성 데이터를 별도로 수집하거나 보관하지 않습니다.";
+"terms.updated" = "최종 업데이트 · 2026년 6월 30일";
+
+/* Intents */
+"intent.createMemo.title" = "메모 추가";
+"intent.createMemo.content" = "내용";
+"intent.createMemo.startActivity" = "잠금화면에 표시";
+"intent.createMemo.fail" = "메모 생성에 실패했습니다";
+"intent.createMemo.success" = "메모가 추가되었습니다: %@";
+"intent.showMemos.title" = "메모 목록 보기";
+"intent.showMemos.fail" = "메모를 불러올 수 없습니다";
+"intent.showMemos.empty" = "저장된 메모가 없습니다";
+"intent.showMemos.result" = "메모 %d개:\n%@%@";
+"intent.toggle.title" = "체크리스트 항목 토글";
+"intent.toggle.memoId" = "메모 ID";
+"intent.toggle.itemId" = "항목 ID";
+"intent.stepProgress.title" = "진행률 조절";
+"intent.stepProgress.direction" = "방향";
+
+/* Live Activity */
+"activity.type.plain" = "메모";
+"activity.type.checklist" = "체크리스트";
+"activity.type.dday" = "D-day";
+"activity.type.countdown" = "카운트다운";
+"activity.type.progress" = "진행바";
+"activity.more" = "외 %d개";
+
+/* Shortcuts */
+"shortcut.create.title" = "메모 추가";
+"shortcut.show.title" = "메모 보기";

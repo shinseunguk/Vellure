@@ -1,0 +1,160 @@
+/* Home */
+"home.title" = "Memos";
+"home.new" = "New";
+"home.edit" = "Edit";
+"home.done" = "Done";
+
+/* Card */
+"card.onLock" = "On Lock";
+
+/* Context Menu */
+"context.startActivity" = "Show on Lock Screen";
+"context.stopActivity" = "Remove from Lock Screen";
+"context.edit" = "Edit";
+"context.delete" = "Delete";
+
+/* Edit */
+"edit.title.new" = "New Memo";
+"edit.title.edit" = "Edit Memo";
+"edit.cancel" = "Cancel";
+"edit.save" = "Save";
+"edit.section.content" = "Content";
+"edit.placeholder" = "Enter your memo";
+"edit.section.type" = "Type";
+"edit.section.targetDate" = "Target Date";
+"edit.section.targetTime" = "Target Time";
+"edit.section.checklist" = "Checklist";
+"edit.checklist.add" = "Add item";
+"edit.checklist.placeholder" = "To-do";
+"edit.section.progress" = "Progress %d%%";
+"edit.section.displayMode" = "Display Mode";
+"edit.mode.pinned" = "Pinned";
+"edit.mode.autoClear" = "Auto Clear";
+"edit.mode.systemCapNotice" = "iOS keeps Live Activities on the Lock Screen for at most 12 hours";
+"edit.autoClear.countdownPrefix" = "Clears in";
+"trigger.target" = "At target time";
+"trigger.target.desc" = "Clears when the D-day or countdown ends";
+"trigger.hours" = "After N hours";
+"trigger.hours.desc" = "Clears a set number of hours after posting";
+"trigger.hours.value" = "After %d hours";
+"trigger.done" = "When all checked";
+"trigger.done.desc" = "Clears once every checklist item is done";
+"trigger.full" = "At 100%";
+"trigger.full.desc" = "Clears when progress reaches 100%";
+"edit.section.font" = "Font";
+"edit.section.color" = "Color";
+"edit.save.cta" = "Publish to Lock Screen";
+"edit.delete" = "Delete Memo";
+
+/* Type Names */
+"type.plain" = "Plain";
+"type.checklist" = "Checklist";
+"type.dday" = "D-day";
+"type.countdown" = "Countdown";
+"type.progress" = "Progress";
+
+/* Font Names */
+"font.system" = "Default";
+"font.rounded" = "Rounded";
+"font.serif" = "Serif";
+"font.mono" = "Mono";
+"font.preview" = "ABC abc 123";
+
+/* Empty State */
+"empty.title" = "No Memos";
+"empty.description" = "Create your first memo\nand see it on your lock screen";
+"empty.cta" = "Create Memo";
+
+/* Onboarding */
+"onboarding.page1.title" = "Notes that live\non your lock screen";
+"onboarding.page1.desc" = "Your notes appear on the lock screen without opening the app.\nD-day, countdowns and progress bars update themselves.";
+"onboarding.page2.title" = "Live Activity\npermission needed";
+"onboarding.page2.desc" = "To show notes on the lock screen\nand Dynamic Island, please allow Live Activities.";
+"onboarding.page3.title" = "Hands-free\ninput with Siri";
+"onboarding.page3.desc" = "Say \"Vellure note, buy milk\" and it saves\n& publishes without opening the app.";
+"onboarding.page4.title" = "Publish your\nfirst note?";
+"onboarding.page4.desc" = "Write anything — it stays on\nyour lock screen for 12 hours.";
+"onboarding.cta.start" = "Get Started";
+"onboarding.cta.allow" = "Allow";
+"onboarding.cta.siri" = "Add to Siri";
+"onboarding.cta.publish" = "Publish to Lock Screen";
+"onboarding.skip" = "Skip";
+"onboarding.hero.date" = "Sunday, July 20";
+"onboarding.hero.dday" = "Jeju trip";
+"onboarding.hero.countdown" = "Until team meeting";
+"onboarding.perm.title" = "\"Vellure\" Would Like to\nShow Live Activities";
+"onboarding.perm.body" = "Notes will appear on your lock screen\nand Dynamic Island.";
+"onboarding.perm.deny" = "Don't Allow";
+"onboarding.perm.allow" = "Allow";
+"onboarding.siri.bubble" = "\"Vellure note, buy milk\"";
+"onboarding.siri.done" = "Published without opening the app";
+"onboarding.preview.placeholder" = "Write your first note";
+"onboarding.input.placeholder" = "Write your first note";
+
+/* Settings */
+"settings.title" = "Settings";
+"settings.done" = "Done";
+"settings.section.diagnostics" = "Display Diagnostics";
+"settings.diag.ready" = "Ready to display";
+"settings.diag.warn" = "Needs attention";
+"settings.diag.liveActivity" = "Allow Live Activities";
+"settings.diag.hint" = "If Live Activity doesn't appear, check permission, Focus mode, and settings.";
+"settings.activity.available" = "Available";
+"settings.activity.disabled" = "Disabled";
+"settings.activity.endAll" = "End All Live Activities";
+"settings.section.siri" = "Siri · Shortcuts";
+"settings.siri.phrases" = "Registered phrases";
+"settings.siri.phrase1" = "Vellure note buy milk";
+"settings.siri.phrase2" = "Make a lock note";
+"settings.siri.phrase3" = "Add a D-day to Vellure";
+"settings.section.automation" = "Shortcuts Automations";
+"settings.auto.home.title" = "Home Screen button";
+"settings.auto.home.desc" = "Tap a shortcut icon to open the input instantly";
+"settings.auto.night.title" = "Every night at 10 PM";
+"settings.auto.night.desc" = "Auto-publish a \"tomorrow\" note at a set time";
+"settings.auto.location.title" = "On arriving at work";
+"settings.auto.location.desc" = "Location automation posts your work checklist";
+"settings.auto.note" = "In the Shortcuts app, combine Vellure actions (create note, create D-day, clear note) with content, type and duration.";
+"settings.appearance" = "Appearance";
+"appearance.system" = "System";
+"appearance.light" = "Light";
+"appearance.dark" = "Dark";
+"settings.feedback" = "Feedback";
+"settings.feedback.dest" = "App Store review";
+"settings.terms" = "Terms & Privacy";
+"settings.priceFree" = "Free";
+"terms.s1.title" = "Service";
+"terms.s1.body" = "Vellure is free and displays your notes as lock-screen Live Activities. Per iOS policy, a Live Activity ends automatically after up to 12 hours.";
+"terms.s2.title" = "Privacy Policy";
+"terms.s2.body" = "All notes and settings are stored only on this device — no account, no servers. Deleting the app deletes all data with it.";
+"terms.s3.title" = "Siri & Voice Input";
+"terms.s3.body" = "Voice recognition is handled by Apple; Vellure only receives the recognized text to save as a note. We never collect or store audio.";
+"terms.updated" = "Last updated · June 30, 2026";
+
+/* Intents */
+"intent.createMemo.title" = "Add Memo";
+"intent.createMemo.content" = "Content";
+"intent.createMemo.startActivity" = "Show on Lock Screen";
+"intent.createMemo.fail" = "Failed to create memo";
+"intent.createMemo.success" = "Memo added: %@";
+"intent.showMemos.title" = "View Memos";
+"intent.showMemos.fail" = "Unable to load memos";
+"intent.showMemos.empty" = "No saved memos";
+"intent.showMemos.result" = "%d memo(s):\n%@%@";
+"intent.toggle.title" = "Toggle Checklist Item";
+"intent.toggle.memoId" = "Memo ID";
+"intent.toggle.itemId" = "Item ID";
+"intent.stepProgress.title" = "Adjust Progress";
+"intent.stepProgress.direction" = "Direction";
+
+/* Live Activity */
+"activity.type.plain" = "Memo";
+"activity.type.checklist" = "Checklist";
+"activity.type.dday" = "D-day";
+"activity.type.countdown" = "Countdown";
+"activity.type.progress" = "Progress";
+"activity.more" = "%d more";
+
+/* Shortcuts */
+"shortcut.create.title" = "Add Memo";
+"shortcut.show.title" = "View Memos";

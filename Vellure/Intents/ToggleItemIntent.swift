@@ -1,8 +1,8 @@
 import AppIntents
 import ActivityKit
-import Foundation
 import SwiftData
 import VellureCore
+import VellureData
 
 struct ToggleItemIntent: LiveActivityIntent {
     static var title: LocalizedStringResource = "intent.toggle.title"
@@ -21,7 +21,18 @@ struct ToggleItemIntent: LiveActivityIntent {
     }
 
     func perform() async throws -> some IntentResult {
-        let context = ModelContext(AppModelContainer.shared)
+        let schema = Schema([Memo.self])
+        let config = ModelConfiguration(
+            "Vellure",
+            schema: schema,
+            groupContainer: .identifier(Constants.appGroupId)
+        )
+
+        guard let container = try? ModelContainer(for: schema, configurations: [config]) else {
+            return .result()
+        }
+
+        let context = ModelContext(container)
         let memoUUID = UUID(uuidString: memoId) ?? UUID()
         let descriptor = FetchDescriptor<Memo>(
             predicate: #Predicate { $0.id == memoUUID }
@@ -43,22 +54,8 @@ struct ToggleItemIntent: LiveActivityIntent {
 
             try? context.save()
 
-            let state = MemoAttributes.ContentState(
-                renderType: memo.renderType.rawValue,
-                content: memo.content,
-                items: memo.items?.map {
-                    LiveChecklistItem(id: $0.id.uuidString, title: $0.title, done: $0.done)
-                },
-                targetDate: memo.targetDate,
-                progress: memo.progress,
-                font: memo.font,
-                colorTag: memo.colorTag,
-                updatedAt: Date(),
-                clearDate: memo.clearDate
-            )
-            let content = ActivityContent(state: state, staleDate: memo.clearDate)
-            for activity in Activity<MemoAttributes>.activities where activity.attributes.memoId == memoId {
-                await activity.update(content)
+            if let activityId = memo.activityId {
+                await LiveActivityService.shared.update(activityId: activityId, memo: memo)
             }
         }
 

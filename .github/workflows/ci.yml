@@ -21,13 +21,19 @@ jobs:
       - name: Install SwiftLint
         run: brew install swiftlint
 
+      - name: Install Tuist
+        run: brew install tuist
+
+      - name: Generate project
+        run: tuist generate --no-open
+
       - name: Run SwiftLint
         run: swiftlint lint --strict
 
       - name: Build
         run: |
           xcodebuild build \
-            -project Vellure.xcodeproj \
+            -workspace Vellure.xcworkspace \
             -scheme Vellure \
             -destination 'platform=iOS Simulator,name=iPhone 16' \
             -configuration Debug \
@@ -36,7 +42,7 @@ jobs:
       - name: Test
         run: |
           xcodebuild test \
-            -project Vellure.xcodeproj \
+            -workspace Vellure.xcworkspace \
             -scheme Vellure \
             -destination 'platform=iOS Simulator,name=iPhone 16' \
             -configuration Debug \

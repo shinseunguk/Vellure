@@ -1,5 +1,6 @@
 import AppIntents
 import SwiftUI
+import VellureCore
 
 struct ExpandedChecklistView: View {
     let items: [LiveChecklistItem]
@@ -8,7 +9,7 @@ struct ExpandedChecklistView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            if items.count > 0 { checkRow(items[0]) }
+            if !items.isEmpty { checkRow(items[0]) }
             if items.count > 1 { checkRow(items[1]) }
             if items.count > 2 { checkRow(items[2]) }
             if items.count > 3 { checkRow(items[3]) }
@@ -36,3 +37,19 @@ struct ExpandedChecklistView: View {
         .buttonStyle(.plain)
     }
 }
+
+#if DEBUG
+#Preview {
+    ExpandedChecklistView(
+        items: [
+            LiveChecklistItem(id: "1", title: "여권", done: true),
+            LiveChecklistItem(id: "2", title: "충전기", done: false),
+            LiveChecklistItem(id: "3", title: "이어폰", done: false)
+        ],
+        memoId: "preview",
+        tint: .green
+    )
+    .padding()
+    .background(.black)
+}
+#endif
