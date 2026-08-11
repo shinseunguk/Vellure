@@ -101,6 +101,7 @@ let project = Project(
             deploymentTargets: deploymentTargets,
             infoPlist: .file(path: "VellureLiveActivity/Info.plist"),
             sources: ["VellureLiveActivity/**/*.swift"],
+            resources: ["VellureLiveActivity/Assets.xcassets"],
             entitlements: "VellureLiveActivity/VellureLiveActivity.entitlements",
             dependencies: [.target(name: "VellureCore")]
         ),

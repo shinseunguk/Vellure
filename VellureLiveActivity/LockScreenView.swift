@@ -13,10 +13,12 @@ struct LockScreenView: View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 12) {
                 VStack(alignment: .leading, spacing: 6) {
-                    HStack(spacing: 6) {
-                        Circle()
-                            .fill(tint)
-                            .frame(width: 6, height: 6)
+                    HStack(spacing: 5) {
+                        Image("AppLogo")
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 14, height: 14)
+                            .clipShape(RoundedRectangle(cornerRadius: 4))
                         Text("Vellure · \(typeLabel)")
                             .font(.system(size: 10, weight: .heavy))
                             .foregroundStyle(tint)
@@ -38,7 +40,7 @@ struct LockScreenView: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(14)
-        .activityBackgroundTint(.black.opacity(0.85))
+        .activityBackgroundTint(backgroundTint(state.colorTag))
     }
 
     // MARK: - Dynamic Value (right side)
@@ -206,6 +208,17 @@ struct LockScreenView: View {
         case "blue": Color(red: 75 / 255, green: 150 / 255, blue: 243 / 255)
         case "rose": Color(red: 238 / 255, green: 123 / 255, blue: 162 / 255)
         default: Color(red: 31 / 255, green: 169 / 255, blue: 124 / 255)
+        }
+    }
+
+    /// 색상 태그에 맞춘 어두운 배경 틴트 (흰 글씨 가독성 유지).
+    private func backgroundTint(_ tag: String) -> Color {
+        switch tag {
+        case "green": Color(red: 0.06, green: 0.15, blue: 0.11)
+        case "gold": Color(red: 0.17, green: 0.11, blue: 0.04)
+        case "blue": Color(red: 0.06, green: 0.11, blue: 0.19)
+        case "rose": Color(red: 0.17, green: 0.08, blue: 0.11)
+        default: Color(red: 0.06, green: 0.15, blue: 0.11)
         }
     }
 }
