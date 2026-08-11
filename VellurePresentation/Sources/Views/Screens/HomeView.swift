@@ -18,6 +18,8 @@ public struct HomeView: View {
     @State private var dragOffsetY: CGFloat = 0
     @State private var dropTargetIndex: Int?
     @State private var activeCardMidYs: [UUID: CGFloat] = [:]
+    @State private var reorderMidYs: [UUID: CGFloat] = [:]
+    @State private var dragBaseMidY: CGFloat = 0
 
     public init() {}
 
@@ -174,39 +176,29 @@ public struct HomeView: View {
 
     @ViewBuilder
     private func memoList(_ vm: MemoListViewModel) -> some View {
-        List {
-            let active = vm.activeMemos
-            if !active.isEmpty {
-                Section {
-                    reorderableSection(active, matches: { $0.activityId != nil }, vm: vm)
-                        .listRowSeparator(.hidden)
-                        .listRowBackground(Color.clear)
-                        .listRowInsets(EdgeInsets())
-                } header: {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 0) {
+                let active = vm.activeMemos
+                if !active.isEmpty {
                     activeSectionHeader(count: active.count)
+                    reorderableSection(active, matches: { $0.activityId != nil }, vm: vm)
                 }
-            }
 
-            ForEach(RenderType.allCases, id: \.self) { type in
-                let group = vm.inactiveMemos(ofType: type)
-                if !group.isEmpty {
-                    Section {
+                ForEach(RenderType.allCases, id: \.self) { type in
+                    let group = vm.inactiveMemos(ofType: type)
+                    if !group.isEmpty {
+                        sectionHeader(type, count: group.count)
                         reorderableSection(
                             group,
                             matches: { $0.activityId == nil && $0.renderType == type },
                             vm: vm
                         )
-                        .listRowSeparator(.hidden)
-                        .listRowBackground(Color.clear)
-                        .listRowInsets(EdgeInsets())
-                    } header: {
-                        sectionHeader(type, count: group.count)
                     }
                 }
             }
+            .padding(.bottom, 20)
         }
-        .listStyle(.plain)
-        .scrollContentBackground(.hidden)
+        .scrollDisabled(draggingId != nil)
         .coordinateSpace(name: "reorder")
         .onPreferenceChange(CardMidYKey.self) { activeCardMidYs = $0 }
     }
@@ -243,7 +235,9 @@ public struct HomeView: View {
                     GeometryReader { geo in
                         Color.clear.preference(
                             key: CardMidYKey.self,
-                            value: [memo.id: geo.frame(in: .named("reorder")).midY]
+                            value: draggingId != nil
+                                ? [:]
+                                : [memo.id: geo.frame(in: .named("reorder")).midY]
                         )
                     }
                 )
@@ -268,14 +262,15 @@ public struct HomeView: View {
             .onChanged { value in
                 if draggingId != memo.id {
                     draggingId = memo.id
+                    reorderMidYs = activeCardMidYs
+                    dragBaseMidY = activeCardMidYs[memo.id] ?? value.startLocation.y
                     dropTargetIndex = items.firstIndex { $0.id == memo.id }
                     reorderHaptic.prepare()
                 }
                 dragOffsetY = value.translation.height
-                let baseMidY = activeCardMidYs[memo.id] ?? value.startLocation.y
-                let centerY = baseMidY + dragOffsetY
+                let centerY = dragBaseMidY + dragOffsetY
                 let newIndex = items
-                    .filter { $0.id != memo.id && (activeCardMidYs[$0.id] ?? 0) < centerY }
+                    .filter { $0.id != memo.id && (reorderMidYs[$0.id] ?? 0) < centerY }
                     .count
                 if newIndex != dropTargetIndex {
                     dropTargetIndex = newIndex
@@ -305,8 +300,10 @@ public struct HomeView: View {
                 .font(.system(size: 12, weight: .semibold))
         }
         .foregroundStyle(Theme.accent)
-        .textCase(nil)
-        .listRowInsets(EdgeInsets(top: 14, leading: 20, bottom: 2, trailing: 20))
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 20)
+        .padding(.top, 14)
+        .padding(.bottom, 2)
     }
 
     private func sectionHeader(_ type: RenderType, count: Int) -> some View {
@@ -319,8 +316,10 @@ public struct HomeView: View {
                 .font(.system(size: 12, weight: .semibold))
         }
         .foregroundStyle(Theme.textSecondary)
-        .textCase(nil)
-        .listRowInsets(EdgeInsets(top: 14, leading: 20, bottom: 2, trailing: 20))
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 20)
+        .padding(.top, 14)
+        .padding(.bottom, 2)
     }
 
     private func typeIconName(_ type: RenderType) -> String {
