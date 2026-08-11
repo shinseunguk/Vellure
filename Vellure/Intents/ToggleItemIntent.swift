@@ -54,8 +54,12 @@ struct ToggleItemIntent: LiveActivityIntent {
 
             try? context.save()
 
-            if let activityId = memo.activityId {
-                await LiveActivityService.shared.update(activityId: activityId, memo: memo)
+            if memo.activityId != nil {
+                let cleared = await LiveActivityService.shared.updateOrAutoClear(memo: memo)
+                if cleared {
+                    memo.activityId = nil
+                    try? context.save()
+                }
             }
         }
 

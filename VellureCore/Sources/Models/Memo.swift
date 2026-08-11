@@ -7,6 +7,15 @@ public enum RenderType: String, Codable, CaseIterable {
     case dday
     case countdown
     case progress
+
+    /// 사용자가 Live Activity에서 직접 조작하는 타입(체크리스트·진행바).
+    /// 상호작용형은 소멸 예약(.after) 대상에서 제외한다 — 예약 시 업데이트가 막히기 때문.
+    public var isInteractive: Bool {
+        switch self {
+        case .checklist, .progress: true
+        case .plain, .dday, .countdown: false
+        }
+    }
 }
 
 public enum DisplayMode: String, Codable, CaseIterable {
