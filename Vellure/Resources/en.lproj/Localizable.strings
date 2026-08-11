@@ -48,6 +48,7 @@
 "edit.section.font" = "Font";
 "edit.section.color" = "Color";
 "edit.save.cta" = "Publish to Lock Screen";
+"edit.update.cta" = "Save";
 "edit.delete" = "Delete Memo";
 
 /* Type Names */

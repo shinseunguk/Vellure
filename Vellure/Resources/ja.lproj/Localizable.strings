@@ -48,6 +48,7 @@
 "edit.section.font" = "フォント";
 "edit.section.color" = "カラー";
 "edit.save.cta" = "ロック画面に表示";
+"edit.update.cta" = "保存";
 "edit.delete" = "メモを削除";
 
 /* Type Names */

@@ -48,6 +48,7 @@
 "edit.section.font" = "字体";
 "edit.section.color" = "颜色";
 "edit.save.cta" = "显示到锁屏";
+"edit.update.cta" = "保存";
 "edit.delete" = "删除备忘录";
 
 /* Type Names */

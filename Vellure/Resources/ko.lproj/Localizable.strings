@@ -48,6 +48,7 @@
 "edit.section.font" = "폰트";
 "edit.section.color" = "색상";
 "edit.save.cta" = "잠금화면에 올리기";
+"edit.update.cta" = "저장";
 "edit.delete" = "메모 삭제";
 
 /* Type Names */

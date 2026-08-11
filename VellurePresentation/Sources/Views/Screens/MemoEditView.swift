@@ -39,7 +39,7 @@ struct MemoEditView: View {
                         }
                         dismiss()
                     } label: {
-                        Text("edit.save.cta")
+                        Text(vm.isEditing ? "edit.update.cta" : "edit.save.cta")
                             .font(.system(size: 15, weight: .bold))
                             .foregroundStyle(.white)
                             .frame(maxWidth: .infinity)
