@@ -92,14 +92,24 @@ public final class LiveActivityService {
         }
     }
 
-    /// 앱 재진입 시 만료된 Activity 정리 + activityId 동기화
+    /// 앱 재진입 시 만료된 Activity 정리 + activityId 동기화.
+    /// 소멸 시각(clearDate)이 지난 Activity는 실제로 종료한다.
     public func cleanupExpired(repository: MemoRepository) {
-        let activeIds = Set(Activity<MemoAttributes>.activities.map(\.id))
+        let runningIds = Set(Activity<MemoAttributes>.activities.map(\.id))
         let activeMemos = repository.fetchActive()
 
         for memo in activeMemos {
             guard let activityId = memo.activityId else { continue }
-            if !activeIds.contains(activityId) {
+
+            // 이미 종료된(목록에 없는) Activity → activityId만 정리
+            if !runningIds.contains(activityId) {
+                repository.clearActivityId(memo)
+                continue
+            }
+
+            // 소멸 시각이 지난 Activity → 실제 종료 후 activityId 정리
+            if let clearDate = memo.clearDate, clearDate <= Date() {
+                Task { await end(activityId: activityId) }
                 repository.clearActivityId(memo)
             }
         }
