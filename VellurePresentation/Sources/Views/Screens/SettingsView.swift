@@ -1,10 +1,12 @@
 import StoreKit
 import SwiftUI
+import UIKit
 import VellureCore
 import VellureData
 
 struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.openURL) private var openURL
     @Environment(\.requestReview) private var requestReview
     @AppStorage("appearanceMode") private var appearanceMode: String = AppearanceMode.system.rawValue
 
@@ -61,11 +63,18 @@ struct SettingsView: View {
 
                 Divider()
 
-                // Live Activity toggle row
-                diagRow(
-                    label: String(localized: "settings.diag.liveActivity"),
-                    isOn: activitySupported
-                )
+                // Live Activity toggle row → 시스템 설정 딥링크
+                Button {
+                    if let url = URL(string: UIApplication.openSettingsURLString) {
+                        openURL(url)
+                    }
+                } label: {
+                    diagRow(
+                        label: String(localized: "settings.diag.liveActivity"),
+                        isOn: activitySupported
+                    )
+                }
+                .buttonStyle(.plain)
 
                 Divider().padding(.leading, 16)
 
@@ -109,8 +118,12 @@ struct SettingsView: View {
                 : String(localized: "settings.activity.disabled"))
                 .font(.system(size: 13, weight: .semibold))
                 .foregroundStyle(isOn ? Theme.accent : .red)
+            Image(systemName: "chevron.right")
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundStyle(Theme.textSecondary)
         }
         .padding(15)
+        .contentShape(Rectangle())
     }
 
     // MARK: - Siri
