@@ -1,10 +1,11 @@
+import StoreKit
 import SwiftUI
 import VellureCore
 import VellureData
 
 struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.openURL) private var openURL
+    @Environment(\.requestReview) private var requestReview
     @AppStorage("appearanceMode") private var appearanceMode: String = AppearanceMode.system.rawValue
 
     private let activitySupported = LiveActivityService.shared.isSupported
@@ -252,9 +253,7 @@ struct SettingsView: View {
     private var miscSection: some View {
         VStack(spacing: 0) {
             Button {
-                if let url = URL(string: "https://apps.apple.com/app/id000000000?action=write-review") {
-                    openURL(url)
-                }
+                requestReview()
             } label: {
                 HStack {
                     Text("settings.feedback")
