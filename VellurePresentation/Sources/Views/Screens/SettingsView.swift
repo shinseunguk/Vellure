@@ -8,9 +8,10 @@ struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.openURL) private var openURL
     @Environment(\.requestReview) private var requestReview
+    @Environment(\.scenePhase) private var scenePhase
     @AppStorage("appearanceMode") private var appearanceMode: String = AppearanceMode.system.rawValue
 
-    private let activitySupported = LiveActivityService.shared.isSupported
+    @State private var activitySupported = LiveActivityService.shared.isSupported
 
     var body: some View {
         NavigationStack {
@@ -31,6 +32,11 @@ struct SettingsView: View {
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("settings.done") { dismiss() }
+                }
+            }
+            .onChange(of: scenePhase) { _, phase in
+                if phase == .active {
+                    activitySupported = LiveActivityService.shared.isSupported
                 }
             }
         }
