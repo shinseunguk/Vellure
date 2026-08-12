@@ -178,6 +178,53 @@ public final class LiveActivityService {
         }
     }
 
+    // MARK: - 실시간 동기화 (앱 사용 중 LA 제거 감지)
+
+    private var isSyncObserving = false
+
+    /// 앱 실행 중 LA가 잠금화면에서 사라지면 즉시 저장된 activityId를 정리해
+    /// 리스트의 "표시 중" 상태를 실제 LA와 맞춘다.
+    /// 실행 목록에서 제거된 것만 정리하므로, `.ended`(종료됐지만 화면에 남은) 상태는 유지된다.
+    /// (백그라운드에서 사라진 건 포그라운드 진입 시 `cleanupExpired`가 정리)
+    @MainActor
+    public func startActivitySync(repository: MemoRepository) {
+        guard !isSyncObserving else { return }
+        isSyncObserving = true
+
+        reconcileActiveMemos(repository: repository)
+
+        Task { @MainActor in
+            for activity in Activity<MemoAttributes>.activities {
+                observeDismissal(of: activity, repository: repository)
+            }
+            for await activity in Activity<MemoAttributes>.activityUpdates {
+                observeDismissal(of: activity, repository: repository)
+            }
+        }
+    }
+
+    /// 개별 Activity의 상태 스트림을 관찰하다 제거(dismissed)되거나 스트림이 끝나면 정리한다.
+    @MainActor
+    private func observeDismissal(of activity: Activity<MemoAttributes>, repository: MemoRepository) {
+        Task { @MainActor in
+            for await state in activity.activityStateUpdates where state == .dismissed {
+                reconcileActiveMemos(repository: repository)
+            }
+            reconcileActiveMemos(repository: repository)
+        }
+    }
+
+    /// 실행 목록에 없는(사라진) 저장 activityId를 정리한다.
+    @MainActor
+    public func reconcileActiveMemos(repository: MemoRepository) {
+        let runningIds = Set(Activity<MemoAttributes>.activities.map(\.id))
+        for memo in repository.fetchActive() {
+            if let activityId = memo.activityId, !runningIds.contains(activityId) {
+                repository.clearActivityId(memo)
+            }
+        }
+    }
+
     // MARK: - Private
 
     private func buildState(from memo: Memo) -> MemoAttributes.ContentState {

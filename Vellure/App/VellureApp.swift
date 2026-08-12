@@ -50,6 +50,9 @@ struct VellureApp: App {
                     .zIndex(1)
                 }
             }
+            .task {
+                LiveActivityService.shared.startActivitySync(repository: repository)
+            }
         }
         .modelContainer(container)
         .onChange(of: scenePhase) { _, newPhase in
