@@ -60,7 +60,9 @@ let project = Project(
             bundleId: "\(bundlePrefix).Vellure",
             deploymentTargets: deploymentTargets,
             infoPlist: .extendingDefault(with: [
-                "UILaunchScreen": [:],
+                "UILaunchScreen": [
+                    "UIColorName": "LaunchBackground",
+                ],
                 "NSSupportsLiveActivities": true,
                 "UIApplicationSupportsIndirectInputEvents": true,
                 "UISupportedInterfaceOrientations": [
