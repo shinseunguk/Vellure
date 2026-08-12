@@ -38,11 +38,15 @@ struct LockScreenView: View {
                     dynamicValue
                 }
 
-                Text(state.content)
-                    .font(.headline.weight(.semibold))
-                    .fontDesign(fontDesign(from: state.font))
-                    .foregroundStyle(.primary)
-                    .lineLimit(2)
+                if !state.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                    Text(state.content)
+                        .font(.headline.weight(.semibold))
+                        .fontDesign(fontDesign(from: state.font))
+                        .foregroundStyle(.primary)
+                        .lineLimit(2)
+                        .truncationMode(.tail)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
 
                 lockScreenExtraContent
                 clearCountdownRow
@@ -110,8 +114,9 @@ struct LockScreenView: View {
         switch state.renderType {
         case "checklist":
             if let items = state.items {
+                let maxVisible = 3
                 VStack(alignment: .leading, spacing: 7) {
-                    ForEach(items.prefix(4), id: \.id) { item in
+                    ForEach(items.prefix(maxVisible), id: \.id) { item in
                         Button(intent: ToggleItemIntent(
                             memoId: context.attributes.memoId,
                             itemId: item.id
@@ -125,12 +130,16 @@ struct LockScreenView: View {
                                     .foregroundStyle(item.done ? .secondary : .primary)
                                     .strikethrough(item.done)
                                     .lineLimit(1)
+                                    .truncationMode(.tail)
+                                Spacer(minLength: 0)
                             }
+                            .frame(maxWidth: .infinity, alignment: .leading)
                         }
                         .buttonStyle(.plain)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     }
-                    if items.count > 4 {
-                        Text("외 \(items.count - 4)개")
+                    if items.count > maxVisible {
+                        Text("외 \(items.count - maxVisible)개")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }

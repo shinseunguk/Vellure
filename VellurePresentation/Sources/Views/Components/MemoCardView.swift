@@ -109,11 +109,13 @@ struct MemoCardView: View {
                             .clipShape(Capsule())
                         }
                     }
-                    Text(memo.content)
-                        .font(.system(size: 15.5, weight: .bold))
-                        .foregroundStyle(Theme.textPrimary)
-                        .lineLimit(2)
-                        .multilineTextAlignment(.leading)
+                    if !memo.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                        Text(memo.content)
+                            .font(.system(size: 15.5, weight: .bold))
+                            .foregroundStyle(Theme.textPrimary)
+                            .lineLimit(2)
+                            .multilineTextAlignment(.leading)
+                    }
 
                     if memo.renderType == .progress {
                         GeometryReader { geo in
