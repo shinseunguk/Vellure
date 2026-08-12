@@ -60,6 +60,7 @@ let project = Project(
             bundleId: "\(bundlePrefix).Vellure",
             deploymentTargets: deploymentTargets,
             infoPlist: .extendingDefault(with: [
+                "ITSAppUsesNonExemptEncryption": false,
                 "UILaunchScreen": [
                     "UIColorName": "LaunchBackground",
                 ],
