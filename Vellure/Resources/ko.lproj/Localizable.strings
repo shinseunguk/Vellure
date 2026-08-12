@@ -23,6 +23,7 @@
 "edit.cancel" = "취소";
 "edit.save" = "저장";
 "edit.section.content" = "내용";
+"edit.section.content.optional" = "내용 (선택)";
 "edit.placeholder" = "메모를 입력하세요";
 "edit.section.type" = "타입";
 "edit.section.targetDate" = "목표일";

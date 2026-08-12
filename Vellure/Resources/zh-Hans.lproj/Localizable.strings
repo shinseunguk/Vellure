@@ -23,6 +23,7 @@
 "edit.cancel" = "取消";
 "edit.save" = "保存";
 "edit.section.content" = "内容";
+"edit.section.content.optional" = "内容（可选）";
 "edit.placeholder" = "请输入备忘录";
 "edit.section.type" = "类型";
 "edit.section.targetDate" = "目标日期";

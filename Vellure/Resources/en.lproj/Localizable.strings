@@ -23,6 +23,7 @@
 "edit.cancel" = "Cancel";
 "edit.save" = "Save";
 "edit.section.content" = "Content";
+"edit.section.content.optional" = "Content (Optional)";
 "edit.placeholder" = "Enter your memo";
 "edit.section.type" = "Type";
 "edit.section.targetDate" = "Target Date";

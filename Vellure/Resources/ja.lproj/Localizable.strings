@@ -23,6 +23,7 @@
 "edit.cancel" = "キャンセル";
 "edit.save" = "保存";
 "edit.section.content" = "内容";
+"edit.section.content.optional" = "内容 (任意)";
 "edit.placeholder" = "メモを入力してください";
 "edit.section.type" = "タイプ";
 "edit.section.targetDate" = "目標日";
