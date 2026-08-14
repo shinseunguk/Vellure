@@ -1,0 +1,28 @@
+Your Lock Screen becomes your notes.
+
+Vellure shows your notes on the Lock Screen and Dynamic Island as iOS Live Activities. Without opening the app, today's tasks, the days left until a date, and your progress are always in view.
+
+■ Made for you if
+- You keep forgetting notes because opening an app is a hassle
+- You want a D-day or deadline front and center
+- You'd like to tick off tasks right from the Lock Screen
+
+■ 5 note types
+- Plain: a short note on your Lock Screen
+- Checklist: check items right from the Lock Screen
+- D-day: automatic count of days left until a date
+- Countdown: live countdown to a target time
+- Progress: adjust a progress bar from the Lock Screen
+
+■ Notes that tidy themselves
+Keep them pinned, or have them disappear automatically when the target time arrives, a set time passes, everything is checked, or you hit 100%.
+
+■ Siri & Shortcuts
+Say something like "Vellure note, buy milk" and it's saved and posted without opening the app. It also works with location and time automations.
+
+■ Privacy first
+No sign-up. Every note is stored only on this device. Nothing is sent to a server, and deleting the app deletes your data.
+
+Completely free. Put your first note on the Lock Screen now.
+
+* Due to iOS, a Live Activity is shown for up to 12 hours after posting, then ends automatically.

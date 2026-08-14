@@ -64,4 +64,25 @@ platform :ios do
       skip_metadata: true
     )
   end
+
+  desc "메타데이터만 App Store Connect에 업로드 (바이너리/스크린샷 제외)"
+  lane :upload_metadata do
+    upload_to_app_store(
+      skip_binary_upload: true,
+      skip_screenshots: true,
+      run_precheck_before_submit: false,
+      force: true # HTML 미리보기 확인 생략
+    )
+  end
+
+  desc "스크린샷만 App Store Connect에 업로드 (바이너리/메타데이터 제외)"
+  lane :upload_screenshots do
+    upload_to_app_store(
+      skip_binary_upload: true,
+      skip_metadata: true,
+      overwrite_screenshots: true,
+      run_precheck_before_submit: false,
+      force: true
+    )
+  end
 end

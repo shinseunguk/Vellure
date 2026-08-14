@@ -1,0 +1,8 @@
+First release.
+
+- Live Activity notes on Lock Screen & Dynamic Island
+- 5 types: plain, checklist, D-day, countdown, progress
+- Pin or auto-dismiss, real-time state sync
+- Siri & Shortcuts support
+
+Feedback is always welcome.
