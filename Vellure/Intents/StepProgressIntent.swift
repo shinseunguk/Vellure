@@ -37,7 +37,11 @@ struct StepProgressIntent: LiveActivityIntent {
         memo.updatedAt = Date()
         try? context.save()
 
-        await LiveActivityService.shared.update(memoId: memoId, memo: memo)
+        let cleared = await LiveActivityService.shared.updateOrAutoClear(memo: memo)
+        if cleared {
+            memo.activityId = nil
+            try? context.save()
+        }
 
         return .result()
     }

@@ -1,5 +1,7 @@
 /* Home */
 "home.title" = "メモ";
+"home.section.active" = "ロック画面に表示中";
+"home.reorder" = "並べ替え";
 "home.new" = "新規";
 "home.edit" = "編集";
 "home.done" = "完了";
@@ -11,6 +13,8 @@
 "context.startActivity" = "ロック画面に表示";
 "context.stopActivity" = "ロック画面から削除";
 "context.edit" = "編集";
+"context.moveUp" = "上に移動";
+"context.moveDown" = "下に移動";
 "context.delete" = "削除";
 
 /* Edit */
@@ -19,6 +23,7 @@
 "edit.cancel" = "キャンセル";
 "edit.save" = "保存";
 "edit.section.content" = "内容";
+"edit.section.content.optional" = "内容 (任意)";
 "edit.placeholder" = "メモを入力してください";
 "edit.section.type" = "タイプ";
 "edit.section.targetDate" = "目標日";
@@ -44,6 +49,7 @@
 "edit.section.font" = "フォント";
 "edit.section.color" = "カラー";
 "edit.save.cta" = "ロック画面に表示";
+"edit.update.cta" = "保存";
 "edit.delete" = "メモを削除";
 
 /* Type Names */

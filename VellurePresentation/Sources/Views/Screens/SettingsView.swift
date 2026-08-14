@@ -1,13 +1,17 @@
+import StoreKit
 import SwiftUI
+import UIKit
 import VellureCore
 import VellureData
 
 struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.openURL) private var openURL
+    @Environment(\.requestReview) private var requestReview
+    @Environment(\.scenePhase) private var scenePhase
     @AppStorage("appearanceMode") private var appearanceMode: String = AppearanceMode.system.rawValue
 
-    private let activitySupported = LiveActivityService.shared.isSupported
+    @State private var activitySupported = LiveActivityService.shared.isSupported
 
     var body: some View {
         NavigationStack {
@@ -28,6 +32,11 @@ struct SettingsView: View {
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("settings.done") { dismiss() }
+                }
+            }
+            .onChange(of: scenePhase) { _, phase in
+                if phase == .active {
+                    activitySupported = LiveActivityService.shared.isSupported
                 }
             }
         }
@@ -60,11 +69,18 @@ struct SettingsView: View {
 
                 Divider()
 
-                // Live Activity toggle row
-                diagRow(
-                    label: String(localized: "settings.diag.liveActivity"),
-                    isOn: activitySupported
-                )
+                // Live Activity toggle row → 시스템 설정 딥링크
+                Button {
+                    if let url = URL(string: UIApplication.openSettingsURLString) {
+                        openURL(url)
+                    }
+                } label: {
+                    diagRow(
+                        label: String(localized: "settings.diag.liveActivity"),
+                        isOn: activitySupported
+                    )
+                }
+                .buttonStyle(.plain)
 
                 Divider().padding(.leading, 16)
 
@@ -108,8 +124,12 @@ struct SettingsView: View {
                 : String(localized: "settings.activity.disabled"))
                 .font(.system(size: 13, weight: .semibold))
                 .foregroundStyle(isOn ? Theme.accent : .red)
+            Image(systemName: "chevron.right")
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundStyle(Theme.textSecondary)
         }
         .padding(15)
+        .contentShape(Rectangle())
     }
 
     // MARK: - Siri
@@ -252,9 +272,7 @@ struct SettingsView: View {
     private var miscSection: some View {
         VStack(spacing: 0) {
             Button {
-                if let url = URL(string: "https://apps.apple.com/app/id000000000?action=write-review") {
-                    openURL(url)
-                }
+                requestReview()
             } label: {
                 HStack {
                     Text("settings.feedback")

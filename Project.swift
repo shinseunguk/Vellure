@@ -20,7 +20,7 @@ private func framework(
 ) -> Target {
     .target(
         name: name,
-        destinations: .iOS,
+        destinations: [.iPhone],
         product: .framework,
         bundleId: "\(bundlePrefix).\(name)",
         deploymentTargets: deploymentTargets,
@@ -55,22 +55,19 @@ let project = Project(
         // MARK: App
         .target(
             name: "Vellure",
-            destinations: .iOS,
+            destinations: [.iPhone],
             product: .app,
             bundleId: "\(bundlePrefix).Vellure",
             deploymentTargets: deploymentTargets,
             infoPlist: .extendingDefault(with: [
-                "UILaunchScreen": [:],
+                "ITSAppUsesNonExemptEncryption": false,
+                "UILaunchScreen": [
+                    "UIColorName": "LaunchBackground",
+                ],
                 "NSSupportsLiveActivities": true,
                 "UIApplicationSupportsIndirectInputEvents": true,
                 "UISupportedInterfaceOrientations": [
                     "UIInterfaceOrientationPortrait",
-                    "UIInterfaceOrientationLandscapeLeft",
-                    "UIInterfaceOrientationLandscapeRight",
-                ],
-                "UISupportedInterfaceOrientations~ipad": [
-                    "UIInterfaceOrientationPortrait",
-                    "UIInterfaceOrientationPortraitUpsideDown",
                     "UIInterfaceOrientationLandscapeLeft",
                     "UIInterfaceOrientationLandscapeRight",
                 ],
@@ -95,12 +92,13 @@ let project = Project(
         // MARK: Widget Extension
         .target(
             name: "VellureLiveActivity",
-            destinations: .iOS,
+            destinations: [.iPhone],
             product: .appExtension,
             bundleId: "\(bundlePrefix).Vellure.VellureLiveActivity",
             deploymentTargets: deploymentTargets,
             infoPlist: .file(path: "VellureLiveActivity/Info.plist"),
             sources: ["VellureLiveActivity/**/*.swift"],
+            resources: ["VellureLiveActivity/Assets.xcassets"],
             entitlements: "VellureLiveActivity/VellureLiveActivity.entitlements",
             dependencies: [.target(name: "VellureCore")]
         ),
@@ -108,7 +106,7 @@ let project = Project(
         // MARK: Tests
         .target(
             name: "VellureTests",
-            destinations: .iOS,
+            destinations: [.iPhone],
             product: .unitTests,
             bundleId: "\(bundlePrefix).VellureTests",
             deploymentTargets: deploymentTargets,
@@ -117,7 +115,7 @@ let project = Project(
         ),
         .target(
             name: "VellureUITests",
-            destinations: .iOS,
+            destinations: [.iPhone],
             product: .uiTests,
             bundleId: "\(bundlePrefix).VellureUITests",
             deploymentTargets: deploymentTargets,

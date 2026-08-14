@@ -57,8 +57,24 @@ struct ToggleItemIntent: LiveActivityIntent {
                 clearDate: memo.clearDate
             )
             let content = ActivityContent(state: state, staleDate: memo.clearDate)
+
+            // 체크 완료 시 소멸: autoClear + .done 트리거 + 모든 항목 완료
+            let allDone = !items.isEmpty && items.allSatisfy(\.done)
+            let shouldAutoClear = memo.displayMode == .autoClear
+                && memo.clearTrigger == .done
+                && allDone
+
             for activity in Activity<MemoAttributes>.activities where activity.attributes.memoId == memoId {
-                await activity.update(content)
+                if shouldAutoClear {
+                    await activity.end(content, dismissalPolicy: .after(Date().addingTimeInterval(2)))
+                } else {
+                    await activity.update(content)
+                }
+            }
+
+            if shouldAutoClear {
+                memo.activityId = nil
+                try? context.save()
             }
         }
 

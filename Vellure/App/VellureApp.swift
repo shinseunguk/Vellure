@@ -9,6 +9,7 @@ struct VellureApp: App {
     @Environment(\.scenePhase) private var scenePhase
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
     @AppStorage("appearanceMode") private var appearanceMode: String = AppearanceMode.system.rawValue
+    @State private var showSplash = true
 
     private let container: ModelContainer
     private let repository: MemoRepository
@@ -24,18 +25,34 @@ struct VellureApp: App {
 
     var body: some Scene {
         WindowGroup {
-            Group {
-                if hasCompletedOnboarding {
-                    HomeView()
+            ZStack {
+                Group {
+                    if hasCompletedOnboarding {
+                        HomeView()
+                            .environment(repository)
+                    } else {
+                        OnboardingView {
+                            hasCompletedOnboarding = true
+                        }
                         .environment(repository)
-                } else {
-                    OnboardingView {
-                        hasCompletedOnboarding = true
                     }
-                    .environment(repository)
+                }
+                .preferredColorScheme(selectedScheme)
+
+                if showSplash {
+                    SplashView {
+                        withAnimation(.easeOut(duration: 0.35)) {
+                            showSplash = false
+                        }
+                    }
+                    .preferredColorScheme(selectedScheme)
+                    .transition(.opacity)
+                    .zIndex(1)
                 }
             }
-            .preferredColorScheme(selectedScheme)
+            .task {
+                LiveActivityService.shared.startActivitySync(repository: repository)
+            }
         }
         .modelContainer(container)
         .onChange(of: scenePhase) { _, newPhase in

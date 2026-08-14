@@ -6,6 +6,7 @@ struct MemoCardView: View {
     let onTap: () -> Void
     let onToggleActivity: () -> Void
     let onDelete: () -> Void
+    var showsActions: Bool = true
 
     private var tintColor: Color {
         Theme.memoColor(for: memo.colorTag)
@@ -77,10 +78,15 @@ struct MemoCardView: View {
                         Text(typeLabel)
                             .font(.system(size: 11, weight: .bold))
                             .foregroundStyle(tintColor)
+                            .lineLimit(1)
+                            .fixedSize()
                         if let value = sideValue {
                             Text(value)
                                 .font(.system(size: 10.5, weight: .heavy))
                                 .foregroundStyle(tintColor)
+                                .monospacedDigit()
+                                .lineLimit(1)
+                                .fixedSize()
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 2)
                                 .background(tintColor.opacity(0.12))
@@ -93,6 +99,8 @@ struct MemoCardView: View {
                                 Text(timerInterval: Date.now...clearDate, countsDown: true)
                                     .font(.system(size: 10, weight: .heavy))
                                     .monospacedDigit()
+                                    .lineLimit(1)
+                                    .fixedSize()
                             }
                             .foregroundStyle(Theme.textSecondary)
                             .padding(.horizontal, 8)
@@ -101,11 +109,13 @@ struct MemoCardView: View {
                             .clipShape(Capsule())
                         }
                     }
-                    Text(memo.content)
-                        .font(.system(size: 15.5, weight: .bold))
-                        .foregroundStyle(Theme.textPrimary)
-                        .lineLimit(2)
-                        .multilineTextAlignment(.leading)
+                    if !memo.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                        Text(memo.content)
+                            .font(.system(size: 15.5, weight: .bold))
+                            .foregroundStyle(Theme.textPrimary)
+                            .lineLimit(2)
+                            .multilineTextAlignment(.leading)
+                    }
 
                     if memo.renderType == .progress {
                         GeometryReader { geo in
@@ -147,26 +157,28 @@ struct MemoCardView: View {
 
                 Spacer(minLength: 4)
 
-                HStack(spacing: 6) {
-                    Button(action: onToggleActivity) {
-                        Image(systemName: "arrow.up")
-                            .font(.system(size: 13, weight: .bold))
-                            .foregroundStyle(isActive ? .white : tintColor)
-                            .frame(width: 34, height: 34)
-                            .background(isActive ? tintColor : tintColor.opacity(0.15))
-                            .clipShape(Circle())
-                    }
-                    .buttonStyle(.plain)
+                if showsActions {
+                    HStack(spacing: 6) {
+                        Button(action: onToggleActivity) {
+                            Image(systemName: isActive ? "arrow.down" : "arrow.up")
+                                .font(.system(size: 13, weight: .bold))
+                                .foregroundStyle(isActive ? .white : tintColor)
+                                .frame(width: 34, height: 34)
+                                .background(isActive ? tintColor : tintColor.opacity(0.15))
+                                .clipShape(Circle())
+                        }
+                        .buttonStyle(.plain)
 
-                    Button(action: onDelete) {
-                        Image(systemName: "trash")
-                            .font(.system(size: 13, weight: .medium))
-                            .foregroundStyle(Theme.textSecondary)
-                            .frame(width: 34, height: 34)
-                            .background(Theme.chipBackground)
-                            .clipShape(Circle())
+                        Button(action: onDelete) {
+                            Image(systemName: "trash")
+                                .font(.system(size: 13, weight: .medium))
+                                .foregroundStyle(Theme.textSecondary)
+                                .frame(width: 34, height: 34)
+                                .background(Theme.chipBackground)
+                                .clipShape(Circle())
+                        }
+                        .buttonStyle(.plain)
                     }
-                    .buttonStyle(.plain)
                 }
             }
             .padding(.horizontal, 12)

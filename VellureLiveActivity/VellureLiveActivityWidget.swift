@@ -11,34 +11,39 @@ struct VellureLiveActivityWidget: Widget {
             DynamicIsland {
                 // MARK: - Expanded (롱탭)
                 DynamicIslandExpandedRegion(.leading) {
-                    HStack(spacing: 6) {
-                        Circle()
-                            .fill(tint(context))
-                            .frame(width: 7, height: 7)
+                    HStack(spacing: 5) {
+                        Image("AppLogo")
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 16, height: 16)
+                            .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
                         Text("Vellure")
-                            .font(.system(size: 11, weight: .bold))
-                            .foregroundStyle(tint(context))
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.primary)
                     }
                 }
 
                 DynamicIslandExpandedRegion(.trailing) {
                     Text(typeLabel(context))
-                        .font(.system(size: 10, weight: .semibold))
-                        .foregroundStyle(.secondary)
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(tint(context))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+                        .fixedSize()
                 }
 
                 DynamicIslandExpandedRegion(.bottom) {
                     VStack(alignment: .leading, spacing: 8) {
                         Text(context.state.content)
-                            .font(.system(size: 15, weight: .semibold, design: fontDesign(from: context.state.font)))
-                            .foregroundStyle(.white)
-                            .lineLimit(3)
+                            .font(.headline.weight(.semibold))
+                            .fontDesign(fontDesign(from: context.state.font))
+                            .foregroundStyle(.primary)
+                            .lineLimit(2)
 
                         expandedDynamicContent(context)
                         clearCountdownRow(context)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.top, 4)
                 }
             } compactLeading: {
                 // MARK: - Compact Leading
@@ -69,6 +74,8 @@ struct VellureLiveActivityWidget: Widget {
                     .font(.system(size: 26, weight: .heavy))
                     .foregroundStyle(tint(context))
                     .monospacedDigit()
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
             }
         case "countdown":
             if let target = state.targetDate {
@@ -76,6 +83,8 @@ struct VellureLiveActivityWidget: Widget {
                     .font(.system(size: 26, weight: .heavy))
                     .foregroundStyle(tint(context))
                     .monospacedDigit()
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
             }
         case "progress":
             if let progress = state.progress {

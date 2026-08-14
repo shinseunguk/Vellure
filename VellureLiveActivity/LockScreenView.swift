@@ -1,44 +1,60 @@
 import AppIntents
 import SwiftUI
+import UIKit
 import WidgetKit
 import VellureCore
 
 struct LockScreenView: View {
+    @Environment(\.colorScheme) private var colorScheme
+
     let context: ActivityViewContext<MemoAttributes>
 
     private var state: MemoAttributes.ContentState { context.state }
     private var tint: Color { colorFromTag(state.colorTag) }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(spacing: 12) {
-                VStack(alignment: .leading, spacing: 6) {
-                    HStack(spacing: 6) {
-                        Circle()
-                            .fill(tint)
-                            .frame(width: 6, height: 6)
-                        Text("Vellure · \(typeLabel)")
-                            .font(.system(size: 10, weight: .heavy))
-                            .foregroundStyle(tint)
-                    }
+        HStack(alignment: .top, spacing: 12) {
+            Image("AppLogo")
+                .resizable()
+                .scaledToFill()
+                .frame(width: 38, height: 38)
+                .clipShape(RoundedRectangle(cornerRadius: 9, style: .continuous))
 
-                    Text(state.content)
-                        .font(.system(size: 14, weight: .semibold, design: fontDesign(from: state.font)))
-                        .foregroundStyle(.white)
-                        .lineLimit(2)
+            VStack(alignment: .leading, spacing: 5) {
+                HStack(spacing: 4) {
+                    Text("Vellure")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.primary)
+                        .lineLimit(1)
+                        .fixedSize()
+                    Text("· \(typeLabel)")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(tint)
+                        .lineLimit(1)
+                        .fixedSize()
+
+                    Spacer(minLength: 8)
+
+                    dynamicValue
                 }
 
-                Spacer()
+                if !state.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                    Text(state.content)
+                        .font(.headline.weight(.semibold))
+                        .fontDesign(fontDesign(from: state.font))
+                        .foregroundStyle(.primary)
+                        .lineLimit(2)
+                        .truncationMode(.tail)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
 
-                dynamicValue
+                lockScreenExtraContent
+                clearCountdownRow
             }
-
-            lockScreenExtraContent
-            clearCountdownRow
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
         .padding(14)
-        .activityBackgroundTint(.black.opacity(0.85))
+        .activityBackgroundTint(colorScheme == .dark ? .black : .white)
+        .activitySystemActionForegroundColor(colorScheme == .dark ? .white : .black)
     }
 
     // MARK: - Dynamic Value (right side)
@@ -49,17 +65,21 @@ struct LockScreenView: View {
         case "dday":
             if let target = state.targetDate {
                 Text(ddayString(target))
-                    .font(.system(size: 22, weight: .heavy))
+                    .font(.title3.weight(.bold))
                     .foregroundStyle(tint)
                     .monospacedDigit()
+                    .lineLimit(1)
+                    .fixedSize()
             }
         case "countdown":
             if let target = state.targetDate {
                 Text(timerInterval: Date.now...target, countsDown: true)
-                    .font(.system(size: 18, weight: .heavy))
+                    .font(.headline)
                     .foregroundStyle(tint)
                     .monospacedDigit()
                     .multilineTextAlignment(.trailing)
+                    .lineLimit(1)
+                    .fixedSize()
             }
         default:
             EmptyView()
@@ -72,14 +92,18 @@ struct LockScreenView: View {
     private var clearCountdownRow: some View {
         if let clearDate = state.clearDate, clearDate > .now {
             HStack(spacing: 4) {
+                Spacer(minLength: 0)
                 Image(systemName: "timer")
-                    .font(.system(size: 10, weight: .semibold))
-                (Text(timerInterval: Date.now...clearDate, countsDown: true) + Text(" 후 소멸"))
-                    .font(.system(size: 12, weight: .bold))
+                    .imageScale(.small)
+                Text(timerInterval: Date.now...clearDate, countsDown: true)
                     .monospacedDigit()
+                    .multilineTextAlignment(.trailing)
+                    .frame(width: 56, alignment: .trailing)
+                Text("후 소멸")
             }
-            .foregroundStyle(tint)
-            .frame(maxWidth: .infinity, alignment: .trailing)
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(Color(uiColor: .secondaryLabel))
+            .lineLimit(1)
         }
     }
 
@@ -90,28 +114,33 @@ struct LockScreenView: View {
         switch state.renderType {
         case "checklist":
             if let items = state.items {
-                VStack(alignment: .leading, spacing: 8) {
-                    ForEach(items.prefix(4), id: \.id) { item in
+                let maxVisible = 3
+                VStack(alignment: .leading, spacing: 7) {
+                    ForEach(items.prefix(maxVisible), id: \.id) { item in
                         Button(intent: ToggleItemIntent(
                             memoId: context.attributes.memoId,
                             itemId: item.id
                         )) {
-                            HStack(spacing: 10) {
+                            HStack(spacing: 8) {
                                 Image(systemName: item.done ? "checkmark.square.fill" : "square")
-                                    .font(.system(size: 16))
-                                    .foregroundStyle(item.done ? tint : .white.opacity(0.6))
+                                    .font(.body)
+                                    .foregroundStyle(item.done ? tint : .secondary)
                                 Text(item.title)
-                                    .font(.system(size: 14))
-                                    .foregroundStyle(item.done ? .white.opacity(0.45) : .white)
+                                    .font(.subheadline)
+                                    .foregroundStyle(item.done ? .secondary : .primary)
                                     .strikethrough(item.done)
                                     .lineLimit(1)
+                                    .truncationMode(.tail)
+                                Spacer(minLength: 0)
                             }
+                            .frame(maxWidth: .infinity, alignment: .leading)
                         }
                         .buttonStyle(.plain)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     }
-                    if items.count > 4 {
-                        Text("외 \(items.count - 4)개")
-                            .font(.system(size: 11, weight: .medium))
+                    if items.count > maxVisible {
+                        Text("외 \(items.count - maxVisible)개")
+                            .font(.caption)
                             .foregroundStyle(.secondary)
                     }
                 }
@@ -122,8 +151,8 @@ struct LockScreenView: View {
                 VStack(spacing: 6) {
                     HStack {
                         Text("\(Int(progress * 100))%")
-                            .font(.system(size: 12, weight: .bold))
-                            .foregroundStyle(.white.opacity(0.6))
+                            .font(.caption.weight(.bold))
+                            .foregroundStyle(.secondary)
                         Spacer()
                     }
                     HStack(spacing: 10) {
@@ -132,11 +161,10 @@ struct LockScreenView: View {
                             direction: "down"
                         )) {
                             Image(systemName: "minus")
-                                .font(.system(size: 13, weight: .bold))
-                                .foregroundStyle(.white)
+                                .font(.subheadline.weight(.bold))
+                                .foregroundStyle(.primary)
                                 .frame(width: 30, height: 30)
-                                .background(.white.opacity(0.12))
-                                .clipShape(Circle())
+                                .background(.quaternary, in: Circle())
                         }
                         .buttonStyle(.plain)
 
@@ -150,11 +178,10 @@ struct LockScreenView: View {
                             direction: "up"
                         )) {
                             Image(systemName: "plus")
-                                .font(.system(size: 13, weight: .bold))
-                                .foregroundStyle(.white)
+                                .font(.subheadline.weight(.bold))
+                                .foregroundStyle(.primary)
                                 .frame(width: 30, height: 30)
-                                .background(.white.opacity(0.12))
-                                .clipShape(Circle())
+                                .background(.quaternary, in: Circle())
                         }
                         .buttonStyle(.plain)
                     }

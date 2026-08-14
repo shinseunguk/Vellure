@@ -1,5 +1,7 @@
 /* Home */
 "home.title" = "Memos";
+"home.section.active" = "On Lock Screen";
+"home.reorder" = "Reorder";
 "home.new" = "New";
 "home.edit" = "Edit";
 "home.done" = "Done";
@@ -11,6 +13,8 @@
 "context.startActivity" = "Show on Lock Screen";
 "context.stopActivity" = "Remove from Lock Screen";
 "context.edit" = "Edit";
+"context.moveUp" = "Move Up";
+"context.moveDown" = "Move Down";
 "context.delete" = "Delete";
 
 /* Edit */
@@ -19,6 +23,7 @@
 "edit.cancel" = "Cancel";
 "edit.save" = "Save";
 "edit.section.content" = "Content";
+"edit.section.content.optional" = "Content (Optional)";
 "edit.placeholder" = "Enter your memo";
 "edit.section.type" = "Type";
 "edit.section.targetDate" = "Target Date";
@@ -44,6 +49,7 @@
 "edit.section.font" = "Font";
 "edit.section.color" = "Color";
 "edit.save.cta" = "Publish to Lock Screen";
+"edit.update.cta" = "Save";
 "edit.delete" = "Delete Memo";
 
 /* Type Names */

@@ -51,8 +51,24 @@ struct StepProgressIntent: LiveActivityIntent {
             clearDate: memo.clearDate
         )
         let content = ActivityContent(state: state, staleDate: memo.clearDate)
+
+        // 100% 도달 시 소멸: autoClear + .full 트리거 + 진행률 100%
+        let isFull = (memo.progress ?? 0) >= 1.0
+        let shouldAutoClear = memo.displayMode == .autoClear
+            && memo.clearTrigger == .full
+            && isFull
+
         for activity in Activity<MemoAttributes>.activities where activity.attributes.memoId == memoId {
-            await activity.update(content)
+            if shouldAutoClear {
+                await activity.end(content, dismissalPolicy: .after(Date().addingTimeInterval(2)))
+            } else {
+                await activity.update(content)
+            }
+        }
+
+        if shouldAutoClear {
+            memo.activityId = nil
+            try? context.save()
         }
 
         return .result()

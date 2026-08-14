@@ -196,6 +196,8 @@ public struct OnboardingView: View {
                     .font(.system(size: 19, weight: .heavy))
                     .foregroundStyle(color)
                     .monospacedDigit()
+                    .lineLimit(1)
+                    .fixedSize()
             }
         }
         .padding(11)
@@ -216,14 +218,11 @@ public struct OnboardingView: View {
             // Permission dialog mockup
             VStack(spacing: 0) {
                 VStack(spacing: 10) {
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(Theme.accent.opacity(0.15))
-                        .frame(width: 40, height: 40)
-                        .overlay {
-                            Circle()
-                                .fill(Theme.accent)
-                                .frame(width: 9, height: 9)
-                        }
+                    Image("AppLogo", bundle: .main)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 44, height: 44)
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
 
                     Text("onboarding.perm.title")
                         .font(.system(size: 13, weight: .bold))

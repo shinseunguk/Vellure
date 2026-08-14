@@ -39,16 +39,15 @@ struct MemoEditView: View {
                         }
                         dismiss()
                     } label: {
-                        Text("edit.save.cta")
+                        Text(vm.isEditing ? "edit.update.cta" : "edit.save.cta")
                             .font(.system(size: 15, weight: .bold))
                             .foregroundStyle(.white)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 16)
-                            .background(vm.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-                                ? Theme.accent.opacity(0.4) : Theme.accent)
+                            .background(vm.canSave ? Theme.accent : Theme.accent.opacity(0.4))
                             .clipShape(RoundedRectangle(cornerRadius: 14))
                     }
-                    .disabled(vm.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    .disabled(!vm.canSave)
                     .padding(.horizontal, 20)
                     .padding(.top, 14)
                     .padding(.bottom, 26)
@@ -77,7 +76,9 @@ struct MemoEditView: View {
     @ViewBuilder
     private func contentSection(_ vm: MemoEditViewModel) -> some View {
         VStack(alignment: .leading, spacing: 8) {
-            sectionLabel(String(localized: "edit.section.content"))
+            sectionLabel(vm.renderType == .plain
+                ? String(localized: "edit.section.content")
+                : String(localized: "edit.section.content.optional"))
             TextField("edit.placeholder", text: Bindable(vm).content, axis: .vertical)
                 .lineLimit(3...8)
                 .focused($contentFocused)

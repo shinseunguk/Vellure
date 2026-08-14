@@ -63,6 +63,21 @@ final class MemoEditViewModel {
         updateProgress()
     }
 
+    /// 저장 가능 여부. 일반 메모만 본문이 필수이고,
+    /// 나머지 타입은 본문을 선택값으로 둔다(타입 데이터로 의미가 성립).
+    var canSave: Bool {
+        let hasContent = !content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        switch renderType {
+        case .plain:
+            return hasContent
+        case .checklist:
+            let hasItems = checklistItems.contains { !$0.title.trimmingCharacters(in: .whitespaces).isEmpty }
+            return hasContent || hasItems
+        case .dday, .countdown, .progress:
+            return true
+        }
+    }
+
     func save() -> Memo {
         let items: [ChecklistItem]? = renderType == .checklist
             ? checklistItems.filter { !$0.title.trimmingCharacters(in: .whitespaces).isEmpty }
