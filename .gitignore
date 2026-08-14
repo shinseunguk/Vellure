@@ -71,3 +71,5 @@ Designs/
 
 # Docs
 Docs/
+# GitHub Pages·README 스크린샷용 docs/는 추적한다 (macOS 대소문자 무시 매칭 예외)
+!docs/
