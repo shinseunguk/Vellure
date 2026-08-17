@@ -4,12 +4,20 @@ import SwiftUI
 import VellureCore
 
 struct VellureLiveActivityWidget: Widget {
+    /// 확장 상태 콘텐츠의 좌우 여백.
+    /// 상단 좌우 영역이 아일랜드 코너 곡선 마스크에 잘리는 것을 막고,
+    /// 하단 영역에도 동일하게 적용해 앱 로고와 본문의 시작 위치를 맞춘다.
+    private static let expandedContentInset: CGFloat = 10
+    /// 본문과 위아래 요소 사이에 추가로 두는 여백
+    private static let contentVerticalPadding: CGFloat = 2
+
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: MemoAttributes.self) { context in
             LockScreenView(context: context)
         } dynamicIsland: { context in
             DynamicIsland {
                 // MARK: - Expanded (롱탭)
+                // 헤더(타입·타이머)는 상단 좌우 영역이 맡고, 하단은 콘텐츠 전용으로 둔다.
                 DynamicIslandExpandedRegion(.leading) {
                     HStack(spacing: 5) {
                         Image("AppLogo")
@@ -17,32 +25,37 @@ struct VellureLiveActivityWidget: Widget {
                             .scaledToFill()
                             .frame(width: 16, height: 16)
                             .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
-                        Text("Vellure")
+                        Text(typeLabel(context))
                             .font(.caption.weight(.semibold))
-                            .foregroundStyle(.primary)
+                            .foregroundStyle(tint(context))
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.8)
                     }
+                    .padding(.leading, Self.expandedContentInset)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
 
                 DynamicIslandExpandedRegion(.trailing) {
-                    Text(typeLabel(context))
-                        .font(.caption2.weight(.semibold))
-                        .foregroundStyle(tint(context))
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.8)
-                        .fixedSize()
+                    clearTimerLabel(context)
+                        .padding(.trailing, Self.expandedContentInset)
+                        .frame(maxWidth: .infinity, alignment: .trailing)
                 }
 
                 DynamicIslandExpandedRegion(.bottom) {
                     VStack(alignment: .leading, spacing: 8) {
-                        Text(context.state.content)
-                            .font(.headline.weight(.semibold))
-                            .fontDesign(fontDesign(from: context.state.font))
-                            .foregroundStyle(.primary)
-                            .lineLimit(2)
+                        if !context.state.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                            Text(context.state.content)
+                                .font(.headline.weight(.semibold))
+                                .fontDesign(fontDesign(from: context.state.font))
+                                .foregroundStyle(.primary)
+                                .lineLimit(2)
+                                .truncationMode(.tail)
+                                .padding(.vertical, Self.contentVerticalPadding)
+                        }
 
                         expandedDynamicContent(context)
-                        clearCountdownRow(context)
                     }
+                    .padding(.horizontal, Self.expandedContentInset)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
             } compactLeading: {
@@ -53,6 +66,7 @@ struct VellureLiveActivityWidget: Widget {
             } compactTrailing: {
                 // MARK: - Compact Trailing
                 compactTrailingContent(context)
+                    .padding(.trailing, Self.compactTrailingInset)
             } minimal: {
                 // MARK: - Minimal
                 Circle()
@@ -106,24 +120,41 @@ struct VellureLiveActivityWidget: Widget {
         }
     }
 
-    // MARK: - Auto-clear Countdown (bottom-right)
+    // MARK: - Auto-clear Timer (header trailing)
 
+    /// 소멸 카운트다운 타이머의 고정 폭 (자릿수가 바뀌어도 위치가 흔들리지 않도록).
+    /// `HH:MM:SS` 8자리가 말줄임 없이 들어가도록 여유를 둔다.
+    /// `timerInterval` 텍스트는 고유 폭이 확정되지 않아 `fixedSize()`를 쓰면
+    /// 무한 폭을 요구하고 확장 영역 전체가 렌더링되지 않는다. 반드시 폭을 명시한다.
+    private static let clearTimerWidth: CGFloat = 62
+
+    /// 상단 trailing 영역의 소멸 카운트다운.
+    /// 하단 모서리 곡선에서 멀리 떨어진 자리라 잘림 없이 배치된다.
     @ViewBuilder
-    private func clearCountdownRow(_ context: ActivityViewContext<MemoAttributes>) -> some View {
+    private func clearTimerLabel(_ context: ActivityViewContext<MemoAttributes>) -> some View {
         if let clearDate = context.state.clearDate, clearDate > .now {
-            HStack(spacing: 4) {
+            HStack(spacing: 3) {
                 Image(systemName: "timer")
-                    .font(.system(size: 10, weight: .semibold))
-                (Text(timerInterval: Date.now...clearDate, countsDown: true) + Text(" 후 소멸"))
-                    .font(.system(size: 11, weight: .bold))
+                    .font(.system(size: 9, weight: .semibold))
+                Text(timerInterval: Date.now...clearDate, countsDown: true)
+                    .font(.system(size: 11, weight: .semibold))
                     .monospacedDigit()
+                    .multilineTextAlignment(.trailing)
+                    .frame(width: Self.clearTimerWidth, alignment: .trailing)
             }
             .foregroundStyle(tint(context))
-            .frame(maxWidth: .infinity, alignment: .trailing)
+            .lineLimit(1)
         }
     }
 
     // MARK: - Compact Trailing
+
+    /// 캡슐 우측 라운드 모서리에 글자가 잘리지 않도록 확보하는 여백
+    private static let compactTrailingInset: CGFloat = 4
+    /// 여백을 제외한 텍스트 최대 폭 (여백 포함 시 기존 폭과 동일)
+    private static let compactTextWidth: CGFloat = 80 - compactTrailingInset
+    /// 여백을 제외한 카운트다운 최대 폭 (여백 포함 시 기존 폭과 동일)
+    private static let compactCountdownWidth: CGFloat = 70 - compactTrailingInset
 
     @ViewBuilder
     private func compactTrailingContent(_ context: ActivityViewContext<MemoAttributes>) -> some View {
@@ -141,7 +172,7 @@ struct VellureLiveActivityWidget: Widget {
                 Text(timerInterval: Date.now...target, countsDown: true)
                     .font(.system(size: 12, weight: .bold))
                     .monospacedDigit()
-                    .frame(maxWidth: 70)
+                    .frame(maxWidth: Self.compactCountdownWidth)
             }
         case "progress":
             if let progress = state.progress {
@@ -154,7 +185,8 @@ struct VellureLiveActivityWidget: Widget {
             Text(state.content)
                 .font(.system(size: 12, weight: .bold))
                 .lineLimit(1)
-                .frame(maxWidth: 80)
+                .truncationMode(.tail)
+                .frame(maxWidth: Self.compactTextWidth)
         }
     }
 
