@@ -5,6 +5,13 @@ import WidgetKit
 import VellureCore
 
 struct LockScreenView: View {
+    /// 카드 기본 여백
+    private static let cardPadding: CGFloat = 14
+    /// 소멸 카운트다운 타이머의 고정 폭 (자릿수가 바뀌어도 위치가 흔들리지 않도록)
+    private static let clearTimerWidth: CGFloat = 62
+    /// 본문과 위아래 요소 사이에 추가로 두는 여백
+    private static let contentVerticalPadding: CGFloat = 4
+
     @Environment(\.colorScheme) private var colorScheme
 
     let context: ActivityViewContext<MemoAttributes>
@@ -21,13 +28,9 @@ struct LockScreenView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 9, style: .continuous))
 
             VStack(alignment: .leading, spacing: 5) {
-                HStack(spacing: 4) {
-                    Text("Vellure")
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(.primary)
-                        .lineLimit(1)
-                        .fixedSize()
-                    Text("· \(typeLabel)")
+                // 헤더: 타입 라벨 + 소멸 타이머
+                HStack(spacing: 8) {
+                    Text(typeLabel)
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(tint)
                         .lineLimit(1)
@@ -35,7 +38,7 @@ struct LockScreenView: View {
 
                     Spacer(minLength: 8)
 
-                    dynamicValue
+                    clearTimerLabel
                 }
 
                 if !state.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
@@ -46,60 +49,31 @@ struct LockScreenView: View {
                         .lineLimit(2)
                         .truncationMode(.tail)
                         .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.vertical, Self.contentVerticalPadding)
                 }
 
                 lockScreenExtraContent
-                clearCountdownRow
             }
         }
-        .padding(14)
+        .padding(Self.cardPadding)
         .activityBackgroundTint(colorScheme == .dark ? .black : .white)
         .activitySystemActionForegroundColor(colorScheme == .dark ? .white : .black)
     }
 
-    // MARK: - Dynamic Value (right side)
+    // MARK: - Auto-clear Timer (header trailing)
 
+    /// 헤더 우측의 소멸 카운트다운.
+    /// 사용자가 직접 시간을 지정한 메모에서만 `clearDate`가 내려온다.
     @ViewBuilder
-    private var dynamicValue: some View {
-        switch state.renderType {
-        case "dday":
-            if let target = state.targetDate {
-                Text(ddayString(target))
-                    .font(.title3.weight(.bold))
-                    .foregroundStyle(tint)
-                    .monospacedDigit()
-                    .lineLimit(1)
-                    .fixedSize()
-            }
-        case "countdown":
-            if let target = state.targetDate {
-                Text(timerInterval: Date.now...target, countsDown: true)
-                    .font(.headline)
-                    .foregroundStyle(tint)
-                    .monospacedDigit()
-                    .multilineTextAlignment(.trailing)
-                    .lineLimit(1)
-                    .fixedSize()
-            }
-        default:
-            EmptyView()
-        }
-    }
-
-    // MARK: - Auto-clear Countdown (bottom-right)
-
-    @ViewBuilder
-    private var clearCountdownRow: some View {
+    private var clearTimerLabel: some View {
         if let clearDate = state.clearDate, clearDate > .now {
-            HStack(spacing: 4) {
-                Spacer(minLength: 0)
+            HStack(spacing: 3) {
                 Image(systemName: "timer")
                     .imageScale(.small)
                 Text(timerInterval: Date.now...clearDate, countsDown: true)
                     .monospacedDigit()
                     .multilineTextAlignment(.trailing)
-                    .frame(width: 56, alignment: .trailing)
-                Text("후 소멸")
+                    .frame(width: Self.clearTimerWidth, alignment: .trailing)
             }
             .font(.caption.weight(.semibold))
             .foregroundStyle(Color(uiColor: .secondaryLabel))
@@ -107,11 +81,29 @@ struct LockScreenView: View {
         }
     }
 
-    // MARK: - Extra Content (checklist / progress)
+    // MARK: - Extra Content (타입별 본문 콘텐츠)
 
     @ViewBuilder
     private var lockScreenExtraContent: some View {
         switch state.renderType {
+        case "dday":
+            if let target = state.targetDate {
+                Text(ddayString(target))
+                    .font(.system(size: 26, weight: .heavy))
+                    .foregroundStyle(tint)
+                    .monospacedDigit()
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+            }
+        case "countdown":
+            if let target = state.targetDate {
+                Text(timerInterval: Date.now...target, countsDown: true)
+                    .font(.system(size: 26, weight: .heavy))
+                    .foregroundStyle(tint)
+                    .monospacedDigit()
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+            }
         case "checklist":
             if let items = state.items {
                 let maxVisible = 3

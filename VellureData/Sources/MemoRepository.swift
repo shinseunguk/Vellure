@@ -89,8 +89,12 @@ public final class MemoRepository {
         if let items { memo.items = items }
         if let targetDate { memo.targetDate = targetDate }
         if let progress { memo.progress = progress }
-        if let displayMode { memo.displayMode = displayMode }
-        memo.clearTrigger = clearTrigger
+        // clearTrigger는 displayMode와 짝으로만 갱신한다.
+        // 무조건 대입하면 activityId만 넘기는 핀 토글 경로에서 트리거가 nil로 지워진다.
+        if let displayMode {
+            memo.displayMode = displayMode
+            memo.clearTrigger = displayMode == .autoClear ? clearTrigger : nil
+        }
         if let clearAfterHours { memo.clearAfterHours = clearAfterHours }
         if let font { memo.font = font }
         if let colorTag { memo.colorTag = colorTag }

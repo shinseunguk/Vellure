@@ -239,7 +239,9 @@ public final class LiveActivityService {
             font: memo.font,
             colorTag: memo.colorTag,
             updatedAt: Date(),
-            clearDate: memo.clearDate
+            // 표시용은 사용자가 지정한 소멸 시각만.
+            // 시스템 만료(staleDate)는 ActivityContent 쪽에서 별도로 memo.clearDate를 쓴다.
+            clearDate: memo.userClearDate
         )
     }
 }

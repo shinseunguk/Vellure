@@ -32,6 +32,9 @@ struct ExpandedChecklistView: View {
                     .foregroundStyle(item.done ? Color.secondary : Color.white)
                     .strikethrough(item.done)
                     .lineLimit(1)
+                    .truncationMode(.tail)
+                // Spacer가 없으면 행 폭이 확정되지 않아 말줄임 대신 그대로 잘린다.
+                Spacer(minLength: 0)
             }
         }
         .buttonStyle(.plain)
