@@ -93,6 +93,17 @@ public final class Memo {
     /// 앱 설정과 무관하게 시스템이 강제로 종료한다. 어떤 트리거를 고르든 이 시각을 넘길 수 없다.
     private static let systemMaxDuration: TimeInterval = 12 * 60 * 60
 
+    /// Live Activity에 카운트다운으로 노출할 소멸 시각.
+    /// 사용자가 직접 시간을 지정한 경우에만 값을 돌려준다.
+    /// - `.hours`: 사용자가 고른 N시간 → 노출
+    /// - `.target`: 타입 콘텐츠(D-day·카운트다운)가 같은 시각을 이미 보여주므로 제외
+    /// - `.done`/`.full`/`pinned`: 시간 기반 트리거가 아니므로 제외
+    ///   (`pinned`의 12시간은 사용자 의도가 아니라 플랫폼 제약이다)
+    public var userClearDate: Date? {
+        guard displayMode == .autoClear, clearTrigger == .hours else { return nil }
+        return clearDate
+    }
+
     public var clearDate: Date? {
         let systemCap = updatedAt.addingTimeInterval(Self.systemMaxDuration)
         switch displayMode {

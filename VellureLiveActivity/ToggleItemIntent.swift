@@ -54,7 +54,8 @@ struct ToggleItemIntent: LiveActivityIntent {
                 font: memo.font,
                 colorTag: memo.colorTag,
                 updatedAt: Date(),
-                clearDate: memo.clearDate
+                // 표시용은 사용자가 지정한 소멸 시각만 (staleDate는 memo.clearDate 유지)
+                clearDate: memo.userClearDate
             )
             let content = ActivityContent(state: state, staleDate: memo.clearDate)
 
