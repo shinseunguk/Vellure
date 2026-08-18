@@ -19,7 +19,7 @@ struct TermsView: View {
                 )
 
                 Text("terms.updated")
-                    .font(.system(size: 11.5))
+                    .scaledFont(11.5)
                     .foregroundStyle(Theme.textSecondary)
                     .padding(.top, 4)
             }
@@ -33,10 +33,10 @@ struct TermsView: View {
     private func termsCard(title: String, body: String) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(title)
-                .font(.system(size: 13.5, weight: .bold))
+                .scaledFont(13.5, weight: .bold)
                 .foregroundStyle(Theme.textPrimary)
             Text(body)
-                .font(.system(size: 13))
+                .scaledFont(13)
                 .foregroundStyle(Theme.textSecondary)
                 .lineSpacing(4)
         }

@@ -57,7 +57,7 @@ struct SettingsView: View {
                         Text(activitySupported
                             ? String(localized: "settings.diag.ready")
                             : String(localized: "settings.diag.warn"))
-                            .font(.system(size: 13.5, weight: .bold))
+                            .scaledFont(13.5, weight: .bold)
                             .foregroundStyle(activitySupported ? Theme.accent : .orange)
                     }
                     Spacer()
@@ -90,7 +90,7 @@ struct SettingsView: View {
                 } label: {
                     HStack {
                         Text("settings.activity.endAll")
-                            .font(.system(size: 14))
+                            .scaledFont(14)
                             .foregroundStyle(.red)
                         Spacer()
                     }
@@ -106,7 +106,7 @@ struct SettingsView: View {
 
             if !activitySupported {
                 Text("settings.diag.hint")
-                    .font(.system(size: 12))
+                    .scaledFont(12)
                     .foregroundStyle(Theme.textSecondary)
                     .padding(.leading, 4)
             }
@@ -116,16 +116,16 @@ struct SettingsView: View {
     private func diagRow(label: String, isOn: Bool) -> some View {
         HStack {
             Text(label)
-                .font(.system(size: 14))
+                .scaledFont(14)
                 .foregroundStyle(Theme.textPrimary)
             Spacer()
             Text(isOn
                 ? String(localized: "settings.activity.available")
                 : String(localized: "settings.activity.disabled"))
-                .font(.system(size: 13, weight: .semibold))
+                .scaledFont(13, weight: .semibold)
                 .foregroundStyle(isOn ? Theme.accent : .red)
             Image(systemName: "chevron.right")
-                .font(.system(size: 12, weight: .semibold))
+                .scaledFont(12, weight: .semibold)
                 .foregroundStyle(Theme.textSecondary)
         }
         .padding(15)
@@ -139,7 +139,7 @@ struct SettingsView: View {
             sectionLabel(String(localized: "settings.section.siri"))
             VStack(alignment: .leading, spacing: 0) {
                 Text("settings.siri.phrases")
-                    .font(.system(size: 14, weight: .bold))
+                    .scaledFont(14, weight: .bold)
                     .foregroundStyle(Theme.textPrimary)
                     .padding(.horizontal, 16)
                     .padding(.top, 16)
@@ -153,7 +153,7 @@ struct SettingsView: View {
                                 .fill(Theme.accent)
                                 .frame(width: 7, height: 7)
                             Text("\"\(phrase)\"")
-                                .font(.system(size: 14, weight: .semibold))
+                                .scaledFont(14, weight: .semibold)
                                 .foregroundStyle(Theme.textSecondary)
                         }
                         .padding(.horizontal, 16)
@@ -203,7 +203,7 @@ struct SettingsView: View {
                 )
                 Divider()
                 Text("settings.auto.note")
-                    .font(.system(size: 11.5))
+                    .scaledFont(11.5)
                     .foregroundStyle(Theme.textSecondary)
                     .padding(16)
                     .lineSpacing(3)
@@ -220,17 +220,17 @@ struct SettingsView: View {
     private func autoRow(icon: String, title: String, desc: String) -> some View {
         HStack(alignment: .top, spacing: 11) {
             Image(systemName: icon)
-                .font(.system(size: 13))
+                .scaledFont(13)
                 .foregroundStyle(Theme.accent)
                 .frame(width: 30, height: 30)
                 .background(Theme.accent.opacity(0.12))
                 .clipShape(RoundedRectangle(cornerRadius: 10))
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                    .font(.system(size: 13.5, weight: .semibold))
+                    .scaledFont(13.5, weight: .semibold)
                     .foregroundStyle(Theme.textPrimary)
                 Text(desc)
-                    .font(.system(size: 12))
+                    .scaledFont(12)
                     .foregroundStyle(Theme.textSecondary)
                     .lineSpacing(2)
             }
@@ -246,7 +246,7 @@ struct SettingsView: View {
         VStack(spacing: 0) {
             HStack {
                 Text("settings.appearance")
-                    .font(.system(size: 14))
+                    .scaledFont(14)
                     .foregroundStyle(Theme.textPrimary)
                 Spacer()
                 Picker("", selection: $appearanceMode) {
@@ -276,15 +276,15 @@ struct SettingsView: View {
             } label: {
                 HStack {
                     Text("settings.feedback")
-                        .font(.system(size: 14))
+                        .scaledFont(14)
                         .foregroundStyle(Theme.textPrimary)
                     Spacer()
                     HStack(spacing: 7) {
                         Text("settings.feedback.dest")
-                            .font(.system(size: 12, weight: .semibold))
+                            .scaledFont(12, weight: .semibold)
                             .foregroundStyle(Theme.textSecondary)
                         Image(systemName: "arrow.up.right")
-                            .font(.system(size: 10, weight: .semibold))
+                            .scaledFont(10, weight: .semibold)
                             .foregroundStyle(Theme.textSecondary)
                     }
                 }
@@ -298,11 +298,11 @@ struct SettingsView: View {
             } label: {
                 HStack {
                     Text("settings.terms")
-                        .font(.system(size: 14))
+                        .scaledFont(14)
                         .foregroundStyle(Theme.textPrimary)
                     Spacer()
                     Image(systemName: "chevron.right")
-                        .font(.system(size: 12, weight: .semibold))
+                        .scaledFont(12, weight: .semibold)
                         .foregroundStyle(Theme.textSecondary)
                 }
                 .padding(15)
@@ -321,7 +321,7 @@ struct SettingsView: View {
     private var versionLabel: some View {
         let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
         return Text("Vellure v\(version) · \(String(localized: "settings.priceFree"))")
-            .font(.system(size: 12))
+            .scaledFont(12)
             .foregroundStyle(Theme.textSecondary)
             .padding(.top, 6)
     }
@@ -330,7 +330,7 @@ struct SettingsView: View {
 
     private func sectionLabel(_ title: String) -> some View {
         Text(title)
-            .font(.system(size: 12, weight: .bold))
+            .scaledFont(12, weight: .bold)
             .foregroundStyle(Theme.textSecondary)
             .padding(.leading, 4)
     }

@@ -70,24 +70,24 @@ struct MemoCardView: View {
                     .frame(width: 38, height: 38)
                     .overlay {
                         Image(systemName: typeIcon)
-                            .font(.system(size: 15, weight: .semibold))
+                            .scaledFont(15, weight: .semibold)
                             .foregroundStyle(tintColor)
                     }
 
                 VStack(alignment: .leading, spacing: 2) {
                     HStack(spacing: 7) {
                         Text(typeLabel)
-                            .font(.system(size: 11, weight: .bold))
+                            .scaledFont(11, weight: .bold)
                             .foregroundStyle(tintColor)
                             .lineLimit(1)
-                            .fixedSize()
+                            .truncationMode(.tail)
                         if let value = sideValue {
                             Text(value)
-                                .font(.system(size: 10.5, weight: .heavy))
+                                .scaledFont(10.5, weight: .heavy)
                                 .foregroundStyle(tintColor)
                                 .monospacedDigit()
                                 .lineLimit(1)
-                                .fixedSize()
+                                .truncationMode(.tail)
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 2)
                                 .background(tintColor.opacity(0.12))
@@ -96,7 +96,7 @@ struct MemoCardView: View {
                     }
                     if !memo.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                         Text(memo.content)
-                            .font(.system(size: 15.5, weight: .bold))
+                            .scaledFont(15.5, weight: .bold)
                             .foregroundStyle(Theme.textPrimary)
                             .lineLimit(2)
                             .multilineTextAlignment(.leading)
@@ -121,10 +121,10 @@ struct MemoCardView: View {
                             ForEach(items.prefix(4)) { item in
                                 HStack(spacing: 5) {
                                     Image(systemName: item.done ? "checkmark.circle.fill" : "circle")
-                                        .font(.system(size: 11, weight: .semibold))
+                                        .scaledFont(11, weight: .semibold)
                                         .foregroundStyle(item.done ? tintColor : Theme.textSecondary)
                                     Text(item.title)
-                                        .font(.system(size: 12.5, weight: .medium))
+                                        .scaledFont(12.5, weight: .medium)
                                         .foregroundStyle(item.done ? Theme.textSecondary : Theme.textPrimary)
                                         .strikethrough(item.done)
                                         .lineLimit(1)
@@ -132,7 +132,7 @@ struct MemoCardView: View {
                             }
                             if items.count > 4 {
                                 Text("+\(items.count - 4)")
-                                    .font(.system(size: 11, weight: .semibold))
+                                    .scaledFont(11, weight: .semibold)
                                     .foregroundStyle(Theme.textSecondary)
                             }
                         }
@@ -146,7 +146,7 @@ struct MemoCardView: View {
                     HStack(spacing: 6) {
                         Button(action: onToggleActivity) {
                             Image(systemName: isActive ? "arrow.down" : "arrow.up")
-                                .font(.system(size: 13, weight: .bold))
+                                .scaledFont(13, weight: .bold)
                                 .foregroundStyle(isActive ? .white : tintColor)
                                 .frame(width: 34, height: 34)
                                 .background(isActive ? tintColor : tintColor.opacity(0.15))
@@ -156,7 +156,7 @@ struct MemoCardView: View {
 
                         Button(action: onDelete) {
                             Image(systemName: "trash")
-                                .font(.system(size: 13, weight: .medium))
+                                .scaledFont(13, weight: .medium)
                                 .foregroundStyle(Theme.textSecondary)
                                 .frame(width: 34, height: 34)
                                 .background(Theme.chipBackground)
@@ -181,7 +181,7 @@ struct MemoCardView: View {
                             .fill(Theme.accent)
                             .frame(width: 5, height: 5)
                         Text("card.onLock")
-                            .font(.system(size: 10, weight: .heavy))
+                            .scaledFont(10, weight: .heavy)
                             .foregroundStyle(.white)
                     }
                     .padding(.horizontal, 10)
