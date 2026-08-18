@@ -193,3 +193,13 @@
 /* Storage */
 "storage.error.title" = "无法载入备忘";
 "storage.error.message" = "无法打开存储空间。本次启动中创建的内容将不会保存。若重启后仍然如此，可能需要重新安装应用。";
+
+/* Search & Filter */
+"search.placeholder" = "搜索备忘";
+"search.empty.title" = "没有匹配的备忘";
+"search.empty.reset" = "重置搜索和筛选";
+"filter.display.all" = "全部";
+"filter.display.active" = "显示中";
+"filter.display.inactive" = "未显示";
+"a11y.search.clear" = "清除搜索";
+"filter.type.all" = "所有类型";

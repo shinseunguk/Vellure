@@ -193,3 +193,13 @@
 /* Storage */
 "storage.error.title" = "메모를 불러오지 못했어요";
 "storage.error.message" = "저장 공간을 여는 데 실패했어요. 이번 실행에서 작성한 내용은 저장되지 않습니다. 앱을 다시 실행해도 같은 문제가 계속되면 재설치가 필요할 수 있어요.";
+
+/* Search & Filter */
+"search.placeholder" = "메모 검색";
+"search.empty.title" = "찾는 메모가 없어요";
+"search.empty.reset" = "검색·필터 초기화";
+"filter.display.all" = "전체";
+"filter.display.active" = "표시 중";
+"filter.display.inactive" = "표시 안 함";
+"a11y.search.clear" = "검색어 지우기";
+"filter.type.all" = "모든 타입";
