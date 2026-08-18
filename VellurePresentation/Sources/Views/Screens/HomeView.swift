@@ -115,6 +115,7 @@ public struct HomeView: View {
                                 .background(Theme.chipBackground)
                                 .clipShape(Circle())
                         }
+                        .accessibilityLabel("a11y.header.reorder")
                     }
 
                     Button { showNewMemo = true } label: {
@@ -130,6 +131,7 @@ public struct HomeView: View {
                         .background(Theme.accent)
                         .clipShape(Capsule())
                     }
+                    .accessibilityLabel("a11y.header.newMemo")
 
                     Button { showSettings = true } label: {
                         Image(systemName: "gearshape")
@@ -139,6 +141,7 @@ public struct HomeView: View {
                             .background(Theme.chipBackground)
                             .clipShape(Circle())
                     }
+                    .accessibilityLabel("a11y.header.settings")
                 }
             }
             .fixedSize()
@@ -226,6 +229,7 @@ public struct HomeView: View {
                             .foregroundStyle(Theme.textSecondary)
                             .frame(width: 24, height: 44)
                             .contentShape(Rectangle())
+                            .accessibilityLabel("a11y.reorder.handle")
                             .highPriorityGesture(reorderGesture(memo: memo, items: items, matches: matches, vm: vm))
                     }
 

@@ -174,6 +174,22 @@
 "liveActivity.error.openSettings" = "Open Settings";
 "common.close" = "Close";
 
+/* Accessibility */
+"a11y.card.publish" = "Show on Lock Screen";
+"a11y.card.unpublish" = "Remove from Lock Screen";
+"a11y.card.delete" = "Delete note";
+"a11y.card.hint" = "Double tap to open the note";
+"a11y.header.reorder" = "Edit order";
+"a11y.header.newMemo" = "New note";
+"a11y.header.settings" = "Settings";
+"a11y.reorder.handle" = "Drag to reorder";
+"a11y.item.add" = "Add item";
+"a11y.item.remove" = "Remove item";
+"a11y.item.checked" = "Completed";
+"a11y.item.unchecked" = "Not completed";
+"a11y.progress.increase" = "Increase progress by 10 percent";
+"a11y.progress.decrease" = "Decrease progress by 10 percent";
+
 /* Storage */
 "storage.error.title" = "Couldn’t load your notes";
 "storage.error.message" = "We couldn’t open the storage. Anything you write in this session won’t be saved. If this keeps happening after relaunching, you may need to reinstall the app.";
