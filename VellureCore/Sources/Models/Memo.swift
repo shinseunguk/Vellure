@@ -99,6 +99,13 @@ public final class Memo {
     /// 앱 설정과 무관하게 시스템이 강제로 종료한다. 어떤 트리거를 고르든 이 시각을 넘길 수 없다.
     public static let systemMaxDuration: TimeInterval = 12 * 60 * 60
 
+    /// Live Activity가 실제로 "동작"하는 시간.
+    /// 8시간이 지나면 시스템이 활동을 종료해 다이나믹 아일랜드에서 즉시 사라지고,
+    /// 잠금화면에는 최대 4시간 더 남지만 갱신은 멈춘다.
+    /// 사용자에게 보여줄 남은 시간은 12시간이 아니라 이 값을 기준으로 해야 한다.
+    /// 출처: Apple - Displaying live data with Live Activities
+    public static let systemActiveDuration: TimeInterval = 8 * 60 * 60
+
     /// Live Activity에 카운트다운으로 노출할 소멸 시각.
     /// 사용자가 직접 시간을 지정한 경우에만 값을 돌려준다.
     /// - `.hours`: 사용자가 고른 N시간 → 노출
@@ -113,6 +120,14 @@ public final class Memo {
     /// 소멸 시각 계산의 기준 시점.
     /// Live Activity가 떠 있으면 그 시작 시각을, 아니면 마지막 수정 시각을 쓴다.
     private var clearAnchor: Date { activityStartedAt ?? updatedAt }
+
+    /// 화면에 표시할 만료 시각.
+    /// 사용자가 지정한 소멸 시각과 시스템 활성 상한(8시간) 중 이른 쪽이다.
+    public var activeDeadline: Date? {
+        let activeCap = clearAnchor.addingTimeInterval(Self.systemActiveDuration)
+        guard let clearDate else { return activeCap }
+        return min(clearDate, activeCap)
+    }
 
     public var clearDate: Date? {
         let systemCap = clearAnchor.addingTimeInterval(Self.systemMaxDuration)

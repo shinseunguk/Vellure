@@ -48,7 +48,8 @@ struct StepProgressIntent: LiveActivityIntent {
             font: memo.font,
             colorTag: memo.colorTag,
             updatedAt: Date(),
-            clearDate: memo.clearDate
+            clearDate: memo.userClearDate,
+            expiresAt: memo.activeDeadline
         )
         let content = ActivityContent(state: state, staleDate: memo.clearDate)
 
