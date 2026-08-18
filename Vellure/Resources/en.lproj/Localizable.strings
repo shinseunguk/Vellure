@@ -173,3 +173,7 @@
 "liveActivity.error.unknown" = "Please try again in a moment.";
 "liveActivity.error.openSettings" = "Open Settings";
 "common.close" = "Close";
+
+/* Storage */
+"storage.error.title" = "Couldn’t load your notes";
+"storage.error.message" = "We couldn’t open the storage. Anything you write in this session won’t be saved. If this keeps happening after relaunching, you may need to reinstall the app.";

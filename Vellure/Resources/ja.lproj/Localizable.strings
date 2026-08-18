@@ -173,3 +173,7 @@
 "liveActivity.error.unknown" = "しばらくしてからもう一度お試しください。";
 "liveActivity.error.openSettings" = "設定を開く";
 "common.close" = "閉じる";
+
+/* Storage */
+"storage.error.title" = "メモを読み込めませんでした";
+"storage.error.message" = "保存領域を開けませんでした。この起動中に作成した内容は保存されません。再起動しても続く場合は、再インストールが必要になることがあります。";
