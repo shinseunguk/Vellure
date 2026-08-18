@@ -32,7 +32,7 @@ struct LockScreenView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: Self.contentSpacing) {
             VStack(alignment: .leading, spacing: Self.brandSpacing) {
-                BrandLabel(tint: tint)
+                BrandLabel(tint: tint, renderType: state.renderType)
 
                 if hasContent {
                     Text(state.content)

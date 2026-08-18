@@ -11,8 +11,6 @@ struct VellureLiveActivityWidget: Widget {
     private static let contentVerticalPadding: CGFloat = 2
     /// 본문과 타입별 콘텐츠 사이 여백
     private static let contentSpacing: CGFloat = 8
-    /// 브랜드 표시와 본문 사이 여백
-    private static let brandSpacing: CGFloat = 5
     /// 본문 글자 크기
     private static let contentFontSize: CGFloat = 15
     /// D-day·카운트다운 강조 숫자 크기
@@ -24,28 +22,32 @@ struct VellureLiveActivityWidget: Widget {
         } dynamicIsland: { context in
             DynamicIsland {
                 // MARK: - Expanded (롱탭)
-                // 상단 좌우 영역은 카메라 컷아웃에 폭이 눌려 잘림이 잦다.
-                // 콘텐츠를 폭이 온전한 하단 영역 하나에 모아 잘림을 없앤다.
+                // 확장 뷰는 카메라 하우징 주변 상단 띠를 항상 예약한다.
+                // 좌우를 비워두면 그 띠가 빈 여백으로 남으므로,
+                // 폭을 거의 쓰지 않는 브랜드 표시를 leading에 둬서 채운다.
+                // 폭이 필요한 본문·타입별 콘텐츠는 온전한 하단 영역에 모은다.
+                DynamicIslandExpandedRegion(.leading) {
+                    BrandLabel(tint: tint(context), renderType: context.state.renderType)
+                        .padding(.leading, Self.expandedContentInset)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+
                 DynamicIslandExpandedRegion(.bottom) {
                     VStack(alignment: .leading, spacing: Self.contentSpacing) {
-                        VStack(alignment: .leading, spacing: Self.brandSpacing) {
-                            BrandLabel(tint: tint(context))
-
-                            if hasContent(context) {
-                                Text(context.state.content)
-                                    .font(.system(size: Self.contentFontSize, weight: .semibold))
-                                    .fontDesign(fontDesign(from: context.state.font))
-                                    .foregroundStyle(.primary)
-                                    .lineLimit(expandedContentLineLimit(context))
-                                    .truncationMode(.tail)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                            }
+                        if hasContent(context) {
+                            Text(context.state.content)
+                                .font(.system(size: Self.contentFontSize, weight: .semibold))
+                                .fontDesign(fontDesign(from: context.state.font))
+                                .foregroundStyle(.primary)
+                                .lineLimit(expandedContentLineLimit(context))
+                                .truncationMode(.tail)
+                                .frame(maxWidth: .infinity, alignment: .leading)
                         }
 
                         expandedDynamicContent(context)
                     }
                     .padding(.horizontal, Self.expandedContentInset)
-                    .padding(.vertical, Self.contentVerticalPadding)
+                    .padding(.bottom, Self.contentVerticalPadding)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
             } compactLeading: {
