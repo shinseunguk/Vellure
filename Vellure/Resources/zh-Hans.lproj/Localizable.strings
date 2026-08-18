@@ -173,3 +173,7 @@
 "liveActivity.error.unknown" = "请稍后再试。";
 "liveActivity.error.openSettings" = "打开设置";
 "common.close" = "关闭";
+
+/* Storage */
+"storage.error.title" = "无法载入备忘";
+"storage.error.message" = "无法打开存储空间。本次启动中创建的内容将不会保存。若重启后仍然如此，可能需要重新安装应用。";
