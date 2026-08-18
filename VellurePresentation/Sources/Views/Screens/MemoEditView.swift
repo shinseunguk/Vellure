@@ -8,11 +8,37 @@ struct MemoEditView: View {
     @Environment(MemoRepository.self) private var repository
     @Environment(\.dismiss) private var dismiss
     @State private var viewModel: MemoEditViewModel?
+    @State private var activityError: LiveActivityError?
+    @State private var didAttemptStart = false
     @FocusState private var contentFocused: Bool
 
     let memo: Memo?
 
     var body: some View {
+        content
+            .liveActivityErrorAlert($activityError)
+            // 알럿을 닫은 뒤 화면을 닫는다. 실패 사유를 못 보고 넘어가지 않도록.
+            .onChange(of: activityError) { _, error in
+                if error == nil && didAttemptStart { dismiss() }
+            }
+    }
+
+    /// 새 메모를 저장한 직후 Live Activity를 띄운다.
+    /// 실패하면 이유를 알럿으로 보여주고, 확인 후 화면을 닫는다.
+    private func startActivity(for memo: Memo) {
+        didAttemptStart = true
+        do {
+            let activityId = try LiveActivityService.shared.start(memo: memo)
+            repository.setActivity(memo, activityId: activityId)
+            dismiss()
+        } catch let error as LiveActivityError {
+            activityError = error
+        } catch {
+            activityError = .unknown(String(describing: type(of: error)))
+        }
+    }
+
+    private var content: some View {
         NavigationStack {
             if let vm = viewModel {
                 VStack(spacing: 0) {
@@ -32,10 +58,9 @@ struct MemoEditView: View {
                     Divider()
                     Button {
                         let saved = vm.save()
-                        if !vm.isEditing && LiveActivityService.shared.isSupported {
-                            if let activityId = LiveActivityService.shared.start(memo: saved) {
-                                repository.update(saved, activityId: activityId)
-                            }
+                        guard vm.isEditing else {
+                            startActivity(for: saved)
+                            return
                         }
                         dismiss()
                     } label: {
@@ -351,130 +376,6 @@ struct MemoEditView: View {
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 14)
             }
-        }
-    }
-
-    // MARK: - Helpers
-
-    private func sectionLabel(_ title: String) -> some View {
-        Text(title)
-            .font(.system(size: 13, weight: .bold))
-            .foregroundStyle(Theme.textSecondary)
-    }
-
-    private func typeChip(_ type: RenderType, selected: Bool, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            HStack(spacing: 5) {
-                Image(systemName: typeIconName(type))
-                    .font(.system(size: 12))
-                Text(typeDisplayName(type))
-                    .font(.system(size: 13, weight: .semibold))
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 8)
-            .background(selected ? Theme.accent : Theme.chipBackground)
-            .foregroundStyle(selected ? .white : Theme.textPrimary)
-            .clipShape(Capsule())
-        }
-    }
-
-    private func modeButton(title: String, selected: Bool, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            Text(title)
-                .font(.system(size: 13, weight: .semibold))
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 12)
-                .background(selected ? Theme.accent : Theme.chipBackground)
-                .foregroundStyle(selected ? .white : Theme.textPrimary)
-                .clipShape(RoundedRectangle(cornerRadius: 14))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 14)
-                        .stroke(selected ? Color.clear : Theme.divider, lineWidth: 1)
-                )
-        }
-    }
-
-    private func triggerRow(_ trigger: ClearTrigger, selected: Bool, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            HStack(spacing: 10) {
-                Circle()
-                    .strokeBorder(selected ? Theme.accent : Theme.textSecondary, lineWidth: 2)
-                    .frame(width: 18, height: 18)
-                    .overlay {
-                        if selected {
-                            Circle()
-                                .fill(Theme.accent)
-                                .frame(width: 8, height: 8)
-                        }
-                    }
-                VStack(alignment: .leading, spacing: 1) {
-                    Text(triggerLabel(trigger))
-                        .font(.system(size: 13.5, weight: .semibold))
-                        .foregroundStyle(Theme.textPrimary)
-                    Text(triggerDesc(trigger))
-                        .font(.system(size: 11.5))
-                        .foregroundStyle(Theme.textSecondary)
-                }
-                Spacer()
-            }
-            .padding(.horizontal, 11)
-            .padding(.vertical, 10)
-            .background(selected ? Theme.accent.opacity(0.08) : Color.clear)
-            .clipShape(RoundedRectangle(cornerRadius: 10))
-        }
-    }
-
-    private func hoursStepper(_ vm: MemoEditViewModel) -> some View {
-        Stepper(
-            value: Binding(
-                get: { vm.clearAfterHours },
-                set: { vm.clearAfterHours = $0 }
-            ),
-            in: 1...12
-        ) {
-            Text(String(format: String(localized: "trigger.hours.value"), vm.clearAfterHours))
-                .font(.system(size: 13, weight: .semibold))
-                .foregroundStyle(Theme.textPrimary)
-        }
-        .padding(.horizontal, 11)
-        .padding(.vertical, 8)
-    }
-
-    private func triggerLabel(_ trigger: ClearTrigger) -> String {
-        switch trigger {
-        case .target: String(localized: "trigger.target")
-        case .hours: String(localized: "trigger.hours")
-        case .done: String(localized: "trigger.done")
-        case .full: String(localized: "trigger.full")
-        }
-    }
-
-    private func triggerDesc(_ trigger: ClearTrigger) -> String {
-        switch trigger {
-        case .target: String(localized: "trigger.target.desc")
-        case .hours: String(localized: "trigger.hours.desc")
-        case .done: String(localized: "trigger.done.desc")
-        case .full: String(localized: "trigger.full.desc")
-        }
-    }
-
-    private func typeIconName(_ type: RenderType) -> String {
-        switch type {
-        case .plain: "note.text"
-        case .checklist: "checklist"
-        case .dday: "calendar"
-        case .countdown: "timer"
-        case .progress: "chart.bar.fill"
-        }
-    }
-
-    private func typeDisplayName(_ type: RenderType) -> String {
-        switch type {
-        case .plain: String(localized: "type.plain")
-        case .checklist: String(localized: "type.checklist")
-        case .dday: String(localized: "type.dday")
-        case .countdown: String(localized: "type.countdown")
-        case .progress: String(localized: "type.progress")
         }
     }
 }

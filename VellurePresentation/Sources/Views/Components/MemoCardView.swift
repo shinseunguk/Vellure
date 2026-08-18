@@ -7,6 +7,9 @@ struct MemoCardView: View {
     let onToggleActivity: () -> Void
     let onDelete: () -> Void
     var showsActions: Bool = true
+    /// 실제로 잠금화면에 떠 있는지. 저장된 activityId가 아니라
+    /// 실행 중인 Activity 목록에서 판정한 값을 주입받는다.
+    var isActive: Bool = false
 
     private var tintColor: Color {
         Theme.memoColor(for: memo.colorTag)
@@ -59,8 +62,6 @@ struct MemoCardView: View {
         }
     }
 
-    private var isActive: Bool { memo.activityId != nil }
-
     var body: some View {
         Button(action: onTap) {
             HStack(spacing: 11) {
@@ -91,22 +92,6 @@ struct MemoCardView: View {
                                 .padding(.vertical, 2)
                                 .background(tintColor.opacity(0.12))
                                 .clipShape(Capsule())
-                        }
-                        if isActive, let clearDate = memo.clearDate, clearDate > .now {
-                            HStack(spacing: 3) {
-                                Image(systemName: "timer")
-                                    .font(.system(size: 9, weight: .semibold))
-                                Text(timerInterval: Date.now...clearDate, countsDown: true)
-                                    .font(.system(size: 10, weight: .heavy))
-                                    .monospacedDigit()
-                                    .lineLimit(1)
-                                    .fixedSize()
-                            }
-                            .foregroundStyle(Theme.textSecondary)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 2)
-                            .background(Theme.chipBackground)
-                            .clipShape(Capsule())
                         }
                     }
                     if !memo.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {

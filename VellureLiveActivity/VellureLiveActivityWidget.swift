@@ -5,11 +5,18 @@ import VellureCore
 
 struct VellureLiveActivityWidget: Widget {
     /// 확장 상태 콘텐츠의 좌우 여백.
-    /// 상단 좌우 영역이 아일랜드 코너 곡선 마스크에 잘리는 것을 막고,
-    /// 하단 영역에도 동일하게 적용해 앱 로고와 본문의 시작 위치를 맞춘다.
+    /// 아일랜드 코너 곡선 마스크에 좌우가 잘리는 것을 막는다.
     private static let expandedContentInset: CGFloat = 10
     /// 본문과 위아래 요소 사이에 추가로 두는 여백
     private static let contentVerticalPadding: CGFloat = 2
+    /// 본문과 타입별 콘텐츠 사이 여백
+    private static let contentSpacing: CGFloat = 8
+    /// 본문 글자 크기
+    private static let contentFontSize: CGFloat = 15
+    /// 상단 띠 우측의 메모 종류 글자 크기. 브랜드 워드마크와 맞춘다.
+    private static let typeLabelFontSize: CGFloat = 11
+    /// D-day·카운트다운 강조 숫자 크기
+    private static let highlightFontSize: CGFloat = 24
 
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: MemoAttributes.self) { context in
@@ -17,62 +24,74 @@ struct VellureLiveActivityWidget: Widget {
         } dynamicIsland: { context in
             DynamicIsland {
                 // MARK: - Expanded (롱탭)
-                // 헤더(타입·타이머)는 상단 좌우 영역이 맡고, 하단은 콘텐츠 전용으로 둔다.
+                // 확장 뷰는 카메라 하우징 주변 상단 띠를 항상 예약한다.
+                // 좌우를 비워두면 그 띠가 빈 여백으로 남으므로,
+                // 폭을 거의 쓰지 않는 브랜드 표시를 leading에 둬서 채운다.
+                // 폭이 필요한 본문·타입별 콘텐츠는 온전한 하단 영역에 모은다.
                 DynamicIslandExpandedRegion(.leading) {
-                    HStack(spacing: 5) {
-                        Image("AppLogo")
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 16, height: 16)
-                            .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
-                        Text(typeLabel(context))
-                            .font(.caption.weight(.semibold))
+                    BrandLabel(tint: tint(context))
+                        .padding(.leading, Self.expandedContentInset)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+
+                // 워드마크와 종류를 한 줄에 붙이면 컷아웃에 눌려 말줄임이 난다.
+                // 예약된 상단 띠의 좌우를 나눠 써서 둘 다 온전히 보이게 한다.
+                DynamicIslandExpandedRegion(.trailing) {
+                    if let label = BrandLabel.typeLabel(context.state.renderType) {
+                        Text(label)
+                            .font(.system(size: Self.typeLabelFontSize, weight: .semibold))
                             .foregroundStyle(tint(context))
                             .lineLimit(1)
                             .minimumScaleFactor(0.8)
+                            .padding(.trailing, Self.expandedContentInset)
+                            .frame(maxWidth: .infinity, alignment: .trailing)
                     }
-                    .padding(.leading, Self.expandedContentInset)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                }
-
-                DynamicIslandExpandedRegion(.trailing) {
-                    clearTimerLabel(context)
-                        .padding(.trailing, Self.expandedContentInset)
-                        .frame(maxWidth: .infinity, alignment: .trailing)
                 }
 
                 DynamicIslandExpandedRegion(.bottom) {
-                    VStack(alignment: .leading, spacing: 8) {
-                        if !context.state.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                    VStack(alignment: .leading, spacing: Self.contentSpacing) {
+                        if hasContent(context) {
                             Text(context.state.content)
-                                .font(.headline.weight(.semibold))
+                                .font(.system(size: Self.contentFontSize, weight: .semibold))
                                 .fontDesign(fontDesign(from: context.state.font))
                                 .foregroundStyle(.primary)
-                                .lineLimit(2)
+                                .lineLimit(expandedContentLineLimit(context))
                                 .truncationMode(.tail)
-                                .padding(.vertical, Self.contentVerticalPadding)
+                                .frame(maxWidth: .infinity, alignment: .leading)
                         }
 
                         expandedDynamicContent(context)
                     }
                     .padding(.horizontal, Self.expandedContentInset)
+                    .padding(.bottom, Self.contentVerticalPadding)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
             } compactLeading: {
-                // MARK: - Compact Leading
                 Circle()
                     .fill(tint(context))
                     .frame(width: 11, height: 11)
             } compactTrailing: {
-                // MARK: - Compact Trailing
                 compactTrailingContent(context)
                     .padding(.trailing, Self.compactTrailingInset)
             } minimal: {
-                // MARK: - Minimal
                 Circle()
                     .fill(tint(context))
                     .frame(width: 11, height: 11)
             }
+        }
+    }
+
+    private func hasContent(_ context: ActivityViewContext<MemoAttributes>) -> Bool {
+        !context.state.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    /// 타입별 본문 최대 줄 수.
+    /// 확장 영역도 높이 상한이 있어, 아래 콘텐츠가 클수록 본문 줄 수를 줄인다.
+    private func expandedContentLineLimit(_ context: ActivityViewContext<MemoAttributes>) -> Int {
+        switch context.state.renderType {
+        case "checklist": 1
+        case "progress", "dday", "countdown": 2
+        default: 3
         }
     }
 
@@ -85,7 +104,7 @@ struct VellureLiveActivityWidget: Widget {
         case "dday":
             if let target = state.targetDate {
                 Text(ddayString(target))
-                    .font(.system(size: 26, weight: .heavy))
+                    .font(.system(size: Self.highlightFontSize, weight: .heavy))
                     .foregroundStyle(tint(context))
                     .monospacedDigit()
                     .lineLimit(1)
@@ -94,7 +113,7 @@ struct VellureLiveActivityWidget: Widget {
         case "countdown":
             if let target = state.targetDate {
                 Text(timerInterval: Date.now...target, countsDown: true)
-                    .font(.system(size: 26, weight: .heavy))
+                    .font(.system(size: Self.highlightFontSize, weight: .heavy))
                     .foregroundStyle(tint(context))
                     .monospacedDigit()
                     .lineLimit(1)
@@ -117,33 +136,6 @@ struct VellureLiveActivityWidget: Widget {
             }
         default:
             EmptyView()
-        }
-    }
-
-    // MARK: - Auto-clear Timer (header trailing)
-
-    /// 소멸 카운트다운 타이머의 고정 폭 (자릿수가 바뀌어도 위치가 흔들리지 않도록).
-    /// `HH:MM:SS` 8자리가 말줄임 없이 들어가도록 여유를 둔다.
-    /// `timerInterval` 텍스트는 고유 폭이 확정되지 않아 `fixedSize()`를 쓰면
-    /// 무한 폭을 요구하고 확장 영역 전체가 렌더링되지 않는다. 반드시 폭을 명시한다.
-    private static let clearTimerWidth: CGFloat = 62
-
-    /// 상단 trailing 영역의 소멸 카운트다운.
-    /// 하단 모서리 곡선에서 멀리 떨어진 자리라 잘림 없이 배치된다.
-    @ViewBuilder
-    private func clearTimerLabel(_ context: ActivityViewContext<MemoAttributes>) -> some View {
-        if let clearDate = context.state.clearDate, clearDate > .now {
-            HStack(spacing: 3) {
-                Image(systemName: "timer")
-                    .font(.system(size: 9, weight: .semibold))
-                Text(timerInterval: Date.now...clearDate, countsDown: true)
-                    .font(.system(size: 11, weight: .semibold))
-                    .monospacedDigit()
-                    .multilineTextAlignment(.trailing)
-                    .frame(width: Self.clearTimerWidth, alignment: .trailing)
-            }
-            .foregroundStyle(tint(context))
-            .lineLimit(1)
         }
     }
 
@@ -203,17 +195,6 @@ struct VellureLiveActivityWidget: Widget {
 
     private func tint(_ context: ActivityViewContext<MemoAttributes>) -> Color {
         colorFromTag(context.state.colorTag)
-    }
-
-    private func typeLabel(_ context: ActivityViewContext<MemoAttributes>) -> String {
-        switch context.state.renderType {
-        case "plain": "메모"
-        case "checklist": "체크리스트"
-        case "dday": "D-day"
-        case "countdown": "카운트다운"
-        case "progress": "진행바"
-        default: "메모"
-        }
     }
 
     private func ddayString(_ target: Date) -> String {

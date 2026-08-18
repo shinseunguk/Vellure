@@ -91,9 +91,9 @@ public struct OnboardingView: View {
             clearAfterHours: 12
         )
 
-        if LiveActivityService.shared.isSupported,
-           let activityId = LiveActivityService.shared.start(memo: memo) {
-            repository.update(memo, activityId: activityId)
+        // 온보딩 흐름은 실패해도 막지 않는다. 사유는 LiveActivityService가 로그로 남긴다.
+        if let activityId = try? LiveActivityService.shared.start(memo: memo) {
+            repository.setActivity(memo, activityId: activityId)
         }
     }
 

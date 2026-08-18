@@ -42,6 +42,12 @@ public struct HomeView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Theme.background)
             .navigationBarHidden(true)
+            .liveActivityErrorAlert(
+                Binding(
+                    get: { viewModel?.activityError },
+                    set: { viewModel?.activityError = $0 }
+                )
+            )
             .sheet(isPresented: $showNewMemo) {
                 MemoEditView(memo: nil)
                     .environment(repository)
@@ -227,10 +233,15 @@ public struct HomeView: View {
                         memo: memo,
                         onTap: { selectedMemo = memo },
                         onToggleActivity: { vm.toggleActivity(for: memo) },
-                        onDelete: { deleteMemo(memo, vm: vm) }
+                        onDelete: { deleteMemo(memo, vm: vm) },
+                        isActive: vm.isActive(memo)
                     )
+                    // 정렬 모드에서 드래그 핸들이 붙어도 행 전체 폭이 늘지 않도록
+                    // 카드가 남은 폭을 받아 줄어들게 한다.
+                    .frame(maxWidth: .infinity)
                     .contextMenu { memoContextMenu(for: memo, vm: vm) }
                 }
+                .frame(maxWidth: .infinity)
                 .background(
                     GeometryReader { geo in
                         Color.clear.preference(
