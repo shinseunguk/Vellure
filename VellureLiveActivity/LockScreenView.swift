@@ -1,16 +1,23 @@
 import AppIntents
 import SwiftUI
-import UIKit
 import WidgetKit
 import VellureCore
 
 struct LockScreenView: View {
     /// 카드 기본 여백
-    private static let cardPadding: CGFloat = 14
-    /// 소멸 카운트다운 타이머의 고정 폭 (자릿수가 바뀌어도 위치가 흔들리지 않도록)
-    private static let clearTimerWidth: CGFloat = 62
-    /// 본문과 위아래 요소 사이에 추가로 두는 여백
-    private static let contentVerticalPadding: CGFloat = 4
+    private static let cardPadding: CGFloat = 12
+    /// 브랜드 표시와 본문 사이 여백
+    private static let brandSpacing: CGFloat = 6
+    /// 본문과 타입별 콘텐츠 사이 여백
+    private static let contentSpacing: CGFloat = 8
+    /// 체크리스트 행 간격
+    private static let checkRowSpacing: CGFloat = 5
+    /// 본문 글자 크기
+    private static let contentFontSize: CGFloat = 15
+    /// 체크리스트 항목 글자 크기
+    private static let itemFontSize: CGFloat = 13
+    /// D-day·카운트다운 강조 숫자 크기
+    private static let highlightFontSize: CGFloat = 24
 
     @Environment(\.colorScheme) private var colorScheme
 
@@ -18,66 +25,42 @@ struct LockScreenView: View {
 
     private var state: MemoAttributes.ContentState { context.state }
     private var tint: Color { colorFromTag(state.colorTag) }
+    private var hasContent: Bool {
+        !state.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
 
     var body: some View {
-        HStack(alignment: .top, spacing: 12) {
-            Image("AppLogo")
-                .resizable()
-                .scaledToFill()
-                .frame(width: 38, height: 38)
-                .clipShape(RoundedRectangle(cornerRadius: 9, style: .continuous))
+        VStack(alignment: .leading, spacing: Self.contentSpacing) {
+            VStack(alignment: .leading, spacing: Self.brandSpacing) {
+                BrandLabel(tint: tint, renderType: state.renderType)
 
-            VStack(alignment: .leading, spacing: 5) {
-                // 헤더: 타입 라벨 + 소멸 타이머
-                HStack(spacing: 8) {
-                    Text(typeLabel)
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(tint)
-                        .lineLimit(1)
-                        .fixedSize()
-
-                    Spacer(minLength: 8)
-
-                    clearTimerLabel
-                }
-
-                if !state.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                if hasContent {
                     Text(state.content)
-                        .font(.headline.weight(.semibold))
+                        .font(.system(size: Self.contentFontSize, weight: .semibold))
                         .fontDesign(fontDesign(from: state.font))
                         .foregroundStyle(.primary)
-                        .lineLimit(2)
+                        .lineLimit(contentLineLimit)
                         .truncationMode(.tail)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.vertical, Self.contentVerticalPadding)
                 }
-
-                lockScreenExtraContent
             }
+
+            lockScreenExtraContent
         }
         .padding(Self.cardPadding)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .activityBackgroundTint(colorScheme == .dark ? .black : .white)
         .activitySystemActionForegroundColor(colorScheme == .dark ? .white : .black)
     }
 
-    // MARK: - Auto-clear Timer (header trailing)
-
-    /// 헤더 우측의 소멸 카운트다운.
-    /// 사용자가 직접 시간을 지정한 메모에서만 `clearDate`가 내려온다.
-    @ViewBuilder
-    private var clearTimerLabel: some View {
-        if let clearDate = state.clearDate, clearDate > .now {
-            HStack(spacing: 3) {
-                Image(systemName: "timer")
-                    .imageScale(.small)
-                Text(timerInterval: Date.now...clearDate, countsDown: true)
-                    .monospacedDigit()
-                    .multilineTextAlignment(.trailing)
-                    .frame(width: Self.clearTimerWidth, alignment: .trailing)
-            }
-            .font(.caption.weight(.semibold))
-            .foregroundStyle(Color(uiColor: .secondaryLabel))
-            .lineLimit(1)
+    /// 타입별 본문 최대 줄 수.
+    /// 잠금화면 LA는 높이 상한이 있어, 아래 콘텐츠가 클수록 본문 줄 수를 줄인다.
+    private var contentLineLimit: Int {
+        switch state.renderType {
+        case "checklist": 1
+        case "progress": 2
+        case "dday", "countdown": 3
+        default: 4
         }
     }
 
@@ -89,7 +72,7 @@ struct LockScreenView: View {
         case "dday":
             if let target = state.targetDate {
                 Text(ddayString(target))
-                    .font(.system(size: 26, weight: .heavy))
+                    .font(.system(size: Self.highlightFontSize, weight: .heavy))
                     .foregroundStyle(tint)
                     .monospacedDigit()
                     .lineLimit(1)
@@ -98,7 +81,7 @@ struct LockScreenView: View {
         case "countdown":
             if let target = state.targetDate {
                 Text(timerInterval: Date.now...target, countsDown: true)
-                    .font(.system(size: 26, weight: .heavy))
+                    .font(.system(size: Self.highlightFontSize, weight: .heavy))
                     .foregroundStyle(tint)
                     .monospacedDigit()
                     .lineLimit(1)
@@ -106,97 +89,101 @@ struct LockScreenView: View {
             }
         case "checklist":
             if let items = state.items {
-                let maxVisible = 3
-                VStack(alignment: .leading, spacing: 7) {
-                    ForEach(items.prefix(maxVisible), id: \.id) { item in
-                        Button(intent: ToggleItemIntent(
-                            memoId: context.attributes.memoId,
-                            itemId: item.id
-                        )) {
-                            HStack(spacing: 8) {
-                                Image(systemName: item.done ? "checkmark.square.fill" : "square")
-                                    .font(.body)
-                                    .foregroundStyle(item.done ? tint : .secondary)
-                                Text(item.title)
-                                    .font(.subheadline)
-                                    .foregroundStyle(item.done ? .secondary : .primary)
-                                    .strikethrough(item.done)
-                                    .lineLimit(1)
-                                    .truncationMode(.tail)
-                                Spacer(minLength: 0)
-                            }
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                        }
-                        .buttonStyle(.plain)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    }
-                    if items.count > maxVisible {
-                        Text("외 \(items.count - maxVisible)개")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-                .padding(.top, 2)
+                checklistContent(items)
             }
         case "progress":
             if let progress = state.progress {
-                VStack(spacing: 6) {
-                    HStack {
-                        Text("\(Int(progress * 100))%")
-                            .font(.caption.weight(.bold))
-                            .foregroundStyle(.secondary)
-                        Spacer()
-                    }
-                    HStack(spacing: 10) {
-                        Button(intent: StepProgressIntent(
-                            memoId: context.attributes.memoId,
-                            direction: "down"
-                        )) {
-                            Image(systemName: "minus")
-                                .font(.subheadline.weight(.bold))
-                                .foregroundStyle(.primary)
-                                .frame(width: 30, height: 30)
-                                .background(.quaternary, in: Circle())
-                        }
-                        .buttonStyle(.plain)
-
-                        ProgressView(value: progress)
-                            .progressViewStyle(.linear)
-                            .tint(tint)
-                            .frame(maxWidth: .infinity)
-
-                        Button(intent: StepProgressIntent(
-                            memoId: context.attributes.memoId,
-                            direction: "up"
-                        )) {
-                            Image(systemName: "plus")
-                                .font(.subheadline.weight(.bold))
-                                .foregroundStyle(.primary)
-                                .frame(width: 30, height: 30)
-                                .background(.quaternary, in: Circle())
-                        }
-                        .buttonStyle(.plain)
-                    }
-                }
-                .padding(.top, 3)
+                progressContent(progress)
             }
         default:
             EmptyView()
         }
     }
 
-    // MARK: - Helpers
+    // MARK: - Checklist
 
-    private var typeLabel: String {
-        switch state.renderType {
-        case "plain": "메모"
-        case "checklist": "체크리스트"
-        case "dday": "D-day"
-        case "countdown": "카운트다운"
-        case "progress": "진행바"
-        default: "메모"
+    /// 본문 유무에 따라 달라지는 최대 표시 행 수.
+    /// 남은 개수 안내("외 N개")도 한 행을 차지하므로 같은 예산에서 함께 계산한다.
+    private var checklistCapacity: Int { hasContent ? 4 : 5 }
+
+    @ViewBuilder
+    private func checklistContent(_ items: [LiveChecklistItem]) -> some View {
+        let showsOverflow = items.count > checklistCapacity
+        let visibleCount = showsOverflow ? checklistCapacity - 1 : checklistCapacity
+
+        VStack(alignment: .leading, spacing: Self.checkRowSpacing) {
+            ForEach(items.prefix(visibleCount), id: \.id) { item in
+                checkRow(item)
+            }
+            if showsOverflow {
+                Text("외 \(items.count - visibleCount)개")
+                    .font(.system(size: 11))
+                    .foregroundStyle(.secondary)
+            }
         }
     }
+
+    private func checkRow(_ item: LiveChecklistItem) -> some View {
+        Button(intent: ToggleItemIntent(
+            memoId: context.attributes.memoId,
+            itemId: item.id
+        )) {
+            HStack(spacing: 8) {
+                Image(systemName: item.done ? "checkmark.square.fill" : "square")
+                    .font(.system(size: 15))
+                    .foregroundStyle(item.done ? tint : .secondary)
+                Text(item.title)
+                    .font(.system(size: Self.itemFontSize))
+                    .foregroundStyle(item.done ? .secondary : .primary)
+                    .strikethrough(item.done)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+                // Spacer가 없으면 행 폭이 확정되지 않아 말줄임 대신 그대로 잘린다.
+                Spacer(minLength: 0)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .buttonStyle(.plain)
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    // MARK: - Progress
+
+    private func progressContent(_ progress: Double) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("\(Int(progress * 100))%")
+                .font(.system(size: 11, weight: .bold))
+                .foregroundStyle(.secondary)
+                .monospacedDigit()
+
+            HStack(spacing: 10) {
+                stepButton(direction: "down", systemName: "minus")
+
+                ProgressView(value: progress)
+                    .progressViewStyle(.linear)
+                    .tint(tint)
+                    .frame(maxWidth: .infinity)
+
+                stepButton(direction: "up", systemName: "plus")
+            }
+        }
+    }
+
+    private func stepButton(direction: String, systemName: String) -> some View {
+        Button(intent: StepProgressIntent(
+            memoId: context.attributes.memoId,
+            direction: direction
+        )) {
+            Image(systemName: systemName)
+                .font(.subheadline.weight(.bold))
+                .foregroundStyle(.primary)
+                .frame(width: 28, height: 28)
+                .background(.quaternary, in: Circle())
+        }
+        .buttonStyle(.plain)
+    }
+
+    // MARK: - Helpers
 
     private func ddayString(_ target: Date) -> String {
         let days = Calendar.current.dateComponents(

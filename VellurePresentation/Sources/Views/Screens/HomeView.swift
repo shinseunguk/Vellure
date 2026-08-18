@@ -229,8 +229,12 @@ public struct HomeView: View {
                         onToggleActivity: { vm.toggleActivity(for: memo) },
                         onDelete: { deleteMemo(memo, vm: vm) }
                     )
+                    // 정렬 모드에서 드래그 핸들이 붙어도 행 전체 폭이 늘지 않도록
+                    // 카드가 남은 폭을 받아 줄어들게 한다.
+                    .frame(maxWidth: .infinity)
                     .contextMenu { memoContextMenu(for: memo, vm: vm) }
                 }
+                .frame(maxWidth: .infinity)
                 .background(
                     GeometryReader { geo in
                         Color.clear.preference(
