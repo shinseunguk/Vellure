@@ -38,7 +38,8 @@ struct BrandLabel: View {
         return "Vellure · \(label)"
     }
 
-    private static func typeLabel(_ renderType: String) -> String? {
+    /// 렌더 타입을 사용자에게 보여줄 이름으로 옮긴다.
+    static func typeLabel(_ renderType: String) -> String? {
         switch renderType {
         case "plain": "메모"
         case "checklist": "체크리스트"

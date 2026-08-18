@@ -13,6 +13,8 @@ struct VellureLiveActivityWidget: Widget {
     private static let contentSpacing: CGFloat = 8
     /// 본문 글자 크기
     private static let contentFontSize: CGFloat = 15
+    /// 상단 띠 우측의 메모 종류 글자 크기. 브랜드 워드마크와 맞춘다.
+    private static let typeLabelFontSize: CGFloat = 11
     /// D-day·카운트다운 강조 숫자 크기
     private static let highlightFontSize: CGFloat = 24
 
@@ -27,9 +29,23 @@ struct VellureLiveActivityWidget: Widget {
                 // 폭을 거의 쓰지 않는 브랜드 표시를 leading에 둬서 채운다.
                 // 폭이 필요한 본문·타입별 콘텐츠는 온전한 하단 영역에 모은다.
                 DynamicIslandExpandedRegion(.leading) {
-                    BrandLabel(tint: tint(context), renderType: context.state.renderType)
+                    BrandLabel(tint: tint(context))
                         .padding(.leading, Self.expandedContentInset)
                         .frame(maxWidth: .infinity, alignment: .leading)
+                }
+
+                // 워드마크와 종류를 한 줄에 붙이면 컷아웃에 눌려 말줄임이 난다.
+                // 예약된 상단 띠의 좌우를 나눠 써서 둘 다 온전히 보이게 한다.
+                DynamicIslandExpandedRegion(.trailing) {
+                    if let label = BrandLabel.typeLabel(context.state.renderType) {
+                        Text(label)
+                            .font(.system(size: Self.typeLabelFontSize, weight: .semibold))
+                            .foregroundStyle(tint(context))
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.8)
+                            .padding(.trailing, Self.expandedContentInset)
+                            .frame(maxWidth: .infinity, alignment: .trailing)
+                    }
                 }
 
                 DynamicIslandExpandedRegion(.bottom) {
