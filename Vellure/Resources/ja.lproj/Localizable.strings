@@ -173,3 +173,23 @@
 "liveActivity.error.unknown" = "しばらくしてからもう一度お試しください。";
 "liveActivity.error.openSettings" = "設定を開く";
 "common.close" = "閉じる";
+
+/* Accessibility */
+"a11y.card.publish" = "ロック画面に表示";
+"a11y.card.unpublish" = "ロック画面から外す";
+"a11y.card.delete" = "メモを削除";
+"a11y.card.hint" = "ダブルタップでメモを開きます";
+"a11y.header.reorder" = "並び替え";
+"a11y.header.newMemo" = "新規メモ";
+"a11y.header.settings" = "設定";
+"a11y.reorder.handle" = "ドラッグして並び替え";
+"a11y.item.add" = "項目を追加";
+"a11y.item.remove" = "項目を削除";
+"a11y.item.checked" = "完了";
+"a11y.item.unchecked" = "未完了";
+"a11y.progress.increase" = "進捗を10パーセント上げる";
+"a11y.progress.decrease" = "進捗を10パーセント下げる";
+
+/* Storage */
+"storage.error.title" = "メモを読み込めませんでした";
+"storage.error.message" = "保存領域を開けませんでした。この起動中に作成した内容は保存されません。再起動しても続く場合は、再インストールが必要になることがあります。";

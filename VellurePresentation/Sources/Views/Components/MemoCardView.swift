@@ -146,6 +146,7 @@ struct MemoCardView: View {
                     HStack(spacing: 6) {
                         Button(action: onToggleActivity) {
                             Image(systemName: isActive ? "arrow.down" : "arrow.up")
+                                .accessibilityHidden(true)
                                 .scaledFont(13, weight: .bold)
                                 .foregroundStyle(isActive ? .white : tintColor)
                                 .frame(width: 34, height: 34)
@@ -153,9 +154,11 @@ struct MemoCardView: View {
                                 .clipShape(Circle())
                         }
                         .buttonStyle(.plain)
+                        .accessibilityLabel(isActive ? "a11y.card.unpublish" : "a11y.card.publish")
 
                         Button(action: onDelete) {
                             Image(systemName: "trash")
+                                .accessibilityHidden(true)
                                 .scaledFont(13, weight: .medium)
                                 .foregroundStyle(Theme.textSecondary)
                                 .frame(width: 34, height: 34)
@@ -163,6 +166,7 @@ struct MemoCardView: View {
                                 .clipShape(Circle())
                         }
                         .buttonStyle(.plain)
+                        .accessibilityLabel("a11y.card.delete")
                     }
                 }
             }
@@ -194,6 +198,8 @@ struct MemoCardView: View {
             }
         }
         .buttonStyle(.plain)
+        .accessibilityElement(children: .contain)
+        .accessibilityHint("a11y.card.hint")
     }
 }
 

@@ -46,6 +46,8 @@ struct ExpandedChecklistView: View {
             }
         }
         .buttonStyle(.plain)
+        .accessibilityLabel(item.title)
+        .accessibilityValue(item.done ? "a11y.item.checked" : "a11y.item.unchecked")
     }
 }
 

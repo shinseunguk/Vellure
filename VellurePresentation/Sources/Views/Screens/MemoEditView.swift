@@ -176,27 +176,7 @@ struct MemoEditView: View {
             sectionLabel(String(localized: "edit.section.checklist"))
             VStack(spacing: 0) {
                 ForEach(vm.checklistItems) { item in
-                    HStack(spacing: 12) {
-                        Button {
-                            vm.toggleChecklistItem(item)
-                        } label: {
-                            Image(systemName: item.done ? "checkmark.circle.fill" : "circle")
-                                .scaledFont(20)
-                                .foregroundStyle(item.done ? Theme.accent : Theme.textSecondary)
-                        }
-                        TextField(String(localized: "edit.checklist.placeholder"), text: titleBinding(vm, item))
-                            .strikethrough(item.done)
-                            .foregroundStyle(item.done ? Theme.textSecondary : Theme.textPrimary)
-                        Button {
-                            vm.removeChecklistItem(item)
-                        } label: {
-                            Image(systemName: "minus.circle.fill")
-                                .scaledFont(20)
-                                .foregroundStyle(Theme.textSecondary)
-                        }
-                    }
-                    .padding(.vertical, 10)
-                    .padding(.horizontal, 16)
+                    checklistRow(vm, item)
                     Divider().padding(.leading, 48)
                 }
 
@@ -222,6 +202,34 @@ struct MemoEditView: View {
                     .stroke(Theme.divider, lineWidth: 1)
             )
         }
+    }
+
+    private func checklistRow(_ vm: MemoEditViewModel, _ item: ChecklistItem) -> some View {
+        HStack(spacing: 12) {
+            Button {
+                vm.toggleChecklistItem(item)
+            } label: {
+                Image(systemName: item.done ? "checkmark.circle.fill" : "circle")
+                    .scaledFont(20)
+                    .foregroundStyle(item.done ? Theme.accent : Theme.textSecondary)
+            }
+            .accessibilityLabel(item.done ? "a11y.item.checked" : "a11y.item.unchecked")
+
+            TextField(String(localized: "edit.checklist.placeholder"), text: titleBinding(vm, item))
+                .strikethrough(item.done)
+                .foregroundStyle(item.done ? Theme.textSecondary : Theme.textPrimary)
+
+            Button {
+                vm.removeChecklistItem(item)
+            } label: {
+                Image(systemName: "minus.circle.fill")
+                    .scaledFont(20)
+                    .foregroundStyle(Theme.textSecondary)
+            }
+            .accessibilityLabel("a11y.item.remove")
+        }
+        .padding(.vertical, 10)
+        .padding(.horizontal, 16)
     }
 
     private func titleBinding(_ vm: MemoEditViewModel, _ item: ChecklistItem) -> Binding<String> {
