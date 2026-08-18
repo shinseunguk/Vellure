@@ -5,11 +5,19 @@ import VellureCore
 
 struct LockScreenView: View {
     /// 카드 기본 여백
-    private static let cardPadding: CGFloat = 14
+    private static let cardPadding: CGFloat = 12
+    /// 브랜드 표시와 본문 사이 여백
+    private static let brandSpacing: CGFloat = 6
     /// 본문과 타입별 콘텐츠 사이 여백
     private static let contentSpacing: CGFloat = 8
     /// 체크리스트 행 간격
-    private static let checkRowSpacing: CGFloat = 6
+    private static let checkRowSpacing: CGFloat = 5
+    /// 본문 글자 크기
+    private static let contentFontSize: CGFloat = 15
+    /// 체크리스트 항목 글자 크기
+    private static let itemFontSize: CGFloat = 13
+    /// D-day·카운트다운 강조 숫자 크기
+    private static let highlightFontSize: CGFloat = 24
 
     @Environment(\.colorScheme) private var colorScheme
 
@@ -23,14 +31,18 @@ struct LockScreenView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: Self.contentSpacing) {
-            if hasContent {
-                Text(state.content)
-                    .font(.headline.weight(.semibold))
-                    .fontDesign(fontDesign(from: state.font))
-                    .foregroundStyle(.primary)
-                    .lineLimit(contentLineLimit)
-                    .truncationMode(.tail)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+            VStack(alignment: .leading, spacing: Self.brandSpacing) {
+                BrandLabel(tint: tint)
+
+                if hasContent {
+                    Text(state.content)
+                        .font(.system(size: Self.contentFontSize, weight: .semibold))
+                        .fontDesign(fontDesign(from: state.font))
+                        .foregroundStyle(.primary)
+                        .lineLimit(contentLineLimit)
+                        .truncationMode(.tail)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
             }
 
             lockScreenExtraContent
@@ -60,7 +72,7 @@ struct LockScreenView: View {
         case "dday":
             if let target = state.targetDate {
                 Text(ddayString(target))
-                    .font(.system(size: 26, weight: .heavy))
+                    .font(.system(size: Self.highlightFontSize, weight: .heavy))
                     .foregroundStyle(tint)
                     .monospacedDigit()
                     .lineLimit(1)
@@ -69,7 +81,7 @@ struct LockScreenView: View {
         case "countdown":
             if let target = state.targetDate {
                 Text(timerInterval: Date.now...target, countsDown: true)
-                    .font(.system(size: 26, weight: .heavy))
+                    .font(.system(size: Self.highlightFontSize, weight: .heavy))
                     .foregroundStyle(tint)
                     .monospacedDigit()
                     .lineLimit(1)
@@ -105,7 +117,7 @@ struct LockScreenView: View {
             }
             if showsOverflow {
                 Text("외 \(items.count - visibleCount)개")
-                    .font(.caption)
+                    .font(.system(size: 11))
                     .foregroundStyle(.secondary)
             }
         }
@@ -118,10 +130,10 @@ struct LockScreenView: View {
         )) {
             HStack(spacing: 8) {
                 Image(systemName: item.done ? "checkmark.square.fill" : "square")
-                    .font(.body)
+                    .font(.system(size: 15))
                     .foregroundStyle(item.done ? tint : .secondary)
                 Text(item.title)
-                    .font(.subheadline)
+                    .font(.system(size: Self.itemFontSize))
                     .foregroundStyle(item.done ? .secondary : .primary)
                     .strikethrough(item.done)
                     .lineLimit(1)
@@ -140,7 +152,7 @@ struct LockScreenView: View {
     private func progressContent(_ progress: Double) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             Text("\(Int(progress * 100))%")
-                .font(.caption.weight(.bold))
+                .font(.system(size: 11, weight: .bold))
                 .foregroundStyle(.secondary)
                 .monospacedDigit()
 
@@ -165,7 +177,7 @@ struct LockScreenView: View {
             Image(systemName: systemName)
                 .font(.subheadline.weight(.bold))
                 .foregroundStyle(.primary)
-                .frame(width: 30, height: 30)
+                .frame(width: 28, height: 28)
                 .background(.quaternary, in: Circle())
         }
         .buttonStyle(.plain)

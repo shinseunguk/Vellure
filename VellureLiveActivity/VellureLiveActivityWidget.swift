@@ -11,6 +11,12 @@ struct VellureLiveActivityWidget: Widget {
     private static let contentVerticalPadding: CGFloat = 2
     /// 본문과 타입별 콘텐츠 사이 여백
     private static let contentSpacing: CGFloat = 8
+    /// 브랜드 표시와 본문 사이 여백
+    private static let brandSpacing: CGFloat = 5
+    /// 본문 글자 크기
+    private static let contentFontSize: CGFloat = 15
+    /// D-day·카운트다운 강조 숫자 크기
+    private static let highlightFontSize: CGFloat = 24
 
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: MemoAttributes.self) { context in
@@ -22,14 +28,18 @@ struct VellureLiveActivityWidget: Widget {
                 // 콘텐츠를 폭이 온전한 하단 영역 하나에 모아 잘림을 없앤다.
                 DynamicIslandExpandedRegion(.bottom) {
                     VStack(alignment: .leading, spacing: Self.contentSpacing) {
-                        if hasContent(context) {
-                            Text(context.state.content)
-                                .font(.headline.weight(.semibold))
-                                .fontDesign(fontDesign(from: context.state.font))
-                                .foregroundStyle(.primary)
-                                .lineLimit(expandedContentLineLimit(context))
-                                .truncationMode(.tail)
-                                .frame(maxWidth: .infinity, alignment: .leading)
+                        VStack(alignment: .leading, spacing: Self.brandSpacing) {
+                            BrandLabel(tint: tint(context))
+
+                            if hasContent(context) {
+                                Text(context.state.content)
+                                    .font(.system(size: Self.contentFontSize, weight: .semibold))
+                                    .fontDesign(fontDesign(from: context.state.font))
+                                    .foregroundStyle(.primary)
+                                    .lineLimit(expandedContentLineLimit(context))
+                                    .truncationMode(.tail)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                            }
                         }
 
                         expandedDynamicContent(context)
@@ -76,7 +86,7 @@ struct VellureLiveActivityWidget: Widget {
         case "dday":
             if let target = state.targetDate {
                 Text(ddayString(target))
-                    .font(.system(size: 26, weight: .heavy))
+                    .font(.system(size: Self.highlightFontSize, weight: .heavy))
                     .foregroundStyle(tint(context))
                     .monospacedDigit()
                     .lineLimit(1)
@@ -85,7 +95,7 @@ struct VellureLiveActivityWidget: Widget {
         case "countdown":
             if let target = state.targetDate {
                 Text(timerInterval: Date.now...target, countsDown: true)
-                    .font(.system(size: 26, weight: .heavy))
+                    .font(.system(size: Self.highlightFontSize, weight: .heavy))
                     .foregroundStyle(tint(context))
                     .monospacedDigit()
                     .lineLimit(1)
