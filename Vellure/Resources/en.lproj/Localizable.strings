@@ -164,3 +164,12 @@
 /* Shortcuts */
 "shortcut.create.title" = "Add Memo";
 "shortcut.show.title" = "View Memos";
+
+/* Live Activity Errors */
+"liveActivity.error.title" = "Couldn’t show on Lock Screen";
+"liveActivity.error.notEnabled" = "Turn on Live Activities in Settings > Vellure.";
+"liveActivity.error.tooMany" = "You’ve reached the limit. Remove another note from the Lock Screen first.";
+"liveActivity.error.tooLarge" = "This note is too long. Try removing some items.";
+"liveActivity.error.unknown" = "Please try again in a moment.";
+"liveActivity.error.openSettings" = "Open Settings";
+"common.close" = "Close";

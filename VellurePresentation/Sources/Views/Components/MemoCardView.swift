@@ -7,6 +7,9 @@ struct MemoCardView: View {
     let onToggleActivity: () -> Void
     let onDelete: () -> Void
     var showsActions: Bool = true
+    /// 실제로 잠금화면에 떠 있는지. 저장된 activityId가 아니라
+    /// 실행 중인 Activity 목록에서 판정한 값을 주입받는다.
+    var isActive: Bool = false
 
     private var tintColor: Color {
         Theme.memoColor(for: memo.colorTag)
@@ -58,8 +61,6 @@ struct MemoCardView: View {
             return nil
         }
     }
-
-    private var isActive: Bool { memo.activityId != nil }
 
     var body: some View {
         Button(action: onTap) {

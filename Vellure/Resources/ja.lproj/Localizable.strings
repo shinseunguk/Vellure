@@ -164,3 +164,12 @@
 /* Shortcuts */
 "shortcut.create.title" = "メモを追加";
 "shortcut.show.title" = "メモを表示";
+
+/* Live Activity Errors */
+"liveActivity.error.title" = "ロック画面に表示できませんでした";
+"liveActivity.error.notEnabled" = "設定 > Vellure で「ライブアクティビティ」をオンにしてください。";
+"liveActivity.error.tooMany" = "表示できる数を超えました。ほかのメモを先に外してください。";
+"liveActivity.error.tooLarge" = "メモが長すぎます。項目を減らすと表示できます。";
+"liveActivity.error.unknown" = "しばらくしてからもう一度お試しください。";
+"liveActivity.error.openSettings" = "設定を開く";
+"common.close" = "閉じる";

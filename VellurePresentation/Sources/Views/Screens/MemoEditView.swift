@@ -8,11 +8,37 @@ struct MemoEditView: View {
     @Environment(MemoRepository.self) private var repository
     @Environment(\.dismiss) private var dismiss
     @State private var viewModel: MemoEditViewModel?
+    @State private var activityError: LiveActivityError?
+    @State private var didAttemptStart = false
     @FocusState private var contentFocused: Bool
 
     let memo: Memo?
 
     var body: some View {
+        content
+            .liveActivityErrorAlert($activityError)
+            // 알럿을 닫은 뒤 화면을 닫는다. 실패 사유를 못 보고 넘어가지 않도록.
+            .onChange(of: activityError) { _, error in
+                if error == nil && didAttemptStart { dismiss() }
+            }
+    }
+
+    /// 새 메모를 저장한 직후 Live Activity를 띄운다.
+    /// 실패하면 이유를 알럿으로 보여주고, 확인 후 화면을 닫는다.
+    private func startActivity(for memo: Memo) {
+        didAttemptStart = true
+        do {
+            let activityId = try LiveActivityService.shared.start(memo: memo)
+            repository.setActivity(memo, activityId: activityId)
+            dismiss()
+        } catch let error as LiveActivityError {
+            activityError = error
+        } catch {
+            activityError = .unknown(String(describing: type(of: error)))
+        }
+    }
+
+    private var content: some View {
         NavigationStack {
             if let vm = viewModel {
                 VStack(spacing: 0) {
@@ -32,10 +58,9 @@ struct MemoEditView: View {
                     Divider()
                     Button {
                         let saved = vm.save()
-                        if !vm.isEditing && LiveActivityService.shared.isSupported {
-                            if let activityId = LiveActivityService.shared.start(memo: saved) {
-                                repository.update(saved, activityId: activityId)
-                            }
+                        guard vm.isEditing else {
+                            startActivity(for: saved)
+                            return
                         }
                         dismiss()
                     } label: {

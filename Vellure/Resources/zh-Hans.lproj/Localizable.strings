@@ -164,3 +164,12 @@
 /* Shortcuts */
 "shortcut.create.title" = "添加备忘录";
 "shortcut.show.title" = "查看备忘录";
+
+/* Live Activity Errors */
+"liveActivity.error.title" = "无法显示到锁屏";
+"liveActivity.error.notEnabled" = "请在“设置 > Vellure”中开启“实时活动”。";
+"liveActivity.error.tooMany" = "已达到可显示的数量上限，请先移除其他备忘。";
+"liveActivity.error.tooLarge" = "备忘内容过长，减少项目后即可显示。";
+"liveActivity.error.unknown" = "请稍后再试。";
+"liveActivity.error.openSettings" = "打开设置";
+"common.close" = "关闭";

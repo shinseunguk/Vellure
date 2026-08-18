@@ -164,3 +164,12 @@
 /* Shortcuts */
 "shortcut.create.title" = "메모 추가";
 "shortcut.show.title" = "메모 보기";
+
+/* Live Activity Errors */
+"liveActivity.error.title" = "잠금화면에 올리지 못했어요";
+"liveActivity.error.notEnabled" = "설정 > Vellure에서 ‘실시간 현황’을 켜주세요.";
+"liveActivity.error.tooMany" = "잠금화면에 올릴 수 있는 개수를 넘었어요. 다른 메모를 먼저 내려주세요.";
+"liveActivity.error.tooLarge" = "메모 내용이 너무 길어요. 항목을 줄이면 올릴 수 있어요.";
+"liveActivity.error.unknown" = "잠시 후 다시 시도해주세요.";
+"liveActivity.error.openSettings" = "설정 열기";
+"common.close" = "닫기";

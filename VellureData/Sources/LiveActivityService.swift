@@ -1,9 +1,13 @@
 import ActivityKit
 import Foundation
+import OSLog
 import VellureCore
 
 public final class LiveActivityService {
     public static let shared = LiveActivityService()
+
+    /// 릴리스 빌드에서도 남는 진단 로그. 메모 내용 등 민감정보는 담지 않는다.
+    private let logger = Logger(subsystem: "com.uk.Vellure", category: "LiveActivity")
 
     private init() {}
 
@@ -11,18 +15,38 @@ public final class LiveActivityService {
         ActivityAuthorizationInfo().areActivitiesEnabled
     }
 
-    public func start(memo: Memo) -> String? {
-        guard isSupported else { return nil }
+    /// 실제로 잠금화면에 떠 있는 Live Activity의 memoId 집합.
+    /// 저장된 activityId는 요청이 성공했다는 기록일 뿐 현재 표시 여부를 보장하지 않으므로,
+    /// "표시 중" 판정은 반드시 이 값을 기준으로 한다.
+    public var runningMemoIds: Set<String> {
+        Set(
+            Activity<MemoAttributes>.activities
+                .filter { $0.activityState == .active || $0.activityState == .stale }
+                .map(\.attributes.memoId)
+        )
+    }
+
+    /// Live Activity를 띄우고 activityId를 돌려준다.
+    /// 실패하면 이유를 담은 `LiveActivityError`를 던진다.
+    /// (예전에는 nil을 반환해 호출부가 실패를 알 수 없었고, 사용자에게도 아무 안내가 없었다)
+    public func start(memo: Memo) throws -> String {
+        guard isSupported else {
+            logger.warning("Live Activity 시작 거부: 설정에서 비활성화됨")
+            throw LiveActivityError.notEnabled
+        }
 
         let attributes = MemoAttributes(
             memoId: memo.id.uuidString,
             displayMode: memo.displayMode.rawValue
         )
 
-        let state = buildState(from: memo)
+        // 소멸 시각은 "지금 띄우는 시점" 기준이어야 한다.
+        // memo.clearDate는 activityStartedAt이 아직 없으면 updatedAt을 기준으로 삼으므로,
+        // 오래전에 쓴 메모를 올릴 때 staleDate가 과거가 되는 것을 막는다.
+        let startedAt = Date()
         let content = ActivityContent(
-            state: state,
-            staleDate: memo.clearDate,
+            state: buildState(from: memo),
+            staleDate: clearDate(for: memo, startedAt: startedAt),
             relevanceScore: relevanceScore(for: memo)
         )
 
@@ -32,11 +56,51 @@ public final class LiveActivityService {
                 content: content,
                 pushType: nil
             )
-            scheduleAutoDismissIfEligible(activity: activity, memo: memo)
+            scheduleAutoDismissIfEligible(activity: activity, memo: memo, startedAt: startedAt)
+            logger.info("Live Activity 시작 성공")
             return activity.id
         } catch {
-            print("Live Activity 시작 실패: \(error)")
-            return nil
+            let mapped = Self.mapped(error)
+            logger.error("Live Activity 시작 실패: \(mapped.diagnosticCode, privacy: .public)")
+            throw mapped
+        }
+    }
+
+    /// ActivityKit 오류를 사용자에게 보여줄 수 있는 형태로 옮긴다.
+    private static func mapped(_ error: Error) -> LiveActivityError {
+        guard let authorizationError = error as? ActivityAuthorizationError else {
+            return .unknown(String(describing: type(of: error)))
+        }
+        switch authorizationError {
+        case .denied, .unsupported, .unentitled:
+            return .notEnabled
+        case .targetMaximumExceeded, .globalMaximumExceeded:
+            return .tooManyActivities
+        case .attributesTooLarge:
+            return .contentTooLarge
+        default:
+            return .unknown(String(describing: authorizationError))
+        }
+    }
+
+    /// 시작 시각을 기준으로 한 소멸 시각.
+    /// 아직 memo.activityStartedAt이 저장되기 전이라 여기서 직접 계산한다.
+    private func clearDate(for memo: Memo, startedAt: Date) -> Date? {
+        let systemCap = startedAt.addingTimeInterval(Memo.systemMaxDuration)
+        switch memo.displayMode {
+        case .pinned:
+            return systemCap
+        case .autoClear:
+            switch memo.clearTrigger {
+            case .target:
+                guard let targetDate = memo.targetDate else { return systemCap }
+                return min(targetDate, systemCap)
+            case .hours, .none:
+                let requested = startedAt.addingTimeInterval(TimeInterval(memo.clearAfterHours) * 3600)
+                return min(requested, systemCap)
+            case .done, .full:
+                return systemCap
+            }
         }
     }
 
@@ -46,10 +110,14 @@ public final class LiveActivityService {
     /// 짧은(≤4h) 비상호작용 autoClear 메모는 시스템이 정확한 시각에 제거하도록 예약한다.
     /// 푸시 없이 백그라운드에서 정시 소멸이 가능한 유일한 경로다.
     /// (4시간 초과·상호작용형은 앱 포그라운드 진입 시 `cleanupExpired`로 정리)
-    private func scheduleAutoDismissIfEligible(activity: Activity<MemoAttributes>, memo: Memo) {
+    private func scheduleAutoDismissIfEligible(
+        activity: Activity<MemoAttributes>,
+        memo: Memo,
+        startedAt: Date
+    ) {
         guard memo.displayMode == .autoClear,
               !memo.renderType.isInteractive,
-              let clearDate = memo.clearDate,
+              let clearDate = clearDate(for: memo, startedAt: startedAt),
               clearDate > Date(),
               clearDate <= Date().addingTimeInterval(Self.maxScheduledDismissal) else {
             return
