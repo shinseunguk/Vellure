@@ -189,3 +189,7 @@
 "a11y.item.unchecked" = "완료 안 됨";
 "a11y.progress.increase" = "진행률 10퍼센트 올리기";
 "a11y.progress.decrease" = "진행률 10퍼센트 내리기";
+
+/* Storage */
+"storage.error.title" = "메모를 불러오지 못했어요";
+"storage.error.message" = "저장 공간을 여는 데 실패했어요. 이번 실행에서 작성한 내용은 저장되지 않습니다. 앱을 다시 실행해도 같은 문제가 계속되면 재설치가 필요할 수 있어요.";

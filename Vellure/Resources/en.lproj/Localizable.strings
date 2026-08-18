@@ -189,3 +189,7 @@
 "a11y.item.unchecked" = "Not completed";
 "a11y.progress.increase" = "Increase progress by 10 percent";
 "a11y.progress.decrease" = "Decrease progress by 10 percent";
+
+/* Storage */
+"storage.error.title" = "Couldn’t load your notes";
+"storage.error.message" = "We couldn’t open the storage. Anything you write in this session won’t be saved. If this keeps happening after relaunching, you may need to reinstall the app.";

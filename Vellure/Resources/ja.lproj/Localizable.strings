@@ -189,3 +189,7 @@
 "a11y.item.unchecked" = "未完了";
 "a11y.progress.increase" = "進捗を10パーセント上げる";
 "a11y.progress.decrease" = "進捗を10パーセント下げる";
+
+/* Storage */
+"storage.error.title" = "メモを読み込めませんでした";
+"storage.error.message" = "保存領域を開けませんでした。この起動中に作成した内容は保存されません。再起動しても続く場合は、再インストールが必要になることがあります。";
