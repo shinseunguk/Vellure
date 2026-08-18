@@ -33,7 +33,29 @@ public struct HomeView: View {
                     .padding(.bottom, 12)
 
                 if let viewModel, !viewModel.memos.isEmpty {
-                    memoList(viewModel)
+                    SearchFilterBar(
+                        searchText: Binding(
+                            get: { viewModel.searchText },
+                            set: { viewModel.searchText = $0 }
+                        ),
+                        typeFilter: Binding(
+                            get: { viewModel.typeFilter },
+                            set: { viewModel.typeFilter = $0 }
+                        ),
+                        displayFilter: Binding(
+                            get: { viewModel.displayFilter },
+                            set: { viewModel.displayFilter = $0 }
+                        )
+                    )
+                    .padding(.bottom, 10)
+
+                    if viewModel.isFiltering && viewModel.filteredMemos.isEmpty {
+                        Spacer()
+                        noResultsView(viewModel)
+                        Spacer()
+                    } else {
+                        memoList(viewModel)
+                    }
                 } else {
                     Spacer()
                     EmptyStateView { showNewMemo = true }
@@ -192,8 +214,46 @@ public struct HomeView: View {
     private func memoList(_ vm: MemoListViewModel) -> some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                let active = vm.activeMemos
-                if !active.isEmpty {
+                // 검색·필터 중에는 섹션을 접고 결과만 한 목록으로 보여준다.
+                // 부분 집합에서 드래그 정렬을 허용하면 sortOrder가 어긋난다.
+                if vm.isFiltering {
+                    resultSection(vm.filteredMemos, vm: vm)
+                } else {
+                    sectionedList(vm)
+                }
+            }
+            .padding(.bottom, 20)
+        }
+        .scrollDisabled(draggingId != nil)
+        .coordinateSpace(name: "reorder")
+        .onPreferenceChange(CardMidYKey.self) { activeCardMidYs = $0 }
+    }
+
+    /// 검색·필터 결과 목록 (정렬 불가)
+    private func resultSection(_ items: [Memo], vm: MemoListViewModel) -> some View {
+        VStack(spacing: 8) {
+            ForEach(items) { memo in
+                MemoCardView(
+                    memo: memo,
+                    onTap: { selectedMemo = memo },
+                    onToggleActivity: { vm.toggleActivity(for: memo) },
+                    onDelete: { deleteMemo(memo, vm: vm) },
+                    isActive: vm.isActive(memo)
+                )
+                .frame(maxWidth: .infinity)
+                .contextMenu { memoContextMenu(for: memo, vm: vm) }
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.horizontal, 20)
+        .padding(.top, 6)
+    }
+
+    @ViewBuilder
+    private func sectionedList(_ vm: MemoListViewModel) -> some View {
+        Group {
+            let active = vm.activeMemos
+            if !active.isEmpty {
                     activeSectionHeader(count: active.count)
                     reorderableSection(active, matches: { $0.activityId != nil }, vm: vm)
                 }
@@ -209,12 +269,29 @@ public struct HomeView: View {
                         )
                     }
                 }
-            }
-            .padding(.bottom, 20)
         }
-        .scrollDisabled(draggingId != nil)
-        .coordinateSpace(name: "reorder")
-        .onPreferenceChange(CardMidYKey.self) { activeCardMidYs = $0 }
+    }
+
+    /// 검색·필터 결과가 없을 때
+    private func noResultsView(_ vm: MemoListViewModel) -> some View {
+        VStack(spacing: 10) {
+            Image(systemName: "magnifyingglass")
+                .scaledFont(30, weight: .light)
+                .foregroundStyle(Theme.textSecondary)
+                .accessibilityHidden(true)
+            Text("search.empty.title")
+                .scaledFont(15, weight: .bold)
+                .foregroundStyle(Theme.textPrimary)
+            Button {
+                vm.clearFilters()
+            } label: {
+                Text("search.empty.reset")
+                    .scaledFont(13, weight: .semibold)
+                    .foregroundStyle(Theme.accent)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.horizontal, 20)
     }
 
     // MARK: - Reorderable Section (custom drag)

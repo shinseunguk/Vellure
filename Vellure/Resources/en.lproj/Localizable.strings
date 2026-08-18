@@ -193,3 +193,13 @@
 /* Storage */
 "storage.error.title" = "Couldn’t load your notes";
 "storage.error.message" = "We couldn’t open the storage. Anything you write in this session won’t be saved. If this keeps happening after relaunching, you may need to reinstall the app.";
+
+/* Search & Filter */
+"search.placeholder" = "Search notes";
+"search.empty.title" = "No matching notes";
+"search.empty.reset" = "Clear search and filters";
+"filter.display.all" = "All";
+"filter.display.active" = "On Lock Screen";
+"filter.display.inactive" = "Not shown";
+"a11y.search.clear" = "Clear search";
+"filter.type.all" = "All types";
