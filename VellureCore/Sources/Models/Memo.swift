@@ -53,6 +53,10 @@ public final class Memo {
     public var font: String
     public var colorTag: String
     public var activityId: String?
+    /// Live Activity를 실제로 띄운 시각.
+    /// 소멸 시각은 메모를 마지막으로 고친 시각이 아니라 이 시각을 기준으로 삼는다.
+    /// (체크박스를 토글할 때마다 `updatedAt`이 갱신돼 카운트다운이 되감기던 문제)
+    public var activityStartedAt: Date?
     public var createdAt: Date
     public var updatedAt: Date
     public var sortOrder: Int
@@ -70,6 +74,7 @@ public final class Memo {
         font: String = "default",
         colorTag: String = "green",
         activityId: String? = nil,
+        activityStartedAt: Date? = nil,
         sortOrder: Int = 0
     ) {
         self.id = id
@@ -84,6 +89,7 @@ public final class Memo {
         self.font = font
         self.colorTag = colorTag
         self.activityId = activityId
+        self.activityStartedAt = activityStartedAt
         self.createdAt = Date()
         self.updatedAt = Date()
         self.sortOrder = sortOrder
@@ -91,7 +97,7 @@ public final class Memo {
 
     /// Live Activity는 iOS 정책상 활성화 후 최대 12시간(활성 8시간 + 소멸 4시간)이 지나면
     /// 앱 설정과 무관하게 시스템이 강제로 종료한다. 어떤 트리거를 고르든 이 시각을 넘길 수 없다.
-    private static let systemMaxDuration: TimeInterval = 12 * 60 * 60
+    public static let systemMaxDuration: TimeInterval = 12 * 60 * 60
 
     /// Live Activity에 카운트다운으로 노출할 소멸 시각.
     /// 사용자가 직접 시간을 지정한 경우에만 값을 돌려준다.
@@ -104,8 +110,12 @@ public final class Memo {
         return clearDate
     }
 
+    /// 소멸 시각 계산의 기준 시점.
+    /// Live Activity가 떠 있으면 그 시작 시각을, 아니면 마지막 수정 시각을 쓴다.
+    private var clearAnchor: Date { activityStartedAt ?? updatedAt }
+
     public var clearDate: Date? {
-        let systemCap = updatedAt.addingTimeInterval(Self.systemMaxDuration)
+        let systemCap = clearAnchor.addingTimeInterval(Self.systemMaxDuration)
         switch displayMode {
         case .pinned:
             return systemCap
@@ -115,7 +125,7 @@ public final class Memo {
                 guard let targetDate else { return systemCap }
                 return min(targetDate, systemCap)
             case .hours, .none:
-                let requested = updatedAt.addingTimeInterval(TimeInterval(clearAfterHours) * 3600)
+                let requested = clearAnchor.addingTimeInterval(TimeInterval(clearAfterHours) * 3600)
                 return min(requested, systemCap)
             case .done, .full:
                 return systemCap

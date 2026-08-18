@@ -103,8 +103,18 @@ public final class MemoRepository {
         save()
     }
 
+    /// Live Activity 시작을 기록한다.
+    /// 소멸 시각 계산의 기준이 되는 시작 시각을 activityId와 함께 저장한다.
+    public func setActivity(_ memo: Memo, activityId: String, startedAt: Date = Date()) {
+        memo.activityId = activityId
+        memo.activityStartedAt = startedAt
+        memo.updatedAt = Date()
+        save()
+    }
+
     public func clearActivityId(_ memo: Memo) {
         memo.activityId = nil
+        memo.activityStartedAt = nil
         memo.updatedAt = Date()
         save()
     }

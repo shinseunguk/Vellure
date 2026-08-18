@@ -9,6 +9,10 @@ final class MemoListViewModel {
     private let repository: MemoRepository
 
     var memos: [Memo] = []
+    /// Live Activity를 띄우지 못한 이유. 뷰가 알럿으로 보여준다.
+    var activityError: LiveActivityError?
+    /// 실제로 잠금화면에 떠 있는 메모 id. "표시 중" 판정의 기준.
+    private(set) var runningMemoIds: Set<String> = []
 
     private var hasPendingReorder = false
 
@@ -19,6 +23,12 @@ final class MemoListViewModel {
 
     func refresh() {
         memos = repository.fetchAll()
+        runningMemoIds = LiveActivityService.shared.runningMemoIds
+    }
+
+    /// 저장된 activityId가 아니라 실제 실행 중인 Activity를 기준으로 판정한다.
+    func isActive(_ memo: Memo) -> Bool {
+        runningMemoIds.contains(memo.id.uuidString)
     }
 
     func delete(_ memo: Memo) {
@@ -33,12 +43,12 @@ final class MemoListViewModel {
 
     /// 잠금화면에 표시 중인(활성) 메모 — 타입 무관 한 그룹.
     var activeMemos: [Memo] {
-        memos.filter { $0.activityId != nil }
+        memos.filter { isActive($0) }
     }
 
     /// 표시 중이 아닌(비활성) 메모 — 타입별 그룹.
     func inactiveMemos(ofType type: RenderType) -> [Memo] {
-        memos.filter { $0.activityId == nil && $0.renderType == type }
+        memos.filter { !isActive($0) && $0.renderType == type }
     }
 
     /// 한 섹션(그룹) 안에서 fromIndex 메모를 toIndex 위치로 옮긴다 (커스텀 드래그).
@@ -73,11 +83,19 @@ final class MemoListViewModel {
                 repository.clearActivityId(memo)
                 refresh()
             }
-        } else {
-            if let activityId = LiveActivityService.shared.start(memo: memo) {
-                repository.update(memo, activityId: activityId)
-                refresh()
-            }
+            return
+        }
+
+        // 실패하면 이유를 알럿으로 알린다.
+        // (예전에는 조용히 아무 일도 일어나지 않아 "눌러도 안 올라간다"로만 보였다)
+        do {
+            let activityId = try LiveActivityService.shared.start(memo: memo)
+            repository.setActivity(memo, activityId: activityId)
+            refresh()
+        } catch let error as LiveActivityError {
+            activityError = error
+        } catch {
+            activityError = .unknown(String(describing: type(of: error)))
         }
     }
 }
