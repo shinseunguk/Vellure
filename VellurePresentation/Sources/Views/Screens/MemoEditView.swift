@@ -65,7 +65,7 @@ struct MemoEditView: View {
                         dismiss()
                     } label: {
                         Text(vm.isEditing ? "edit.update.cta" : "edit.save.cta")
-                            .font(.system(size: 15, weight: .bold))
+                            .scaledFont(15, weight: .bold)
                             .foregroundStyle(.white)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 16)
@@ -185,7 +185,7 @@ struct MemoEditView: View {
                 } label: {
                     HStack(spacing: 12) {
                         Image(systemName: "plus.circle.fill")
-                            .font(.system(size: 20))
+                            .scaledFont(20)
                             .foregroundStyle(Theme.accent)
                         Text("edit.checklist.add")
                             .foregroundStyle(Theme.accent)
@@ -210,7 +210,7 @@ struct MemoEditView: View {
                 vm.toggleChecklistItem(item)
             } label: {
                 Image(systemName: item.done ? "checkmark.circle.fill" : "circle")
-                    .font(.system(size: 20))
+                    .scaledFont(20)
                     .foregroundStyle(item.done ? Theme.accent : Theme.textSecondary)
             }
             .accessibilityLabel(item.done ? "a11y.item.checked" : "a11y.item.unchecked")
@@ -223,7 +223,7 @@ struct MemoEditView: View {
                 vm.removeChecklistItem(item)
             } label: {
                 Image(systemName: "minus.circle.fill")
-                    .font(.system(size: 20))
+                    .scaledFont(20)
                     .foregroundStyle(Theme.textSecondary)
             }
             .accessibilityLabel("a11y.item.remove")
@@ -267,7 +267,7 @@ struct MemoEditView: View {
                 ) { vm.displayMode = .autoClear }
             }
             Text("edit.mode.systemCapNotice")
-                .font(.system(size: 11))
+                .scaledFont(11)
                 .foregroundStyle(Theme.textSecondary)
             if vm.displayMode == .autoClear {
                 VStack(spacing: 2) {
@@ -292,11 +292,11 @@ struct MemoEditView: View {
             if let clearDate = memo?.clearDate, memo?.activityId != nil, clearDate > .now {
                 HStack(spacing: 5) {
                     Image(systemName: "timer")
-                        .font(.system(size: 11, weight: .semibold))
+                        .scaledFont(11, weight: .semibold)
                     Text("edit.autoClear.countdownPrefix")
-                        .font(.system(size: 12.5, weight: .semibold))
+                        .scaledFont(12.5, weight: .semibold)
                     Text(timerInterval: Date.now...clearDate, countsDown: true)
-                        .font(.system(size: 12.5, weight: .semibold))
+                        .scaledFont(12.5, weight: .semibold)
                         .monospacedDigit()
                 }
                 .foregroundStyle(Theme.textSecondary)
@@ -320,7 +320,7 @@ struct MemoEditView: View {
                                     .font(style.font(size: 14))
                                     .lineLimit(1)
                                 Text(style.displayName)
-                                    .font(.system(size: 11, weight: .medium))
+                                    .scaledFont(11, weight: .medium)
                             }
                             .padding(.horizontal, 16)
                             .padding(.vertical, 10)
@@ -351,7 +351,7 @@ struct MemoEditView: View {
                             .overlay {
                                 if vm.colorTag == key {
                                     Image(systemName: "checkmark")
-                                        .font(.system(size: 14, weight: .bold))
+                                        .scaledFont(14, weight: .bold)
                                         .foregroundStyle(.white)
                                 }
                             }
@@ -380,7 +380,7 @@ struct MemoEditView: View {
                 dismiss()
             } label: {
                 Text("edit.delete")
-                    .font(.system(size: 15, weight: .semibold))
+                    .scaledFont(15, weight: .semibold)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 14)
             }
