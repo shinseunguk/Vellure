@@ -173,3 +173,19 @@
 "liveActivity.error.unknown" = "잠시 후 다시 시도해주세요.";
 "liveActivity.error.openSettings" = "설정 열기";
 "common.close" = "닫기";
+
+/* Accessibility */
+"a11y.card.publish" = "잠금화면에 올리기";
+"a11y.card.unpublish" = "잠금화면에서 내리기";
+"a11y.card.delete" = "메모 삭제";
+"a11y.card.hint" = "두 번 탭하면 메모를 엽니다";
+"a11y.header.reorder" = "순서 편집";
+"a11y.header.newMemo" = "새 메모 작성";
+"a11y.header.settings" = "설정";
+"a11y.reorder.handle" = "드래그해서 순서 바꾸기";
+"a11y.item.add" = "항목 추가";
+"a11y.item.remove" = "항목 삭제";
+"a11y.item.checked" = "완료됨";
+"a11y.item.unchecked" = "완료 안 됨";
+"a11y.progress.increase" = "진행률 10퍼센트 올리기";
+"a11y.progress.decrease" = "진행률 10퍼센트 내리기";

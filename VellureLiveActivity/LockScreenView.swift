@@ -156,6 +156,8 @@ struct LockScreenView: View {
         }
         .buttonStyle(.plain)
         .frame(maxWidth: .infinity, alignment: .leading)
+        .accessibilityLabel(item.title)
+        .accessibilityValue(item.done ? "a11y.item.checked" : "a11y.item.unchecked")
     }
 
     // MARK: - Progress
@@ -192,6 +194,7 @@ struct LockScreenView: View {
                 .background(.quaternary, in: Circle())
         }
         .buttonStyle(.plain)
+        .accessibilityLabel(direction == "up" ? "a11y.progress.increase" : "a11y.progress.decrease")
     }
 
     // MARK: - Helpers
