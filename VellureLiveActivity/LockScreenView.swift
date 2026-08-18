@@ -1,5 +1,6 @@
 import AppIntents
 import SwiftUI
+import UIKit
 import WidgetKit
 import VellureCore
 
@@ -19,7 +20,12 @@ struct LockScreenView: View {
     /// D-day·카운트다운 강조 숫자 크기
     private static let highlightFontSize: CGFloat = 24
 
-    @Environment(\.colorScheme) private var colorScheme
+    /// 카드 배경. 라이트=흰색, 다크=검은색
+    private static let background = Color(uiColor: .systemBackground)
+    /// 본문 글자색. 라이트=검은색, 다크=흰색
+    private static let label = Color(uiColor: .label)
+    /// 보조 글자색
+    private static let secondaryLabel = Color(uiColor: .secondaryLabel)
 
     let context: ActivityViewContext<MemoAttributes>
 
@@ -38,7 +44,7 @@ struct LockScreenView: View {
                     Text(state.content)
                         .font(.system(size: Self.contentFontSize, weight: .semibold))
                         .fontDesign(fontDesign(from: state.font))
-                        .foregroundStyle(.primary)
+                        .foregroundStyle(Self.label)
                         .lineLimit(contentLineLimit)
                         .truncationMode(.tail)
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -49,8 +55,13 @@ struct LockScreenView: View {
         }
         .padding(Self.cardPadding)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .activityBackgroundTint(colorScheme == .dark ? .black : .white)
-        .activitySystemActionForegroundColor(colorScheme == .dark ? .white : .black)
+        // 배경을 뷰 안에서 직접 칠한다.
+        // activityBackgroundTint에 적응형 색을 넘기면 시스템 외형 기준으로 해석되는 반면
+        // 본문 글자색은 잠금화면 렌더 컨텍스트 기준으로 해석돼 서로 어긋난다.
+        // (라이트 모드에서 흰 배경 + 흰 글씨가 되던 원인)
+        // 같은 컨텍스트에서 함께 해석되도록 배경과 글자색을 모두 뷰 안에 둔다.
+        .background(Self.background)
+        .activitySystemActionForegroundColor(Self.label)
     }
 
     /// 타입별 본문 최대 줄 수.
@@ -118,7 +129,7 @@ struct LockScreenView: View {
             if showsOverflow {
                 Text("외 \(items.count - visibleCount)개")
                     .font(.system(size: 11))
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Self.secondaryLabel)
             }
         }
     }
@@ -131,10 +142,10 @@ struct LockScreenView: View {
             HStack(spacing: 8) {
                 Image(systemName: item.done ? "checkmark.square.fill" : "square")
                     .font(.system(size: 15))
-                    .foregroundStyle(item.done ? tint : .secondary)
+                    .foregroundStyle(item.done ? tint : Self.secondaryLabel)
                 Text(item.title)
                     .font(.system(size: Self.itemFontSize))
-                    .foregroundStyle(item.done ? .secondary : .primary)
+                    .foregroundStyle(item.done ? Self.secondaryLabel : Self.label)
                     .strikethrough(item.done)
                     .lineLimit(1)
                     .truncationMode(.tail)
@@ -153,7 +164,7 @@ struct LockScreenView: View {
         VStack(alignment: .leading, spacing: 6) {
             Text("\(Int(progress * 100))%")
                 .font(.system(size: 11, weight: .bold))
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Self.secondaryLabel)
                 .monospacedDigit()
 
             HStack(spacing: 10) {
@@ -176,7 +187,7 @@ struct LockScreenView: View {
         )) {
             Image(systemName: systemName)
                 .font(.subheadline.weight(.bold))
-                .foregroundStyle(.primary)
+                .foregroundStyle(Self.label)
                 .frame(width: 28, height: 28)
                 .background(.quaternary, in: Circle())
         }
