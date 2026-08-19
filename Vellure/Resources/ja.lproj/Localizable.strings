@@ -35,8 +35,8 @@
 "edit.section.displayMode" = "表示モード";
 "edit.mode.pinned" = "固定";
 "edit.mode.autoClear" = "自動消去";
-"edit.mode.systemCapNotice" = "iOSの仕様上、ロック画面表示は最大12時間までです";
-"edit.autoClear.countdownPrefix" = "自動消去まで";
+"edit.mode.systemCapNotice" = "iOSの仕様上、8時間で更新が止まり、最大12時間後に消えます";
+"edit.autoClear.countdownPrefix" = "更新の残り";
 "trigger.target" = "目標時刻到達時";
 "trigger.target.desc" = "D-dayやカウントダウンが終了すると自動で終了します";
 "trigger.hours" = "N時間経過後";
@@ -79,7 +79,8 @@
 "onboarding.page3.title" = "Siriに話すだけで\nすぐ投稿";
 "onboarding.page3.desc" = "「Vellureメモ 牛乳買う」と言えば\nアプリを開かずに保存・投稿されます。";
 "onboarding.page4.title" = "最初のメモを\n投稿しましょう";
-"onboarding.page4.desc" = "何でも書いてみてください。\n12時間ロック画面に表示されます。";
+"onboarding.page4.desc" = "何でも書いてみてください。
+8時間ロック画面で動き続けます。";
 "onboarding.cta.start" = "はじめる";
 "onboarding.cta.allow" = "許可する";
 "onboarding.cta.siri" = "Siriに追加";
@@ -130,7 +131,7 @@
 "settings.terms" = "利用規約・プライバシー";
 "settings.priceFree" = "無料";
 "terms.s1.title" = "サービス利用";
-"terms.s1.body" = "Vellureは無料で提供され、メモをロック画面のライブアクティビティとして表示します。iOSの仕様により、ライブアクティビティは最大12時間表示後に自動終了します。";
+"terms.s1.body" = "Vellureは無料で提供され、メモをロック画面のライブアクティビティとして表示します。iOSの仕様により、ライブアクティビティは最大8時間更新され、その後ロック画面に最大4時間残ってから消えます。";
 "terms.s2.title" = "プライバシーポリシー";
 "terms.s2.body" = "すべてのメモと設定はアカウント不要でこの端末にのみ保存されます。サーバーへのデータ送信はなく、アプリを削除するとすべてのデータも削除されます。";
 "terms.s3.title" = "Siri・音声入力";
@@ -173,3 +174,34 @@
 "liveActivity.error.unknown" = "しばらくしてからもう一度お試しください。";
 "liveActivity.error.openSettings" = "設定を開く";
 "common.close" = "閉じる";
+
+/* Accessibility */
+"a11y.card.publish" = "ロック画面に表示";
+"a11y.card.unpublish" = "ロック画面から外す";
+"a11y.card.delete" = "メモを削除";
+"a11y.card.hint" = "ダブルタップでメモを開きます";
+"a11y.header.reorder" = "並び替え";
+"a11y.header.newMemo" = "新規メモ";
+"a11y.header.settings" = "設定";
+"a11y.reorder.handle" = "ドラッグして並び替え";
+"a11y.item.add" = "項目を追加";
+"a11y.item.remove" = "項目を削除";
+"a11y.item.checked" = "完了";
+"a11y.item.unchecked" = "未完了";
+"a11y.progress.increase" = "進捗を10パーセント上げる";
+"a11y.progress.decrease" = "進捗を10パーセント下げる";
+
+/* Storage */
+"storage.error.title" = "メモを読み込めませんでした";
+"storage.error.message" = "保存領域を開けませんでした。この起動中に作成した内容は保存されません。再起動しても続く場合は、再インストールが必要になることがあります。";
+
+/* Search & Filter */
+"search.placeholder" = "メモを検索";
+"search.empty.title" = "該当するメモがありません";
+"search.empty.reset" = "検索とフィルタをリセット";
+"filter.display.all" = "すべて";
+"filter.display.active" = "表示中";
+"filter.display.inactive" = "非表示";
+"a11y.search.clear" = "検索をクリア";
+"filter.type.all" = "すべてのタイプ";
+"la.expired" = "再表示が必要です";

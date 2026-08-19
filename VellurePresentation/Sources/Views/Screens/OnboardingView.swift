@@ -45,7 +45,7 @@ public struct OnboardingView: View {
                 }
             } label: {
                 Text(ctaText)
-                    .font(.system(size: 15.5, weight: .bold))
+                    .scaledFont(15.5, weight: .bold)
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
@@ -60,7 +60,7 @@ public struct OnboardingView: View {
                 Button("onboarding.skip") {
                     onComplete()
                 }
-                .font(.system(size: 13, weight: .semibold))
+                .scaledFont(13, weight: .semibold)
                 .foregroundStyle(Theme.textSecondary)
                 .padding(.bottom, 40)
             } else {
@@ -118,10 +118,10 @@ public struct OnboardingView: View {
             VStack(spacing: 14) {
                 VStack(spacing: 2) {
                     Text("onboarding.hero.date")
-                        .font(.system(size: 11, weight: .semibold))
+                        .scaledFont(11, weight: .semibold)
                         .foregroundStyle(.white.opacity(0.6))
                     Text("9:41")
-                        .font(.system(size: 38, weight: .bold))
+                        .scaledFont(38, weight: .bold)
                         .foregroundStyle(.white)
                         .monospacedDigit()
                 }
@@ -165,12 +165,12 @@ public struct OnboardingView: View {
             .frame(width: 210)
 
             Text("onboarding.page1.title")
-                .font(.system(size: 26, weight: .heavy))
+                .scaledFont(26, weight: .heavy)
                 .foregroundStyle(Theme.textPrimary)
                 .multilineTextAlignment(.center)
 
             Text("onboarding.page1.desc")
-                .font(.system(size: 15, weight: .medium))
+                .scaledFont(15, weight: .medium)
                 .foregroundStyle(Theme.textSecondary)
                 .multilineTextAlignment(.center)
                 .lineSpacing(4)
@@ -184,16 +184,16 @@ public struct OnboardingView: View {
             HStack(spacing: 6) {
                 Circle().fill(color).frame(width: 5, height: 5)
                 Text("Vellure · \(typeLabel)")
-                    .font(.system(size: 9, weight: .heavy))
+                    .scaledFont(9, weight: .heavy)
                     .foregroundStyle(color)
             }
             HStack {
                 Text(content)
-                    .font(.system(size: 12, weight: .semibold))
+                    .scaledFont(12, weight: .semibold)
                     .foregroundStyle(.white)
                 Spacer()
                 Text(value)
-                    .font(.system(size: 19, weight: .heavy))
+                    .scaledFont(19, weight: .heavy)
                     .foregroundStyle(color)
                     .monospacedDigit()
                     .lineLimit(1)
@@ -225,13 +225,13 @@ public struct OnboardingView: View {
                         .clipShape(RoundedRectangle(cornerRadius: 10))
 
                     Text("onboarding.perm.title")
-                        .font(.system(size: 13, weight: .bold))
+                        .scaledFont(13, weight: .bold)
                         .foregroundStyle(Theme.textPrimary)
                         .multilineTextAlignment(.center)
                         .lineSpacing(2)
 
                     Text("onboarding.perm.body")
-                        .font(.system(size: 11))
+                        .scaledFont(11)
                         .foregroundStyle(Theme.textSecondary)
                         .multilineTextAlignment(.center)
                         .lineSpacing(2)
@@ -242,7 +242,7 @@ public struct OnboardingView: View {
 
                 HStack(spacing: 0) {
                     Text("onboarding.perm.deny")
-                        .font(.system(size: 13, weight: .semibold))
+                        .scaledFont(13, weight: .semibold)
                         .foregroundStyle(Theme.textSecondary)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 11)
@@ -250,7 +250,7 @@ public struct OnboardingView: View {
                     Divider().frame(height: 40)
 
                     Text("onboarding.perm.allow")
-                        .font(.system(size: 13, weight: .heavy))
+                        .scaledFont(13, weight: .heavy)
                         .foregroundStyle(Theme.accent)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 11)
@@ -266,12 +266,12 @@ public struct OnboardingView: View {
             .frame(width: 230)
 
             Text("onboarding.page2.title")
-                .font(.system(size: 26, weight: .heavy))
+                .scaledFont(26, weight: .heavy)
                 .foregroundStyle(Theme.textPrimary)
                 .multilineTextAlignment(.center)
 
             Text("onboarding.page2.desc")
-                .font(.system(size: 15, weight: .medium))
+                .scaledFont(15, weight: .medium)
                 .foregroundStyle(Theme.textSecondary)
                 .multilineTextAlignment(.center)
                 .lineSpacing(4)
@@ -295,7 +295,7 @@ public struct OnboardingView: View {
 
                 // Speech bubble
                 Text("onboarding.siri.bubble")
-                    .font(.system(size: 12.5, weight: .semibold))
+                    .scaledFont(12.5, weight: .semibold)
                     .foregroundStyle(.white)
                     .padding(10)
                     .frame(maxWidth: .infinity)
@@ -304,10 +304,10 @@ public struct OnboardingView: View {
 
                 HStack(spacing: 6) {
                     Image(systemName: "checkmark")
-                        .font(.system(size: 10, weight: .bold))
+                        .scaledFont(10, weight: .bold)
                         .foregroundStyle(Color(red: 0.36, green: 0.86, blue: 0.6))
                     Text("onboarding.siri.done")
-                        .font(.system(size: 10.5, weight: .bold))
+                        .scaledFont(10.5, weight: .bold)
                         .foregroundStyle(Color(red: 0.36, green: 0.86, blue: 0.6))
                 }
             }
@@ -333,12 +333,12 @@ public struct OnboardingView: View {
             .frame(width: 230)
 
             Text("onboarding.page3.title")
-                .font(.system(size: 26, weight: .heavy))
+                .scaledFont(26, weight: .heavy)
                 .foregroundStyle(Theme.textPrimary)
                 .multilineTextAlignment(.center)
 
             Text("onboarding.page3.desc")
-                .font(.system(size: 15, weight: .medium))
+                .scaledFont(15, weight: .medium)
                 .foregroundStyle(Theme.textSecondary)
                 .multilineTextAlignment(.center)
                 .lineSpacing(4)
@@ -358,11 +358,11 @@ public struct OnboardingView: View {
                         .fill(Theme.accent)
                         .frame(width: 5, height: 5)
                     Text("Vellure · \(String(localized: "type.plain"))")
-                        .font(.system(size: 9, weight: .heavy))
+                        .scaledFont(9, weight: .heavy)
                         .foregroundStyle(Theme.accent)
                 }
                 Text(firstMemoText.isEmpty ? String(localized: "onboarding.preview.placeholder") : firstMemoText)
-                    .font(.system(size: 13.5, weight: .semibold))
+                    .scaledFont(13.5, weight: .semibold)
                     .foregroundStyle(firstMemoText.isEmpty ? .white.opacity(0.4) : .white)
                     .lineLimit(2)
                     .frame(maxWidth: .infinity, minHeight: 20, alignment: .leading)
@@ -390,12 +390,12 @@ public struct OnboardingView: View {
             .frame(width: 230)
 
             Text("onboarding.page4.title")
-                .font(.system(size: 26, weight: .heavy))
+                .scaledFont(26, weight: .heavy)
                 .foregroundStyle(Theme.textPrimary)
                 .multilineTextAlignment(.center)
 
             Text("onboarding.page4.desc")
-                .font(.system(size: 15, weight: .medium))
+                .scaledFont(15, weight: .medium)
                 .foregroundStyle(Theme.textSecondary)
                 .multilineTextAlignment(.center)
                 .lineSpacing(4)
@@ -404,7 +404,7 @@ public struct OnboardingView: View {
             // Input field
             HStack {
                 TextField("onboarding.input.placeholder", text: $firstMemoText)
-                    .font(.system(size: 15))
+                    .scaledFont(15)
             }
             .padding(14)
             .background(Theme.cardBackground)

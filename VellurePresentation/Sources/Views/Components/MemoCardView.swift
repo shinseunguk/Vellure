@@ -11,6 +11,12 @@ struct MemoCardView: View {
     /// 실행 중인 Activity 목록에서 판정한 값을 주입받는다.
     var isActive: Bool = false
 
+    /// 만료 타이머의 고정 폭.
+    /// `timerInterval` 텍스트는 고유 폭이 확정되지 않아 폭을 명시해야 한다.
+    /// 예전에는 이 칩에 `.fixedSize()`를 걸어 카드가 넓어지고 화면 전체가
+    /// 좌우로 밀렸다 (#37). 폭을 고정하되 늘어나지는 않게 한다.
+    private static let expiryTimerWidth: CGFloat = 46
+
     private var tintColor: Color {
         Theme.memoColor(for: memo.colorTag)
     }
@@ -62,6 +68,33 @@ struct MemoCardView: View {
         }
     }
 
+    /// 잠금화면에 떠 있는 동안 언제까지 유지되는지 알린다.
+    /// Live Activity와 같은 8시간 기준이라 두 화면의 값이 일치한다.
+    @ViewBuilder
+    private var expiryTimer: some View {
+        if isActive, let deadline = memo.activeDeadline() {
+            HStack(spacing: 3) {
+                Image(systemName: deadline > .now ? "timer" : "exclamationmark.arrow.circlepath")
+                    .scaledFont(9, weight: .semibold)
+                    .accessibilityHidden(true)
+
+                if deadline > .now {
+                    Text(timerInterval: Date.now...deadline, countsDown: true)
+                        .scaledFont(10, weight: .semibold)
+                        .monospacedDigit()
+                        .multilineTextAlignment(.trailing)
+                        .frame(width: Self.expiryTimerWidth, alignment: .trailing)
+                } else {
+                    Text("la.expired")
+                        .scaledFont(10, weight: .semibold)
+                        .lineLimit(1)
+                }
+            }
+            .foregroundStyle(deadline > .now ? Theme.textSecondary : Theme.accent)
+            .lineLimit(1)
+        }
+    }
+
     var body: some View {
         Button(action: onTap) {
             HStack(spacing: 11) {
@@ -70,33 +103,37 @@ struct MemoCardView: View {
                     .frame(width: 38, height: 38)
                     .overlay {
                         Image(systemName: typeIcon)
-                            .font(.system(size: 15, weight: .semibold))
+                            .scaledFont(15, weight: .semibold)
                             .foregroundStyle(tintColor)
                     }
 
                 VStack(alignment: .leading, spacing: 2) {
                     HStack(spacing: 7) {
                         Text(typeLabel)
-                            .font(.system(size: 11, weight: .bold))
+                            .scaledFont(11, weight: .bold)
                             .foregroundStyle(tintColor)
                             .lineLimit(1)
-                            .fixedSize()
+                            .truncationMode(.tail)
                         if let value = sideValue {
                             Text(value)
-                                .font(.system(size: 10.5, weight: .heavy))
+                                .scaledFont(10.5, weight: .heavy)
                                 .foregroundStyle(tintColor)
                                 .monospacedDigit()
                                 .lineLimit(1)
-                                .fixedSize()
+                                .truncationMode(.tail)
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 2)
                                 .background(tintColor.opacity(0.12))
                                 .clipShape(Capsule())
                         }
+
+                        expiryTimer
+
+                        Spacer(minLength: 0)
                     }
                     if !memo.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                         Text(memo.content)
-                            .font(.system(size: 15.5, weight: .bold))
+                            .scaledFont(15.5, weight: .bold)
                             .foregroundStyle(Theme.textPrimary)
                             .lineLimit(2)
                             .multilineTextAlignment(.leading)
@@ -121,10 +158,10 @@ struct MemoCardView: View {
                             ForEach(items.prefix(4)) { item in
                                 HStack(spacing: 5) {
                                     Image(systemName: item.done ? "checkmark.circle.fill" : "circle")
-                                        .font(.system(size: 11, weight: .semibold))
+                                        .scaledFont(11, weight: .semibold)
                                         .foregroundStyle(item.done ? tintColor : Theme.textSecondary)
                                     Text(item.title)
-                                        .font(.system(size: 12.5, weight: .medium))
+                                        .scaledFont(12.5, weight: .medium)
                                         .foregroundStyle(item.done ? Theme.textSecondary : Theme.textPrimary)
                                         .strikethrough(item.done)
                                         .lineLimit(1)
@@ -132,7 +169,7 @@ struct MemoCardView: View {
                             }
                             if items.count > 4 {
                                 Text("+\(items.count - 4)")
-                                    .font(.system(size: 11, weight: .semibold))
+                                    .scaledFont(11, weight: .semibold)
                                     .foregroundStyle(Theme.textSecondary)
                             }
                         }
@@ -146,23 +183,27 @@ struct MemoCardView: View {
                     HStack(spacing: 6) {
                         Button(action: onToggleActivity) {
                             Image(systemName: isActive ? "arrow.down" : "arrow.up")
-                                .font(.system(size: 13, weight: .bold))
+                                .accessibilityHidden(true)
+                                .scaledFont(13, weight: .bold)
                                 .foregroundStyle(isActive ? .white : tintColor)
                                 .frame(width: 34, height: 34)
                                 .background(isActive ? tintColor : tintColor.opacity(0.15))
                                 .clipShape(Circle())
                         }
                         .buttonStyle(.plain)
+                        .accessibilityLabel(isActive ? "a11y.card.unpublish" : "a11y.card.publish")
 
                         Button(action: onDelete) {
                             Image(systemName: "trash")
-                                .font(.system(size: 13, weight: .medium))
+                                .accessibilityHidden(true)
+                                .scaledFont(13, weight: .medium)
                                 .foregroundStyle(Theme.textSecondary)
                                 .frame(width: 34, height: 34)
                                 .background(Theme.chipBackground)
                                 .clipShape(Circle())
                         }
                         .buttonStyle(.plain)
+                        .accessibilityLabel("a11y.card.delete")
                     }
                 }
             }
@@ -181,7 +222,7 @@ struct MemoCardView: View {
                             .fill(Theme.accent)
                             .frame(width: 5, height: 5)
                         Text("card.onLock")
-                            .font(.system(size: 10, weight: .heavy))
+                            .scaledFont(10, weight: .heavy)
                             .foregroundStyle(.white)
                     }
                     .padding(.horizontal, 10)
@@ -194,6 +235,8 @@ struct MemoCardView: View {
             }
         }
         .buttonStyle(.plain)
+        .accessibilityElement(children: .contain)
+        .accessibilityHint("a11y.card.hint")
     }
 }
 

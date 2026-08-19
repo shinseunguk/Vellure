@@ -43,10 +43,13 @@ public final class LiveActivityService {
         // 소멸 시각은 "지금 띄우는 시점" 기준이어야 한다.
         // memo.clearDate는 activityStartedAt이 아직 없으면 updatedAt을 기준으로 삼으므로,
         // 오래전에 쓴 메모를 올릴 때 staleDate가 과거가 되는 것을 막는다.
+        // staleDate는 12시간(clearDate)이 아니라 8시간(activeDeadline)이어야 한다.
+        // 8시간이 지나면 시스템이 활동을 종료해 갱신이 멈추므로, 그 시점에
+        // isStale이 켜지며 뷰가 다시 그려져야 사용자에게 멈춤을 알릴 수 있다.
         let startedAt = Date()
         let content = ActivityContent(
-            state: buildState(from: memo),
-            staleDate: clearDate(for: memo, startedAt: startedAt),
+            state: buildState(from: memo, startedAt: startedAt),
+            staleDate: memo.activeDeadline(startedAt: startedAt),
             relevanceScore: relevanceScore(for: memo)
         )
 
@@ -124,7 +127,7 @@ public final class LiveActivityService {
         }
 
         let content = ActivityContent(
-            state: buildState(from: memo),
+            state: buildState(from: memo, startedAt: startedAt),
             staleDate: clearDate,
             relevanceScore: relevanceScore(for: memo)
         )
@@ -137,7 +140,7 @@ public final class LiveActivityService {
         let state = buildState(from: memo)
         let content = ActivityContent(
             state: state,
-            staleDate: memo.clearDate,
+            staleDate: memo.activeDeadline(),
             relevanceScore: relevanceScore(for: memo)
         )
 
@@ -151,7 +154,7 @@ public final class LiveActivityService {
         let state = buildState(from: memo)
         let content = ActivityContent(
             state: state,
-            staleDate: memo.clearDate,
+            staleDate: memo.activeDeadline(),
             relevanceScore: relevanceScore(for: memo)
         )
 
@@ -174,7 +177,7 @@ public final class LiveActivityService {
 
         let content = ActivityContent(
             state: buildState(from: memo),
-            staleDate: memo.clearDate,
+            staleDate: memo.activeDeadline(),
             relevanceScore: relevanceScore(for: memo)
         )
         for activity in Activity<MemoAttributes>.activities where activity.attributes.memoId == memoId {
@@ -295,7 +298,10 @@ public final class LiveActivityService {
 
     // MARK: - Private
 
-    private func buildState(from memo: Memo) -> MemoAttributes.ContentState {
+    /// - Parameter startedAt: Live Activity를 지금 막 띄우는 경우의 시작 시각.
+    ///   저장소에 `activityStartedAt`이 반영되기 전이라 호출부가 직접 넘겨야 한다.
+    ///   nil이면 메모에 저장된 값을 쓴다.
+    private func buildState(from memo: Memo, startedAt: Date? = nil) -> MemoAttributes.ContentState {
         MemoAttributes.ContentState(
             renderType: memo.renderType.rawValue,
             content: memo.content,
@@ -309,7 +315,8 @@ public final class LiveActivityService {
             updatedAt: Date(),
             // 표시용은 사용자가 지정한 소멸 시각만.
             // 시스템 만료(staleDate)는 ActivityContent 쪽에서 별도로 memo.clearDate를 쓴다.
-            clearDate: memo.userClearDate
+            clearDate: memo.userClearDate,
+            expiresAt: memo.activeDeadline(startedAt: startedAt)
         )
     }
 }

@@ -17,11 +17,11 @@ struct EmptyStateView: View {
 
             VStack(spacing: 8) {
                 Text("empty.title")
-                    .font(.system(size: 19, weight: .heavy))
+                    .scaledFont(19, weight: .heavy)
                     .foregroundStyle(Theme.textPrimary)
 
                 Text("empty.description")
-                    .font(.system(size: 14))
+                    .scaledFont(14)
                     .foregroundStyle(Theme.textSecondary)
                     .multilineTextAlignment(.center)
                     .lineSpacing(4)
@@ -29,7 +29,7 @@ struct EmptyStateView: View {
 
             Button(action: onCreateTap) {
                 Text("empty.cta")
-                    .font(.system(size: 15, weight: .bold))
+                    .scaledFont(15, weight: .bold)
                     .foregroundStyle(.white)
                     .padding(.horizontal, 28)
                     .padding(.vertical, 14)

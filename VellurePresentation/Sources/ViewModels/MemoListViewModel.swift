@@ -14,6 +14,13 @@ final class MemoListViewModel {
     /// 실제로 잠금화면에 떠 있는 메모 id. "표시 중" 판정의 기준.
     private(set) var runningMemoIds: Set<String> = []
 
+    /// 검색어. 본문과 체크리스트 항목 제목을 대상으로 한다.
+    var searchText = ""
+    /// 타입 필터. nil이면 전체.
+    var typeFilter: RenderType?
+    /// 표시 상태 필터.
+    var displayFilter: DisplayFilter = .all
+
     private var hasPendingReorder = false
 
     init(repository: MemoRepository) {
@@ -39,6 +46,45 @@ final class MemoListViewModel {
         }
         repository.delete(memo)
         refresh()
+    }
+
+    /// 검색·필터가 하나라도 걸려 있는지.
+    /// 걸려 있으면 섹션을 접고 단일 결과 목록을 보여주며, 드래그 정렬을 막는다.
+    var isFiltering: Bool {
+        !searchText.trimmingCharacters(in: .whitespaces).isEmpty
+            || typeFilter != nil
+            || displayFilter != .all
+    }
+
+    /// 검색·필터를 통과한 메모. `isFiltering`일 때만 쓴다.
+    var filteredMemos: [Memo] {
+        memos.filter { matchesSearch($0) && matchesType($0) && matchesDisplay($0) }
+    }
+
+    func clearFilters() {
+        searchText = ""
+        typeFilter = nil
+        displayFilter = .all
+    }
+
+    private func matchesSearch(_ memo: Memo) -> Bool {
+        let keyword = searchText.trimmingCharacters(in: .whitespaces)
+        guard !keyword.isEmpty else { return true }
+        if memo.content.localizedCaseInsensitiveContains(keyword) { return true }
+        return memo.items?.contains { $0.title.localizedCaseInsensitiveContains(keyword) } ?? false
+    }
+
+    private func matchesType(_ memo: Memo) -> Bool {
+        guard let typeFilter else { return true }
+        return memo.renderType == typeFilter
+    }
+
+    private func matchesDisplay(_ memo: Memo) -> Bool {
+        switch displayFilter {
+        case .all: true
+        case .active: isActive(memo)
+        case .inactive: !isActive(memo)
+        }
     }
 
     /// 잠금화면에 표시 중인(활성) 메모 — 타입 무관 한 그룹.

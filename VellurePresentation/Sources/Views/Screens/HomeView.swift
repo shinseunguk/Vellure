@@ -12,6 +12,7 @@ public struct HomeView: View {
     @State private var showNewMemo = false
     @State private var selectedMemo: Memo?
     @State private var showSettings = false
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var isReordering = false
     @State private var reorderHaptic = UISelectionFeedbackGenerator()
     @State private var draggingId: UUID?
@@ -32,7 +33,29 @@ public struct HomeView: View {
                     .padding(.bottom, 12)
 
                 if let viewModel, !viewModel.memos.isEmpty {
-                    memoList(viewModel)
+                    SearchFilterBar(
+                        searchText: Binding(
+                            get: { viewModel.searchText },
+                            set: { viewModel.searchText = $0 }
+                        ),
+                        typeFilter: Binding(
+                            get: { viewModel.typeFilter },
+                            set: { viewModel.typeFilter = $0 }
+                        ),
+                        displayFilter: Binding(
+                            get: { viewModel.displayFilter },
+                            set: { viewModel.displayFilter = $0 }
+                        )
+                    )
+                    .padding(.bottom, 10)
+
+                    if viewModel.isFiltering && viewModel.filteredMemos.isEmpty {
+                        Spacer()
+                        noResultsView(viewModel)
+                        Spacer()
+                    } else {
+                        memoList(viewModel)
+                    }
                 } else {
                     Spacer()
                     EmptyStateView { showNewMemo = true }
@@ -80,10 +103,10 @@ public struct HomeView: View {
         HStack(alignment: .center) {
             VStack(alignment: .leading, spacing: 2) {
                 Text(Date.now.formatted(.dateTime.month().day().weekday(.wide)))
-                    .font(.system(size: 13, weight: .semibold))
+                    .scaledFont(13, weight: .semibold)
                     .foregroundStyle(Theme.textSecondary)
                 Text("home.title")
-                    .font(.system(size: 27, weight: .heavy))
+                    .scaledFont(27, weight: .heavy)
                     .foregroundStyle(Theme.textPrimary)
             }
 
@@ -95,7 +118,7 @@ public struct HomeView: View {
                         withAnimation { isReordering = false }
                     } label: {
                         Text("home.done")
-                            .font(.system(size: 13, weight: .bold))
+                            .scaledFont(13, weight: .bold)
                             .foregroundStyle(.white)
                             .padding(.horizontal, 16)
                             .padding(.vertical, 7)
@@ -109,20 +132,26 @@ public struct HomeView: View {
                             withAnimation { isReordering = true }
                         } label: {
                             Image(systemName: "arrow.up.arrow.down")
-                                .font(.system(size: 14, weight: .bold))
+                                .scaledFont(14, weight: .bold)
                                 .foregroundStyle(Theme.textSecondary)
                                 .frame(width: 34, height: 34)
                                 .background(Theme.chipBackground)
                                 .clipShape(Circle())
                         }
+                        .accessibilityLabel("a11y.header.reorder")
                     }
 
                     Button { showNewMemo = true } label: {
                         HStack(spacing: 4) {
                             Image(systemName: "plus")
-                                .font(.system(size: 12, weight: .bold))
-                            Text("home.new")
-                                .font(.system(size: 13, weight: .bold))
+                                .scaledFont(12, weight: .bold)
+                            // 접근성 글자 크기에서는 라벨이 여러 줄로 접혀 버튼이 뭉개진다.
+                            // 아이콘만 남긴다. VoiceOver는 접근성 레이블로 읽으므로 정보 손실이 없다.
+                            if !dynamicTypeSize.isAccessibilitySize {
+                                Text("home.new")
+                                    .scaledFont(13, weight: .bold)
+                                    .lineLimit(1)
+                            }
                         }
                         .foregroundStyle(.white)
                         .padding(.horizontal, 12)
@@ -130,18 +159,19 @@ public struct HomeView: View {
                         .background(Theme.accent)
                         .clipShape(Capsule())
                     }
+                    .accessibilityLabel("a11y.header.newMemo")
 
                     Button { showSettings = true } label: {
                         Image(systemName: "gearshape")
-                            .font(.system(size: 15))
+                            .scaledFont(15)
                             .foregroundStyle(Theme.textSecondary)
                             .frame(width: 34, height: 34)
                             .background(Theme.chipBackground)
                             .clipShape(Circle())
                     }
+                    .accessibilityLabel("a11y.header.settings")
                 }
             }
-            .fixedSize()
         }
     }
 
@@ -184,8 +214,46 @@ public struct HomeView: View {
     private func memoList(_ vm: MemoListViewModel) -> some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                let active = vm.activeMemos
-                if !active.isEmpty {
+                // 검색·필터 중에는 섹션을 접고 결과만 한 목록으로 보여준다.
+                // 부분 집합에서 드래그 정렬을 허용하면 sortOrder가 어긋난다.
+                if vm.isFiltering {
+                    resultSection(vm.filteredMemos, vm: vm)
+                } else {
+                    sectionedList(vm)
+                }
+            }
+            .padding(.bottom, 20)
+        }
+        .scrollDisabled(draggingId != nil)
+        .coordinateSpace(name: "reorder")
+        .onPreferenceChange(CardMidYKey.self) { activeCardMidYs = $0 }
+    }
+
+    /// 검색·필터 결과 목록 (정렬 불가)
+    private func resultSection(_ items: [Memo], vm: MemoListViewModel) -> some View {
+        VStack(spacing: 8) {
+            ForEach(items) { memo in
+                MemoCardView(
+                    memo: memo,
+                    onTap: { selectedMemo = memo },
+                    onToggleActivity: { vm.toggleActivity(for: memo) },
+                    onDelete: { deleteMemo(memo, vm: vm) },
+                    isActive: vm.isActive(memo)
+                )
+                .frame(maxWidth: .infinity)
+                .contextMenu { memoContextMenu(for: memo, vm: vm) }
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.horizontal, 20)
+        .padding(.top, 6)
+    }
+
+    @ViewBuilder
+    private func sectionedList(_ vm: MemoListViewModel) -> some View {
+        Group {
+            let active = vm.activeMemos
+            if !active.isEmpty {
                     activeSectionHeader(count: active.count)
                     reorderableSection(active, matches: { $0.activityId != nil }, vm: vm)
                 }
@@ -201,12 +269,29 @@ public struct HomeView: View {
                         )
                     }
                 }
-            }
-            .padding(.bottom, 20)
         }
-        .scrollDisabled(draggingId != nil)
-        .coordinateSpace(name: "reorder")
-        .onPreferenceChange(CardMidYKey.self) { activeCardMidYs = $0 }
+    }
+
+    /// 검색·필터 결과가 없을 때
+    private func noResultsView(_ vm: MemoListViewModel) -> some View {
+        VStack(spacing: 10) {
+            Image(systemName: "magnifyingglass")
+                .scaledFont(30, weight: .light)
+                .foregroundStyle(Theme.textSecondary)
+                .accessibilityHidden(true)
+            Text("search.empty.title")
+                .scaledFont(15, weight: .bold)
+                .foregroundStyle(Theme.textPrimary)
+            Button {
+                vm.clearFilters()
+            } label: {
+                Text("search.empty.reset")
+                    .scaledFont(13, weight: .semibold)
+                    .foregroundStyle(Theme.accent)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.horizontal, 20)
     }
 
     // MARK: - Reorderable Section (custom drag)
@@ -222,10 +307,11 @@ public struct HomeView: View {
                 HStack(spacing: 4) {
                     if isReordering {
                         Image(systemName: "line.3.horizontal")
-                            .font(.system(size: 16, weight: .semibold))
+                            .scaledFont(16, weight: .semibold)
                             .foregroundStyle(Theme.textSecondary)
                             .frame(width: 24, height: 44)
                             .contentShape(Rectangle())
+                            .accessibilityLabel("a11y.reorder.handle")
                             .highPriorityGesture(reorderGesture(memo: memo, items: items, matches: matches, vm: vm))
                     }
 
@@ -304,11 +390,11 @@ public struct HomeView: View {
     private func activeSectionHeader(count: Int) -> some View {
         HStack(spacing: 5) {
             Image(systemName: "lock.fill")
-                .font(.system(size: 11, weight: .semibold))
+                .scaledFont(11, weight: .semibold)
             Text("home.section.active")
-                .font(.system(size: 13, weight: .bold))
+                .scaledFont(13, weight: .bold)
             Text("\(count)")
-                .font(.system(size: 12, weight: .semibold))
+                .scaledFont(12, weight: .semibold)
         }
         .foregroundStyle(Theme.accent)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -320,11 +406,11 @@ public struct HomeView: View {
     private func sectionHeader(_ type: RenderType, count: Int) -> some View {
         HStack(spacing: 5) {
             Image(systemName: typeIconName(type))
-                .font(.system(size: 11, weight: .semibold))
+                .scaledFont(11, weight: .semibold)
             Text(typeDisplayName(type))
-                .font(.system(size: 13, weight: .bold))
+                .scaledFont(13, weight: .bold)
             Text("\(count)")
-                .font(.system(size: 12, weight: .semibold))
+                .scaledFont(12, weight: .semibold)
         }
         .foregroundStyle(Theme.textSecondary)
         .frame(maxWidth: .infinity, alignment: .leading)

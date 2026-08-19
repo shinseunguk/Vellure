@@ -7,7 +7,7 @@ extension MemoEditView {
 
     func sectionLabel(_ title: String) -> some View {
         Text(title)
-            .font(.system(size: 13, weight: .bold))
+            .scaledFont(13, weight: .bold)
             .foregroundStyle(Theme.textSecondary)
     }
 
@@ -15,9 +15,9 @@ extension MemoEditView {
         Button(action: action) {
             HStack(spacing: 5) {
                 Image(systemName: typeIconName(type))
-                    .font(.system(size: 12))
+                    .scaledFont(12)
                 Text(typeDisplayName(type))
-                    .font(.system(size: 13, weight: .semibold))
+                    .scaledFont(13, weight: .semibold)
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 8)
@@ -30,7 +30,7 @@ extension MemoEditView {
     func modeButton(title: String, selected: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Text(title)
-                .font(.system(size: 13, weight: .semibold))
+                .scaledFont(13, weight: .semibold)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 12)
                 .background(selected ? Theme.accent : Theme.chipBackground)
@@ -58,10 +58,10 @@ extension MemoEditView {
                     }
                 VStack(alignment: .leading, spacing: 1) {
                     Text(triggerLabel(trigger))
-                        .font(.system(size: 13.5, weight: .semibold))
+                        .scaledFont(13.5, weight: .semibold)
                         .foregroundStyle(Theme.textPrimary)
                     Text(triggerDesc(trigger))
-                        .font(.system(size: 11.5))
+                        .scaledFont(11.5)
                         .foregroundStyle(Theme.textSecondary)
                 }
                 Spacer()
@@ -82,7 +82,7 @@ extension MemoEditView {
             in: 1...12
         ) {
             Text(String(format: String(localized: "trigger.hours.value"), vm.clearAfterHours))
-                .font(.system(size: 13, weight: .semibold))
+                .scaledFont(13, weight: .semibold)
                 .foregroundStyle(Theme.textPrimary)
         }
         .padding(.horizontal, 11)

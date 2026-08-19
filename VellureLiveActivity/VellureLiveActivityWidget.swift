@@ -37,15 +37,18 @@ struct VellureLiveActivityWidget: Widget {
                 // 워드마크와 종류를 한 줄에 붙이면 컷아웃에 눌려 말줄임이 난다.
                 // 예약된 상단 띠의 좌우를 나눠 써서 둘 다 온전히 보이게 한다.
                 DynamicIslandExpandedRegion(.trailing) {
-                    if let label = BrandLabel.typeLabel(context.state.renderType) {
-                        Text(label)
-                            .font(.system(size: Self.typeLabelFontSize, weight: .semibold))
-                            .foregroundStyle(tint(context))
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.8)
-                            .padding(.trailing, Self.expandedContentInset)
-                            .frame(maxWidth: .infinity, alignment: .trailing)
+                    VStack(alignment: .trailing, spacing: 1) {
+                        if let label = BrandLabel.typeLabel(context.state.renderType) {
+                            Text(label)
+                                .font(.system(size: Self.typeLabelFontSize, weight: .semibold))
+                                .foregroundStyle(tint(context))
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.8)
+                        }
+                        expiryTimer(context)
                     }
+                    .padding(.trailing, Self.expandedContentInset)
+                    .frame(maxWidth: .infinity, alignment: .trailing)
                 }
 
                 DynamicIslandExpandedRegion(.bottom) {
@@ -92,6 +95,30 @@ struct VellureLiveActivityWidget: Widget {
         case "checklist": 1
         case "progress", "dday", "countdown": 2
         default: 3
+        }
+    }
+
+    /// 만료 타이머의 고정 폭.
+    /// `timerInterval` 텍스트는 고유 폭이 확정되지 않아 폭을 명시해야 한다.
+    /// `H:MM:SS` 7자리에 맞춘 값이며, 넓게 잡으면 아이콘과 사이가 벌어진다.
+    private static let expiryTimerWidth: CGFloat = 46
+
+    /// 상단 우측의 만료 타이머. 잠금화면과 같은 8시간 기준이다.
+    @ViewBuilder
+    private func expiryTimer(_ context: ActivityViewContext<MemoAttributes>) -> some View {
+        if let expiresAt = context.state.expiresAt, expiresAt > .now {
+            HStack(spacing: 2) {
+                Image(systemName: "timer")
+                    .font(.system(size: 8, weight: .semibold))
+                    .accessibilityHidden(true)
+                Text(timerInterval: Date.now...expiresAt, countsDown: true)
+                    .font(.system(size: 10, weight: .semibold))
+                    .monospacedDigit()
+                    .multilineTextAlignment(.trailing)
+                    .frame(width: Self.expiryTimerWidth, alignment: .trailing)
+            }
+            .foregroundStyle(.secondary)
+            .lineLimit(1)
         }
     }
 

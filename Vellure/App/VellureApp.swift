@@ -50,6 +50,7 @@ struct VellureApp: App {
                     .zIndex(1)
                 }
             }
+            .storageNoticeAlert()
             .task {
                 LiveActivityService.shared.startActivitySync(repository: repository)
             }

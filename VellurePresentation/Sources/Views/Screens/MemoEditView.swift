@@ -65,7 +65,7 @@ struct MemoEditView: View {
                         dismiss()
                     } label: {
                         Text(vm.isEditing ? "edit.update.cta" : "edit.save.cta")
-                            .font(.system(size: 15, weight: .bold))
+                            .scaledFont(15, weight: .bold)
                             .foregroundStyle(.white)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 16)
@@ -176,27 +176,7 @@ struct MemoEditView: View {
             sectionLabel(String(localized: "edit.section.checklist"))
             VStack(spacing: 0) {
                 ForEach(vm.checklistItems) { item in
-                    HStack(spacing: 12) {
-                        Button {
-                            vm.toggleChecklistItem(item)
-                        } label: {
-                            Image(systemName: item.done ? "checkmark.circle.fill" : "circle")
-                                .font(.system(size: 20))
-                                .foregroundStyle(item.done ? Theme.accent : Theme.textSecondary)
-                        }
-                        TextField(String(localized: "edit.checklist.placeholder"), text: titleBinding(vm, item))
-                            .strikethrough(item.done)
-                            .foregroundStyle(item.done ? Theme.textSecondary : Theme.textPrimary)
-                        Button {
-                            vm.removeChecklistItem(item)
-                        } label: {
-                            Image(systemName: "minus.circle.fill")
-                                .font(.system(size: 20))
-                                .foregroundStyle(Theme.textSecondary)
-                        }
-                    }
-                    .padding(.vertical, 10)
-                    .padding(.horizontal, 16)
+                    checklistRow(vm, item)
                     Divider().padding(.leading, 48)
                 }
 
@@ -205,7 +185,7 @@ struct MemoEditView: View {
                 } label: {
                     HStack(spacing: 12) {
                         Image(systemName: "plus.circle.fill")
-                            .font(.system(size: 20))
+                            .scaledFont(20)
                             .foregroundStyle(Theme.accent)
                         Text("edit.checklist.add")
                             .foregroundStyle(Theme.accent)
@@ -222,6 +202,34 @@ struct MemoEditView: View {
                     .stroke(Theme.divider, lineWidth: 1)
             )
         }
+    }
+
+    private func checklistRow(_ vm: MemoEditViewModel, _ item: ChecklistItem) -> some View {
+        HStack(spacing: 12) {
+            Button {
+                vm.toggleChecklistItem(item)
+            } label: {
+                Image(systemName: item.done ? "checkmark.circle.fill" : "circle")
+                    .scaledFont(20)
+                    .foregroundStyle(item.done ? Theme.accent : Theme.textSecondary)
+            }
+            .accessibilityLabel(item.done ? "a11y.item.checked" : "a11y.item.unchecked")
+
+            TextField(String(localized: "edit.checklist.placeholder"), text: titleBinding(vm, item))
+                .strikethrough(item.done)
+                .foregroundStyle(item.done ? Theme.textSecondary : Theme.textPrimary)
+
+            Button {
+                vm.removeChecklistItem(item)
+            } label: {
+                Image(systemName: "minus.circle.fill")
+                    .scaledFont(20)
+                    .foregroundStyle(Theme.textSecondary)
+            }
+            .accessibilityLabel("a11y.item.remove")
+        }
+        .padding(.vertical, 10)
+        .padding(.horizontal, 16)
     }
 
     private func titleBinding(_ vm: MemoEditViewModel, _ item: ChecklistItem) -> Binding<String> {
@@ -259,7 +267,7 @@ struct MemoEditView: View {
                 ) { vm.displayMode = .autoClear }
             }
             Text("edit.mode.systemCapNotice")
-                .font(.system(size: 11))
+                .scaledFont(11)
                 .foregroundStyle(Theme.textSecondary)
             if vm.displayMode == .autoClear {
                 VStack(spacing: 2) {
@@ -281,14 +289,16 @@ struct MemoEditView: View {
                         .stroke(Theme.divider, lineWidth: 1)
                 )
             }
-            if let clearDate = memo?.clearDate, memo?.activityId != nil, clearDate > .now {
+            // 12시간(clearDate)이 아니라 8시간(activeDeadline) 기준이어야 한다.
+            // 8시간이 지나면 갱신이 멈춰 사실상 쓸 수 없는 상태가 된다.
+            if let deadline = memo?.activeDeadline(), memo?.activityId != nil, deadline > .now {
                 HStack(spacing: 5) {
                     Image(systemName: "timer")
-                        .font(.system(size: 11, weight: .semibold))
+                        .scaledFont(11, weight: .semibold)
                     Text("edit.autoClear.countdownPrefix")
-                        .font(.system(size: 12.5, weight: .semibold))
-                    Text(timerInterval: Date.now...clearDate, countsDown: true)
-                        .font(.system(size: 12.5, weight: .semibold))
+                        .scaledFont(12.5, weight: .semibold)
+                    Text(timerInterval: Date.now...deadline, countsDown: true)
+                        .scaledFont(12.5, weight: .semibold)
                         .monospacedDigit()
                 }
                 .foregroundStyle(Theme.textSecondary)
@@ -312,7 +322,7 @@ struct MemoEditView: View {
                                     .font(style.font(size: 14))
                                     .lineLimit(1)
                                 Text(style.displayName)
-                                    .font(.system(size: 11, weight: .medium))
+                                    .scaledFont(11, weight: .medium)
                             }
                             .padding(.horizontal, 16)
                             .padding(.vertical, 10)
@@ -343,7 +353,7 @@ struct MemoEditView: View {
                             .overlay {
                                 if vm.colorTag == key {
                                     Image(systemName: "checkmark")
-                                        .font(.system(size: 14, weight: .bold))
+                                        .scaledFont(14, weight: .bold)
                                         .foregroundStyle(.white)
                                 }
                             }
@@ -372,7 +382,7 @@ struct MemoEditView: View {
                 dismiss()
             } label: {
                 Text("edit.delete")
-                    .font(.system(size: 15, weight: .semibold))
+                    .scaledFont(15, weight: .semibold)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 14)
             }
