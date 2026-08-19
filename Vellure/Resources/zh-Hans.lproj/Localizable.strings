@@ -35,7 +35,7 @@
 "edit.section.displayMode" = "显示模式";
 "edit.mode.pinned" = "固定";
 "edit.mode.autoClear" = "自动清除";
-"edit.mode.systemCapNotice" = "受iOS限制，8小时后停止更新，最多12小时后消失";
+"edit.mode.systemCapNotice" = "锁屏显示最多保留8小时，之后会自动移除";
 "edit.autoClear.countdownPrefix" = "更新剩余";
 "trigger.target" = "目标时间到达时";
 "trigger.target.desc" = "D-day或倒计时结束后自动移除";
@@ -46,7 +46,6 @@
 "trigger.done.desc" = "清单全部完成后自动移除";
 "trigger.full" = "达到100%时";
 "trigger.full.desc" = "进度达到100%时自动移除";
-"edit.section.font" = "字体";
 "edit.section.color" = "颜色";
 "edit.save.cta" = "显示到锁屏";
 "edit.update.cta" = "保存";
@@ -60,11 +59,6 @@
 "type.progress" = "进度条";
 
 /* Font Names */
-"font.system" = "默认";
-"font.rounded" = "圆体";
-"font.serif" = "衬线";
-"font.mono" = "等宽";
-"font.preview" = "你好 ABC 123";
 
 /* Empty State */
 "empty.title" = "暂无备忘录";
@@ -131,7 +125,7 @@
 "settings.terms" = "条款与隐私";
 "settings.priceFree" = "完全免费";
 "terms.s1.title" = "服务使用";
-"terms.s1.body" = "Vellure免费提供，将备忘录显示为锁屏实时活动。根据iOS规定，实时活动最多更新8小时，之后在锁屏上最多保留4小时后消失。";
+"terms.s1.body" = "Vellure免费提供，将备忘录显示为锁屏实时活动。根据iOS规定，实时活动最多更新8小时，Vellure会在此之后自动移除备忘。";
 "terms.s2.title" = "隐私政策";
 "terms.s2.body" = "所有备忘录和设置仅存储在本设备上，无需注册。不会向服务器传输数据，删除应用将同时删除所有数据。";
 "terms.s3.title" = "Siri与语音输入";

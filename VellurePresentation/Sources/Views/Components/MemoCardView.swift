@@ -62,6 +62,33 @@ struct MemoCardView: View {
         }
     }
 
+    /// 타입별 보조 값 칩.
+    ///
+    /// 카운트다운만 `Text(timerInterval:)`을 쓴다. 계산된 문자열로 그리면
+    /// 뷰가 다시 그려질 때까지 숫자가 멈춰 있어 흐르지 않는다.
+    /// (D-day·진행률·체크 개수는 초 단위로 변하지 않으므로 문자열로 충분하다)
+    @ViewBuilder
+    private var sideValueChip: some View {
+        if memo.renderType == .countdown, let target = memo.targetDate, target > .now {
+            chipLabel { Text(timerInterval: Date.now...target, countsDown: true) }
+        } else if let value = sideValue {
+            chipLabel { Text(value) }
+        }
+    }
+
+    private func chipLabel<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+        content()
+            .scaledFont(10.5, weight: .heavy)
+            .foregroundStyle(tintColor)
+            .monospacedDigit()
+            .lineLimit(1)
+            .truncationMode(.tail)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 2)
+            .background(tintColor.opacity(0.12))
+            .clipShape(Capsule())
+    }
+
     /// 잠금화면에 떠 있는 동안 언제까지 유지되는지 알린다.
     /// Live Activity와 같은 8시간 기준이라 두 화면의 값이 일치한다.
     ///
@@ -114,18 +141,7 @@ struct MemoCardView: View {
                             .foregroundStyle(tintColor)
                             .lineLimit(1)
                             .truncationMode(.tail)
-                        if let value = sideValue {
-                            Text(value)
-                                .scaledFont(10.5, weight: .heavy)
-                                .foregroundStyle(tintColor)
-                                .monospacedDigit()
-                                .lineLimit(1)
-                                .truncationMode(.tail)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 2)
-                                .background(tintColor.opacity(0.12))
-                                .clipShape(Capsule())
-                        }
+                        sideValueChip
 
                         Spacer(minLength: 0)
                     }
