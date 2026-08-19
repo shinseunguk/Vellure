@@ -27,6 +27,12 @@ struct LockScreenView: View {
     /// 보조 글자색
     private static let secondaryLabel = Color(uiColor: .secondaryLabel)
 
+    /// 만료 타이머의 고정 폭.
+    /// `timerInterval` 텍스트는 고유 폭이 확정되지 않아 폭을 명시하지 않으면
+    /// 자릿수가 바뀔 때마다 레이아웃이 흔들리거나 잘린다.
+    /// `H:MM:SS` 7자리에 맞춘 값이며, 넓게 잡으면 아이콘과 사이가 벌어진다.
+    private static let expiryTimerWidth: CGFloat = 50
+
     let context: ActivityViewContext<MemoAttributes>
 
     private var state: MemoAttributes.ContentState { context.state }
@@ -38,7 +44,11 @@ struct LockScreenView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: Self.contentSpacing) {
             VStack(alignment: .leading, spacing: Self.brandSpacing) {
-                BrandLabel(tint: tint, renderType: state.renderType)
+                HStack(spacing: 8) {
+                    BrandLabel(tint: tint, renderType: state.renderType)
+                    Spacer(minLength: 4)
+                    expiryTimer
+                }
 
                 if hasContent {
                     Text(state.content)
@@ -72,6 +82,39 @@ struct LockScreenView: View {
         case "progress": 2
         case "dday", "countdown": 3
         default: 4
+        }
+    }
+
+    // MARK: - Expiry Timer
+
+    /// 잠금화면에서 이 메모가 언제까지 살아있는지 알린다.
+    /// 12시간이 아니라 8시간(활성 상한) 기준이다.
+    /// 8시간이 지나면 아일랜드에서 사라지고 잠금화면에서도 갱신이 멈추므로,
+    /// 12시간을 세면 마지막 4시간이 사실과 달라진다.
+    @ViewBuilder
+    private var expiryTimer: some View {
+        if let expiresAt = state.expiresAt {
+            HStack(spacing: 3) {
+                Image(systemName: expiresAt > .now ? "timer" : "exclamationmark.arrow.circlepath")
+                    .font(.system(size: 9, weight: .semibold))
+                    .accessibilityHidden(true)
+
+                if expiresAt > .now {
+                    Text(timerInterval: Date.now...expiresAt, countsDown: true)
+                        .font(.system(size: 11, weight: .semibold))
+                        .monospacedDigit()
+                        .multilineTextAlignment(.trailing)
+                        .frame(width: Self.expiryTimerWidth, alignment: .trailing)
+                } else {
+                    // 8시간이 지나면 갱신이 멈춘다. 타이머를 지우면 왜 멈췄는지 알 수 없으니
+                    // 다시 올려야 한다는 사실을 알린다.
+                    Text("la.expired")
+                        .font(.system(size: 11, weight: .semibold))
+                        .lineLimit(1)
+                }
+            }
+            .foregroundStyle(Self.secondaryLabel)
+            .lineLimit(1)
         }
     }
 

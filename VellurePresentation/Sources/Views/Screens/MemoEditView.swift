@@ -289,13 +289,15 @@ struct MemoEditView: View {
                         .stroke(Theme.divider, lineWidth: 1)
                 )
             }
-            if let clearDate = memo?.clearDate, memo?.activityId != nil, clearDate > .now {
+            // 12시간(clearDate)이 아니라 8시간(activeDeadline) 기준이어야 한다.
+            // 8시간이 지나면 갱신이 멈춰 사실상 쓸 수 없는 상태가 된다.
+            if let deadline = memo?.activeDeadline(), memo?.activityId != nil, deadline > .now {
                 HStack(spacing: 5) {
                     Image(systemName: "timer")
                         .scaledFont(11, weight: .semibold)
                     Text("edit.autoClear.countdownPrefix")
                         .scaledFont(12.5, weight: .semibold)
-                    Text(timerInterval: Date.now...clearDate, countsDown: true)
+                    Text(timerInterval: Date.now...deadline, countsDown: true)
                         .scaledFont(12.5, weight: .semibold)
                         .monospacedDigit()
                 }

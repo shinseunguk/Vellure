@@ -20,6 +20,8 @@ public struct MemoAttributes: ActivityAttributes {
         public var colorTag: String
         public var updatedAt: Date
         public var clearDate: Date?
+        /// 잠금화면·아일랜드에 표시할 만료 시각 (사용자 지정 소멸 시각과 8시간 상한 중 이른 쪽)
+        public var expiresAt: Date?
 
         public init(
             renderType: String,
@@ -30,7 +32,8 @@ public struct MemoAttributes: ActivityAttributes {
             font: String,
             colorTag: String,
             updatedAt: Date,
-            clearDate: Date? = nil
+            clearDate: Date? = nil,
+            expiresAt: Date? = nil
         ) {
             self.renderType = renderType
             self.content = content
@@ -41,6 +44,7 @@ public struct MemoAttributes: ActivityAttributes {
             self.colorTag = colorTag
             self.updatedAt = updatedAt
             self.clearDate = clearDate
+            self.expiresAt = expiresAt
         }
     }
 }
