@@ -27,12 +27,6 @@ struct LockScreenView: View {
     /// 보조 글자색
     private static let secondaryLabel = Color(uiColor: .secondaryLabel)
 
-    /// 만료 타이머의 고정 폭.
-    /// `timerInterval` 텍스트는 고유 폭이 확정되지 않아 폭을 명시하지 않으면
-    /// 자릿수가 바뀔 때마다 레이아웃이 흔들리거나 잘린다.
-    /// `H:MM:SS` 7자리에 맞춘 값이며, 넓게 잡으면 아이콘과 사이가 벌어진다.
-    private static let expiryTimerWidth: CGFloat = 50
-
     let context: ActivityViewContext<MemoAttributes>
 
     private var state: MemoAttributes.ContentState { context.state }
@@ -105,9 +99,9 @@ struct LockScreenView: View {
                 if !context.isStale {
                     Text(timerInterval: Date.now...expiresAt, countsDown: true)
                         .font(.system(size: 11, weight: .semibold))
+                        // 고정 폭을 주지 않는다. 자릿수가 줄면 그만큼 좁아지며
+                        // 아이콘과 숫자가 계속 붙어 있다.
                         .monospacedDigit()
-                        .multilineTextAlignment(.trailing)
-                        .frame(width: Self.expiryTimerWidth, alignment: .trailing)
                 } else {
                     // 8시간이 지나면 갱신이 멈춘다. 타이머를 지우면 왜 멈췄는지 알 수 없으니
                     // 다시 올려야 한다는 사실을 알린다.

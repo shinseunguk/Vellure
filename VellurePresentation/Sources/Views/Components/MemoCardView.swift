@@ -11,12 +11,6 @@ struct MemoCardView: View {
     /// 실행 중인 Activity 목록에서 판정한 값을 주입받는다.
     var isActive: Bool = false
 
-    /// 만료 타이머의 고정 폭.
-    /// `timerInterval` 텍스트는 고유 폭이 확정되지 않아 폭을 명시해야 한다.
-    /// 예전에는 이 칩에 `.fixedSize()`를 걸어 카드가 넓어지고 화면 전체가
-    /// 좌우로 밀렸다 (#37). 폭을 고정하되 늘어나지는 않게 한다.
-    private static let expiryTimerWidth: CGFloat = 46
-
     private var tintColor: Color {
         Theme.memoColor(for: memo.colorTag)
     }
@@ -70,27 +64,33 @@ struct MemoCardView: View {
 
     /// 잠금화면에 떠 있는 동안 언제까지 유지되는지 알린다.
     /// Live Activity와 같은 8시간 기준이라 두 화면의 값이 일치한다.
+    ///
+    /// 메타 행이 아니라 배지 안에 두는 이유:
+    /// 타입 라벨·값 칩과 한 줄을 나눠 쓰면 카운트다운처럼 값이 긴 타입에서
+    /// 서로 폭을 다투다 말줄임이 생긴다 (#37과 같은 구조).
+    /// 배지는 우측 상단 독립 영역이라 폭 경쟁이 없다.
     @ViewBuilder
     private var expiryTimer: some View {
-        if isActive, let deadline = memo.activeDeadline() {
+        if let deadline = memo.activeDeadline() {
             HStack(spacing: 3) {
-                Image(systemName: deadline > .now ? "timer" : "exclamationmark.arrow.circlepath")
-                    .scaledFont(9, weight: .semibold)
+                Text(verbatim: "·")
+                    .scaledFont(10, weight: .heavy)
+                    .foregroundStyle(.white.opacity(0.5))
                     .accessibilityHidden(true)
 
                 if deadline > .now {
+                    // 고정 폭을 주지 않는다. 자릿수가 줄면 그만큼 배지가 좁아지며
+                    // 아이콘과 숫자가 계속 붙어 있다.
                     Text(timerInterval: Date.now...deadline, countsDown: true)
-                        .scaledFont(10, weight: .semibold)
+                        .scaledFont(10, weight: .heavy)
                         .monospacedDigit()
-                        .multilineTextAlignment(.trailing)
-                        .frame(width: Self.expiryTimerWidth, alignment: .trailing)
+                        .foregroundStyle(.white.opacity(0.85))
                 } else {
                     Text("la.expired")
-                        .scaledFont(10, weight: .semibold)
-                        .lineLimit(1)
+                        .scaledFont(10, weight: .heavy)
+                        .foregroundStyle(.white.opacity(0.85))
                 }
             }
-            .foregroundStyle(deadline > .now ? Theme.textSecondary : Theme.accent)
             .lineLimit(1)
         }
     }
@@ -126,8 +126,6 @@ struct MemoCardView: View {
                                 .background(tintColor.opacity(0.12))
                                 .clipShape(Capsule())
                         }
-
-                        expiryTimer
 
                         Spacer(minLength: 0)
                     }
@@ -224,6 +222,7 @@ struct MemoCardView: View {
                         Text("card.onLock")
                             .scaledFont(10, weight: .heavy)
                             .foregroundStyle(.white)
+                        expiryTimer
                     }
                     .padding(.horizontal, 10)
                     .padding(.vertical, 3.5)
