@@ -37,18 +37,15 @@ struct VellureLiveActivityWidget: Widget {
                 // 워드마크와 종류를 한 줄에 붙이면 컷아웃에 눌려 말줄임이 난다.
                 // 예약된 상단 띠의 좌우를 나눠 써서 둘 다 온전히 보이게 한다.
                 DynamicIslandExpandedRegion(.trailing) {
-                    VStack(alignment: .trailing, spacing: 1) {
-                        if let label = BrandLabel.typeLabel(context.state.renderType) {
-                            Text(label)
-                                .font(.system(size: Self.typeLabelFontSize, weight: .semibold))
-                                .foregroundStyle(tint(context))
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.8)
-                        }
-                        expiryTimer(context)
+                    if let label = BrandLabel.typeLabel(context.state.renderType) {
+                        Text(label)
+                            .font(.system(size: Self.typeLabelFontSize, weight: .semibold))
+                            .foregroundStyle(tint(context))
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.8)
+                            .padding(.trailing, Self.expandedContentInset)
+                            .frame(maxWidth: .infinity, alignment: .trailing)
                     }
-                    .padding(.trailing, Self.expandedContentInset)
-                    .frame(maxWidth: .infinity, alignment: .trailing)
                 }
 
                 DynamicIslandExpandedRegion(.bottom) {
@@ -56,7 +53,6 @@ struct VellureLiveActivityWidget: Widget {
                         if hasContent(context) {
                             Text(context.state.content)
                                 .font(.system(size: Self.contentFontSize, weight: .semibold))
-                                .fontDesign(fontDesign(from: context.state.font))
                                 .foregroundStyle(.primary)
                                 .lineLimit(expandedContentLineLimit(context))
                                 .truncationMode(.tail)
@@ -95,23 +91,6 @@ struct VellureLiveActivityWidget: Widget {
         case "checklist": 1
         case "progress", "dday", "countdown": 2
         default: 3
-        }
-    }
-
-    /// 상단 우측의 만료 타이머. 잠금화면과 같은 8시간 기준이다.
-    @ViewBuilder
-    private func expiryTimer(_ context: ActivityViewContext<MemoAttributes>) -> some View {
-        if let expiresAt = context.state.expiresAt, expiresAt > .now {
-            HStack(spacing: 2) {
-                Image(systemName: "timer")
-                    .font(.system(size: 8, weight: .semibold))
-                    .accessibilityHidden(true)
-                Text(timerInterval: Date.now...expiresAt, countsDown: true)
-                    .font(.system(size: 10, weight: .semibold))
-                    .monospacedDigit()
-            }
-            .foregroundStyle(.secondary)
-            .lineLimit(1)
         }
     }
 
@@ -203,15 +182,6 @@ struct VellureLiveActivityWidget: Widget {
     }
 
     // MARK: - Helpers
-
-    private func fontDesign(from fontTag: String) -> Font.Design? {
-        switch fontTag {
-        case "rounded": .rounded
-        case "serif": .serif
-        case "mono": .monospaced
-        default: nil
-        }
-    }
 
     private func tint(_ context: ActivityViewContext<MemoAttributes>) -> Color {
         colorFromTag(context.state.colorTag)
