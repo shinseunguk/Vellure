@@ -18,10 +18,14 @@ public final class LiveActivityService {
     /// 실제로 잠금화면에 떠 있는 Live Activity의 memoId 집합.
     /// 저장된 activityId는 요청이 성공했다는 기록일 뿐 현재 표시 여부를 보장하지 않으므로,
     /// "표시 중" 판정은 반드시 이 값을 기준으로 한다.
+    ///
+    /// 기준은 *갱신 가능한가*가 아니라 *화면에 보이는가*다.
+    /// `.ended`는 갱신은 못 하지만 잠금화면에는 최대 4시간 더 남아 있으므로 포함한다.
+    /// (제외하면 소멸 예약된 메모가 화면에 보이는데도 비활성으로 분류된다)
     public var runningMemoIds: Set<String> {
         Set(
             Activity<MemoAttributes>.activities
-                .filter { $0.activityState == .active || $0.activityState == .stale }
+                .filter { $0.activityState != .dismissed }
                 .map(\.attributes.memoId)
         )
     }
@@ -228,6 +232,14 @@ public final class LiveActivityService {
 
     /// 앱 재진입 시 만료된 Activity 정리 + activityId 동기화.
     /// 소멸 시각(clearDate)이 지난 Activity는 실제로 종료한다.
+    /// 앱 진입 시 만료된 Live Activity를 잠금화면에서 내린다.
+    ///
+    /// 8시간이 지나면 시스템이 활동을 종료해 갱신이 멈춘다.
+    /// 그 뒤로 최대 4시간은 잠금화면에 남지만, 체크박스를 눌러도 화면이 바뀌지 않고
+    /// 완료 시 자동소멸도 동작하지 않는 "죽은 카드"다. 남겨둘 이유가 없으므로 즉시 내린다.
+    ///
+    /// 8시간 정각에 내리지 못하는 것은 앱이 꺼져 있으면 코드가 돌지 않기 때문이다.
+    /// 앱을 여는 시점이 로컬 앱이 개입할 수 있는 가장 이른 순간이다.
     public func cleanupExpired(repository: MemoRepository) {
         let runningIds = Set(Activity<MemoAttributes>.activities.map(\.id))
         let activeMemos = repository.fetchActive()
@@ -235,14 +247,14 @@ public final class LiveActivityService {
         for memo in activeMemos {
             guard let activityId = memo.activityId else { continue }
 
-            // 이미 종료된(목록에 없는) Activity → activityId만 정리
+            // 이미 사라진(목록에 없는) Activity → activityId만 정리
             if !runningIds.contains(activityId) {
                 repository.clearActivityId(memo)
                 continue
             }
 
-            // 소멸 시각이 지난 Activity → 실제 종료 후 activityId 정리
-            if let clearDate = memo.clearDate, clearDate <= Date() {
+            // 갱신이 멈춘(8시간 경과) Activity → 잠금화면에서 내리고 기록도 정리
+            if let deadline = memo.activeDeadline(), deadline <= Date() {
                 Task { await end(activityId: activityId) }
                 repository.clearActivityId(memo)
             }
