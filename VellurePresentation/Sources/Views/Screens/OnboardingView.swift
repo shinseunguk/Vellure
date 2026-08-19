@@ -88,7 +88,7 @@ public struct OnboardingView: View {
             content: trimmed,
             displayMode: .autoClear,
             clearTrigger: .hours,
-            clearAfterHours: 12
+            clearAfterHours: Memo.maxClearAfterHours
         )
 
         // 온보딩 흐름은 실패해도 막지 않는다. 사유는 LiveActivityService가 로그로 남긴다.

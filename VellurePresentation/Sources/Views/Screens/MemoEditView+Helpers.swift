@@ -79,7 +79,7 @@ extension MemoEditView {
                 get: { vm.clearAfterHours },
                 set: { vm.clearAfterHours = $0 }
             ),
-            in: 1...12
+            in: 1...Memo.maxClearAfterHours
         ) {
             Text(String(format: String(localized: "trigger.hours.value"), vm.clearAfterHours))
                 .scaledFont(13, weight: .semibold)

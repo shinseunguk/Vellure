@@ -35,7 +35,7 @@
 "edit.section.displayMode" = "Display Mode";
 "edit.mode.pinned" = "Pinned";
 "edit.mode.autoClear" = "Auto Clear";
-"edit.mode.systemCapNotice" = "iOS stops updates after 8 hours; it disappears within 12";
+"edit.mode.systemCapNotice" = "Notes stay on the Lock Screen for up to 8 hours, then come down automatically";
 "edit.autoClear.countdownPrefix" = "Updates for";
 "trigger.target" = "At target time";
 "trigger.target.desc" = "Clears when the D-day or countdown ends";
@@ -46,7 +46,6 @@
 "trigger.done.desc" = "Clears once every checklist item is done";
 "trigger.full" = "At 100%";
 "trigger.full.desc" = "Clears when progress reaches 100%";
-"edit.section.font" = "Font";
 "edit.section.color" = "Color";
 "edit.save.cta" = "Publish to Lock Screen";
 "edit.update.cta" = "Save";
@@ -60,11 +59,6 @@
 "type.progress" = "Progress";
 
 /* Font Names */
-"font.system" = "Default";
-"font.rounded" = "Rounded";
-"font.serif" = "Serif";
-"font.mono" = "Mono";
-"font.preview" = "ABC abc 123";
 
 /* Empty State */
 "empty.title" = "No Memos";
@@ -131,7 +125,7 @@ your lock screen for 8 hours.";
 "settings.terms" = "Terms & Privacy";
 "settings.priceFree" = "Free";
 "terms.s1.title" = "Service";
-"terms.s1.body" = "Vellure is free and displays your notes as lock-screen Live Activities. Per iOS policy, a Live Activity updates for up to 8 hours, then remains on the Lock Screen for up to 4 more hours before it disappears.";
+"terms.s1.body" = "Vellure is free and displays your notes as lock-screen Live Activities. Per iOS policy, a Live Activity updates for up to 8 hours; Vellure removes notes automatically after that point.";
 "terms.s2.title" = "Privacy Policy";
 "terms.s2.body" = "All notes and settings are stored only on this device — no account, no servers. Deleting the app deletes all data with it.";
 "terms.s3.title" = "Siri & Voice Input";
@@ -204,4 +198,4 @@ your lock screen for 8 hours.";
 "filter.display.inactive" = "Not shown";
 "a11y.search.clear" = "Clear search";
 "filter.type.all" = "All types";
-"la.expired" = "Tap to refresh";
+"la.expired" = "Updates stopped";

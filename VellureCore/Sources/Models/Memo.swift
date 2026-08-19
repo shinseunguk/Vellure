@@ -49,7 +49,12 @@ public final class Memo {
     public var progress: Double?
     public var displayMode: DisplayMode
     public var clearTrigger: ClearTrigger?
-    public var clearAfterHours: Int = 12
+    /// 자동소멸까지의 시간(시간 단위). 상한은 `maxClearAfterHours`.
+    public var clearAfterHours: Int = Memo.maxClearAfterHours
+    /// 서체 태그. 현재 UI에서 선택지를 제공하지 않는다.
+    /// iOS 시스템 폰트의 serif(New York)·rounded(SF Rounded)에 한글 글리프가 없어
+    /// 한국어 메모에서는 아무 변화가 없었다. 한글 지원 폰트를 번들에 넣으면 되살린다.
+    /// 필드를 지우면 SwiftData 스키마가 또 바뀌므로 값만 보존한다.
     public var font: String
     public var colorTag: String
     public var activityId: String?
@@ -70,7 +75,7 @@ public final class Memo {
         progress: Double? = nil,
         displayMode: DisplayMode = .pinned,
         clearTrigger: ClearTrigger? = nil,
-        clearAfterHours: Int = 12,
+        clearAfterHours: Int = Memo.maxClearAfterHours,
         font: String = "default",
         colorTag: String = "green",
         activityId: String? = nil,
@@ -98,6 +103,11 @@ public final class Memo {
     /// Live Activity는 iOS 정책상 활성화 후 최대 12시간(활성 8시간 + 소멸 4시간)이 지나면
     /// 앱 설정과 무관하게 시스템이 강제로 종료한다. 어떤 트리거를 고르든 이 시각을 넘길 수 없다.
     public static let systemMaxDuration: TimeInterval = 12 * 60 * 60
+
+    /// 사용자가 고를 수 있는 자동소멸 시간의 상한.
+    /// 8시간이 지나면 갱신이 멈추므로 그보다 긴 값을 고르게 하면
+    /// 설정과 실제 동작이 어긋난다.
+    public static let maxClearAfterHours = 8
 
     /// Live Activity가 실제로 "동작"하는 시간.
     /// 8시간이 지나면 시스템이 활동을 종료해 다이나믹 아일랜드에서 즉시 사라지고,
