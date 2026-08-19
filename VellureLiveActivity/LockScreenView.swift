@@ -30,7 +30,8 @@ struct LockScreenView: View {
     /// 만료 타이머의 고정 폭.
     /// `timerInterval` 텍스트는 고유 폭이 확정되지 않아 폭을 명시하지 않으면
     /// 자릿수가 바뀔 때마다 레이아웃이 흔들리거나 잘린다.
-    private static let expiryTimerWidth: CGFloat = 58
+    /// `H:MM:SS` 7자리에 맞춘 값이며, 넓게 잡으면 아이콘과 사이가 벌어진다.
+    private static let expiryTimerWidth: CGFloat = 50
 
     let context: ActivityViewContext<MemoAttributes>
 
@@ -92,16 +93,25 @@ struct LockScreenView: View {
     /// 12시간을 세면 마지막 4시간이 사실과 달라진다.
     @ViewBuilder
     private var expiryTimer: some View {
-        if let expiresAt = state.expiresAt, expiresAt > .now {
+        if let expiresAt = state.expiresAt {
             HStack(spacing: 3) {
-                Image(systemName: "timer")
+                Image(systemName: expiresAt > .now ? "timer" : "exclamationmark.arrow.circlepath")
                     .font(.system(size: 9, weight: .semibold))
                     .accessibilityHidden(true)
-                Text(timerInterval: Date.now...expiresAt, countsDown: true)
-                    .font(.system(size: 11, weight: .semibold))
-                    .monospacedDigit()
-                    .multilineTextAlignment(.trailing)
-                    .frame(width: Self.expiryTimerWidth, alignment: .trailing)
+
+                if expiresAt > .now {
+                    Text(timerInterval: Date.now...expiresAt, countsDown: true)
+                        .font(.system(size: 11, weight: .semibold))
+                        .monospacedDigit()
+                        .multilineTextAlignment(.trailing)
+                        .frame(width: Self.expiryTimerWidth, alignment: .trailing)
+                } else {
+                    // 8시간이 지나면 갱신이 멈춘다. 타이머를 지우면 왜 멈췄는지 알 수 없으니
+                    // 다시 올려야 한다는 사실을 알린다.
+                    Text("la.expired")
+                        .font(.system(size: 11, weight: .semibold))
+                        .lineLimit(1)
+                }
             }
             .foregroundStyle(Self.secondaryLabel)
             .lineLimit(1)

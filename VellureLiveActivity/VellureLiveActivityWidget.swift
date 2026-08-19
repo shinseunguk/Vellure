@@ -100,7 +100,8 @@ struct VellureLiveActivityWidget: Widget {
 
     /// 만료 타이머의 고정 폭.
     /// `timerInterval` 텍스트는 고유 폭이 확정되지 않아 폭을 명시해야 한다.
-    private static let expiryTimerWidth: CGFloat = 52
+    /// `H:MM:SS` 7자리에 맞춘 값이며, 넓게 잡으면 아이콘과 사이가 벌어진다.
+    private static let expiryTimerWidth: CGFloat = 46
 
     /// 상단 우측의 만료 타이머. 잠금화면과 같은 8시간 기준이다.
     @ViewBuilder
