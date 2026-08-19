@@ -120,11 +120,11 @@ public final class LiveActivityService {
     private func scheduleAutoDismissIfEligible(
         activity: Activity<MemoAttributes>,
         memo: Memo,
-        startedAt: Date
+        startedAt: Date? = nil
     ) {
         guard memo.displayMode == .autoClear,
               !memo.renderType.isInteractive,
-              let clearDate = clearDate(for: memo, startedAt: startedAt),
+              let clearDate = startedAt.map({ clearDate(for: memo, startedAt: $0) }) ?? memo.clearDate,
               clearDate > Date(),
               clearDate <= Date().addingTimeInterval(Self.maxScheduledDismissal) else {
             return
@@ -150,6 +150,9 @@ public final class LiveActivityService {
 
         for activity in Activity<MemoAttributes>.activities where activity.id == activityId {
             await activity.update(content)
+            // 편집으로 트리거·목표 시각이 바뀌었을 수 있다.
+            // 예약을 다시 걸지 않으면 "목표 시각 도달 시"로 바꿔도 소멸하지 않는다.
+            scheduleAutoDismissIfEligible(activity: activity, memo: memo)
         }
     }
 
@@ -164,6 +167,7 @@ public final class LiveActivityService {
 
         for activity in Activity<MemoAttributes>.activities where activity.attributes.memoId == memoId {
             await activity.update(content)
+            scheduleAutoDismissIfEligible(activity: activity, memo: memo)
         }
     }
 
