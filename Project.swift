@@ -98,7 +98,12 @@ let project = Project(
             deploymentTargets: deploymentTargets,
             infoPlist: .file(path: "VellureLiveActivity/Info.plist"),
             sources: ["VellureLiveActivity/**/*.swift"],
-            resources: ["VellureLiveActivity/Assets.xcassets"],
+            // 위젯 익스텐션은 앱과 별도 번들이라 앱의 Localizable.strings를 찾지 못한다.
+            // 포함하지 않으면 잠금화면에 키 문자열이 그대로 노출된다.
+            resources: [
+                "VellureLiveActivity/Assets.xcassets",
+                "Vellure/Resources/**/*.strings",
+            ],
             entitlements: "VellureLiveActivity/VellureLiveActivity.entitlements",
             dependencies: [.target(name: "VellureCore")]
         ),

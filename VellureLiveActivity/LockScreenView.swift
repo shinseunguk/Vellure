@@ -95,11 +95,14 @@ struct LockScreenView: View {
     private var expiryTimer: some View {
         if let expiresAt = state.expiresAt {
             HStack(spacing: 3) {
-                Image(systemName: expiresAt > .now ? "timer" : "exclamationmark.arrow.circlepath")
+                Image(systemName: context.isStale ? "exclamationmark.arrow.circlepath" : "timer")
                     .font(.system(size: 9, weight: .semibold))
                     .accessibilityHidden(true)
 
-                if expiresAt > .now {
+                // `expiresAt > .now` 비교로는 전환되지 않는다.
+                // 앱이 종료된 상태에서는 뷰를 다시 그릴 계기가 없어 타이머가 0:00에 멈춘 채 남는다.
+                // isStale은 staleDate 도달 시 ActivityKit이 뷰를 다시 그려주므로 이때만 신뢰할 수 있다.
+                if !context.isStale {
                     Text(timerInterval: Date.now...expiresAt, countsDown: true)
                         .font(.system(size: 11, weight: .semibold))
                         .monospacedDigit()
