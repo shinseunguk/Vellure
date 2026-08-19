@@ -45,7 +45,7 @@ public final class LiveActivityService {
         // 오래전에 쓴 메모를 올릴 때 staleDate가 과거가 되는 것을 막는다.
         let startedAt = Date()
         let content = ActivityContent(
-            state: buildState(from: memo),
+            state: buildState(from: memo, startedAt: startedAt),
             staleDate: clearDate(for: memo, startedAt: startedAt),
             relevanceScore: relevanceScore(for: memo)
         )
@@ -124,7 +124,7 @@ public final class LiveActivityService {
         }
 
         let content = ActivityContent(
-            state: buildState(from: memo),
+            state: buildState(from: memo, startedAt: startedAt),
             staleDate: clearDate,
             relevanceScore: relevanceScore(for: memo)
         )
@@ -295,7 +295,10 @@ public final class LiveActivityService {
 
     // MARK: - Private
 
-    private func buildState(from memo: Memo) -> MemoAttributes.ContentState {
+    /// - Parameter startedAt: Live Activity를 지금 막 띄우는 경우의 시작 시각.
+    ///   저장소에 `activityStartedAt`이 반영되기 전이라 호출부가 직접 넘겨야 한다.
+    ///   nil이면 메모에 저장된 값을 쓴다.
+    private func buildState(from memo: Memo, startedAt: Date? = nil) -> MemoAttributes.ContentState {
         MemoAttributes.ContentState(
             renderType: memo.renderType.rawValue,
             content: memo.content,
@@ -310,7 +313,7 @@ public final class LiveActivityService {
             // 표시용은 사용자가 지정한 소멸 시각만.
             // 시스템 만료(staleDate)는 ActivityContent 쪽에서 별도로 memo.clearDate를 쓴다.
             clearDate: memo.userClearDate,
-            expiresAt: memo.activeDeadline
+            expiresAt: memo.activeDeadline(startedAt: startedAt)
         )
     }
 }

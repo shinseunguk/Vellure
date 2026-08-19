@@ -123,8 +123,11 @@ public final class Memo {
 
     /// 화면에 표시할 만료 시각.
     /// 사용자가 지정한 소멸 시각과 시스템 활성 상한(8시간) 중 이른 쪽이다.
-    public var activeDeadline: Date? {
-        let activeCap = clearAnchor.addingTimeInterval(Self.systemActiveDuration)
+    /// - Parameter startedAt: 지금 막 띄우는 경우의 시작 시각.
+    ///   저장된 `activityStartedAt`보다 우선한다.
+    public func activeDeadline(startedAt: Date? = nil) -> Date? {
+        let anchor = startedAt ?? clearAnchor
+        let activeCap = anchor.addingTimeInterval(Self.systemActiveDuration)
         guard let clearDate else { return activeCap }
         return min(clearDate, activeCap)
     }
