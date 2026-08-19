@@ -11,7 +11,7 @@ final class MemoEditViewModel {
     var renderType: RenderType = .plain
     var displayMode: DisplayMode = .pinned
     var clearTrigger: ClearTrigger = .hours
-    var clearAfterHours: Int = 12
+    var clearAfterHours: Int = Memo.maxClearAfterHours
     var font: String = "default"
     var colorTag: String = "green"
     var targetDate: Date = Calendar.current.date(byAdding: .day, value: 7, to: Date()) ?? Date()
@@ -28,7 +28,7 @@ final class MemoEditViewModel {
             self.renderType = memo.renderType
             self.displayMode = memo.displayMode
             self.clearTrigger = memo.clearTrigger ?? ClearTrigger.available(for: memo.renderType).first ?? .hours
-            self.clearAfterHours = memo.clearAfterHours
+            self.clearAfterHours = min(memo.clearAfterHours, Memo.maxClearAfterHours)
             self.font = memo.font
             self.colorTag = memo.colorTag
             self.targetDate = memo.targetDate ?? self.targetDate

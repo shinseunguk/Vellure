@@ -123,7 +123,9 @@ final class MemoListViewModel {
     }
 
     func toggleActivity(for memo: Memo) {
-        if let activityId = memo.activityId {
+        // 버튼 모양은 isActive(실행 목록)로 정하는데 동작을 activityId로 판단하면
+        // "올리기"라고 쓰여 있는 버튼이 실제로는 내리는 동작을 한다. 기준을 맞춘다.
+        if isActive(memo), let activityId = memo.activityId {
             Task {
                 await LiveActivityService.shared.end(activityId: activityId)
                 repository.clearActivityId(memo)

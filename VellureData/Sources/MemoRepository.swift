@@ -21,7 +21,7 @@ public final class MemoRepository {
         progress: Double? = nil,
         displayMode: DisplayMode = .pinned,
         clearTrigger: ClearTrigger? = nil,
-        clearAfterHours: Int = 12,
+        clearAfterHours: Int = Memo.maxClearAfterHours,
         font: String = "default",
         colorTag: String = "green"
     ) -> Memo {
