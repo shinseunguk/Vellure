@@ -51,6 +51,10 @@ public final class Memo {
     public var clearTrigger: ClearTrigger?
     /// 자동소멸까지의 시간(시간 단위). 상한은 `maxClearAfterHours`.
     public var clearAfterHours: Int = Memo.maxClearAfterHours
+    /// 서체 태그. 현재 UI에서 선택지를 제공하지 않는다.
+    /// iOS 시스템 폰트의 serif(New York)·rounded(SF Rounded)에 한글 글리프가 없어
+    /// 한국어 메모에서는 아무 변화가 없었다. 한글 지원 폰트를 번들에 넣으면 되살린다.
+    /// 필드를 지우면 SwiftData 스키마가 또 바뀌므로 값만 보존한다.
     public var font: String
     public var colorTag: String
     public var activityId: String?

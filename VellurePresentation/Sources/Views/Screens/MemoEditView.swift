@@ -48,7 +48,6 @@ struct MemoEditView: View {
                             contentSection(vm)
                             dynamicSection(vm)
                             displayModeSection(vm)
-                            fontSection(vm)
                             colorSection(vm)
                             actionSection(vm)
                         }
@@ -303,35 +302,6 @@ struct MemoEditView: View {
                 }
                 .foregroundStyle(Theme.textSecondary)
                 .padding(.horizontal, 4)
-            }
-        }
-    }
-
-    @ViewBuilder
-    private func fontSection(_ vm: MemoEditViewModel) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            sectionLabel(String(localized: "edit.section.font"))
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
-                    ForEach(FontStyle.allCases) { style in
-                        Button {
-                            vm.font = style.rawValue
-                        } label: {
-                            VStack(spacing: 6) {
-                                Text(style.preview)
-                                    .font(style.font(size: 14))
-                                    .lineLimit(1)
-                                Text(style.displayName)
-                                    .scaledFont(11, weight: .medium)
-                            }
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 10)
-                            .background(vm.font == style.rawValue ? Theme.accent : Theme.chipBackground)
-                            .foregroundStyle(vm.font == style.rawValue ? .white : Theme.textPrimary)
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
-                        }
-                    }
-                }
             }
         }
     }

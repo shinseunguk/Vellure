@@ -47,7 +47,6 @@ struct LockScreenView: View {
                 if hasContent {
                     Text(state.content)
                         .font(.system(size: Self.contentFontSize, weight: .semibold))
-                        .fontDesign(fontDesign(from: state.font))
                         .foregroundStyle(Self.label)
                         .lineLimit(contentLineLimit)
                         .truncationMode(.tail)
@@ -248,15 +247,6 @@ struct LockScreenView: View {
         if days > 0 { return "D-\(days)" }
         if days == 0 { return "D-Day" }
         return "D+\(abs(days))"
-    }
-
-    private func fontDesign(from fontTag: String) -> Font.Design? {
-        switch fontTag {
-        case "rounded": .rounded
-        case "serif": .serif
-        case "mono": .monospaced
-        default: nil
-        }
     }
 
     private func colorFromTag(_ tag: String) -> Color {
