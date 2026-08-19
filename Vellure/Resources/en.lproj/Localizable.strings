@@ -35,8 +35,8 @@
 "edit.section.displayMode" = "Display Mode";
 "edit.mode.pinned" = "Pinned";
 "edit.mode.autoClear" = "Auto Clear";
-"edit.mode.systemCapNotice" = "iOS keeps Live Activities on the Lock Screen for at most 12 hours";
-"edit.autoClear.countdownPrefix" = "Clears in";
+"edit.mode.systemCapNotice" = "iOS stops updates after 8 hours; it disappears within 12";
+"edit.autoClear.countdownPrefix" = "Updates for";
 "trigger.target" = "At target time";
 "trigger.target.desc" = "Clears when the D-day or countdown ends";
 "trigger.hours" = "After N hours";
@@ -79,7 +79,8 @@
 "onboarding.page3.title" = "Hands-free\ninput with Siri";
 "onboarding.page3.desc" = "Say \"Vellure note, buy milk\" and it saves\n& publishes without opening the app.";
 "onboarding.page4.title" = "Publish your\nfirst note?";
-"onboarding.page4.desc" = "Write anything — it stays on\nyour lock screen for 12 hours.";
+"onboarding.page4.desc" = "Write anything — it stays live on
+your lock screen for 8 hours.";
 "onboarding.cta.start" = "Get Started";
 "onboarding.cta.allow" = "Allow";
 "onboarding.cta.siri" = "Add to Siri";
@@ -130,7 +131,7 @@
 "settings.terms" = "Terms & Privacy";
 "settings.priceFree" = "Free";
 "terms.s1.title" = "Service";
-"terms.s1.body" = "Vellure is free and displays your notes as lock-screen Live Activities. Per iOS policy, a Live Activity ends automatically after up to 12 hours.";
+"terms.s1.body" = "Vellure is free and displays your notes as lock-screen Live Activities. Per iOS policy, a Live Activity updates for up to 8 hours, then remains on the Lock Screen for up to 4 more hours before it disappears.";
 "terms.s2.title" = "Privacy Policy";
 "terms.s2.body" = "All notes and settings are stored only on this device — no account, no servers. Deleting the app deletes all data with it.";
 "terms.s3.title" = "Siri & Voice Input";
@@ -203,3 +204,4 @@
 "filter.display.inactive" = "Not shown";
 "a11y.search.clear" = "Clear search";
 "filter.type.all" = "All types";
+"la.expired" = "Tap to refresh";

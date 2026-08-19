@@ -35,8 +35,8 @@
 "edit.section.displayMode" = "表示モード";
 "edit.mode.pinned" = "固定";
 "edit.mode.autoClear" = "自動消去";
-"edit.mode.systemCapNotice" = "iOSの仕様上、ロック画面表示は最大12時間までです";
-"edit.autoClear.countdownPrefix" = "自動消去まで";
+"edit.mode.systemCapNotice" = "iOSの仕様上、8時間で更新が止まり、最大12時間後に消えます";
+"edit.autoClear.countdownPrefix" = "更新の残り";
 "trigger.target" = "目標時刻到達時";
 "trigger.target.desc" = "D-dayやカウントダウンが終了すると自動で終了します";
 "trigger.hours" = "N時間経過後";
@@ -79,7 +79,8 @@
 "onboarding.page3.title" = "Siriに話すだけで\nすぐ投稿";
 "onboarding.page3.desc" = "「Vellureメモ 牛乳買う」と言えば\nアプリを開かずに保存・投稿されます。";
 "onboarding.page4.title" = "最初のメモを\n投稿しましょう";
-"onboarding.page4.desc" = "何でも書いてみてください。\n12時間ロック画面に表示されます。";
+"onboarding.page4.desc" = "何でも書いてみてください。
+8時間ロック画面で動き続けます。";
 "onboarding.cta.start" = "はじめる";
 "onboarding.cta.allow" = "許可する";
 "onboarding.cta.siri" = "Siriに追加";
@@ -130,7 +131,7 @@
 "settings.terms" = "利用規約・プライバシー";
 "settings.priceFree" = "無料";
 "terms.s1.title" = "サービス利用";
-"terms.s1.body" = "Vellureは無料で提供され、メモをロック画面のライブアクティビティとして表示します。iOSの仕様により、ライブアクティビティは最大12時間表示後に自動終了します。";
+"terms.s1.body" = "Vellureは無料で提供され、メモをロック画面のライブアクティビティとして表示します。iOSの仕様により、ライブアクティビティは最大8時間更新され、その後ロック画面に最大4時間残ってから消えます。";
 "terms.s2.title" = "プライバシーポリシー";
 "terms.s2.body" = "すべてのメモと設定はアカウント不要でこの端末にのみ保存されます。サーバーへのデータ送信はなく、アプリを削除するとすべてのデータも削除されます。";
 "terms.s3.title" = "Siri・音声入力";
@@ -203,3 +204,4 @@
 "filter.display.inactive" = "非表示";
 "a11y.search.clear" = "検索をクリア";
 "filter.type.all" = "すべてのタイプ";
+"la.expired" = "再表示が必要です";
