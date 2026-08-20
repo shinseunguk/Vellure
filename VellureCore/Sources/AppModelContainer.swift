@@ -29,7 +29,7 @@ public enum AppModelContainer {
 
     public private(set) static var status: Status = .shared
 
-    private static let logger = Logger(subsystem: "com.uk.Vellure", category: "ModelContainer")
+    private static let logger = Logger(subsystem: "com.ukseung.Vellure", category: "ModelContainer")
 
     public static let shared: ModelContainer = {
         let schema = Schema([Memo.self])
