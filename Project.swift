@@ -2,7 +2,7 @@ import ProjectDescription
 
 // MARK: - Constants
 
-private let bundlePrefix = "com.uk"
+private let bundlePrefix = "com.ukseung"
 private let deploymentTargets: DeploymentTargets = .iOS("17.0")
 
 private let baseSettings: SettingsDictionary = [
