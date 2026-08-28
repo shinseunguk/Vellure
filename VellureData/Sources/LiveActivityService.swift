@@ -7,7 +7,7 @@ public final class LiveActivityService {
     public static let shared = LiveActivityService()
 
     /// 릴리스 빌드에서도 남는 진단 로그. 메모 내용 등 민감정보는 담지 않는다.
-    private let logger = Logger(subsystem: "com.ukseung.Vellure", category: "LiveActivity")
+    private let logger = Logger(subsystem: "dev.ukseung.Vellure", category: "LiveActivity")
 
     private init() {}
 
