@@ -100,9 +100,10 @@ platform :ios do
 
   # MARK: - Private
 
-  desc "빌드 번호 생성 (YYYYMMDDHHMM)"
+  desc "빌드 번호 생성 (YYYYMMDDHHMM, KST 고정)"
   private_lane :timestamp_build_number do
-    Time.now.strftime("%Y%m%d%H%M")
+    # CI 러너는 UTC이므로 로컬/CI 어디서 빌드해도 같은 기준이 되도록 KST로 고정한다
+    Time.now.getlocal("+09:00").strftime("%Y%m%d%H%M")
   end
 
   desc "App Store Connect API 키 로드"
