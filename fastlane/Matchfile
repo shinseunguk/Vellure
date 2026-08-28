@@ -1,0 +1,4 @@
+git_url("https://github.com/shinseunguk/vellure-certificates.git")
+storage_mode("git")
+type("appstore")
+app_identifier(["dev.ukseung.Vellure", "dev.ukseung.Vellure.VellureLiveActivity"])

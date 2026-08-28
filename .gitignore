@@ -37,6 +37,7 @@ fastlane/report.xml
 fastlane/Preview.html
 fastlane/screenshots/**/*.png
 fastlane/test_output/
+*.p8
 
 # Bundle
 vendor/bundle
