@@ -76,6 +76,8 @@ platform :ios do
       skip_binary_upload: true,
       skip_screenshots: true,
       run_precheck_before_submit: false,
+      # 가격은 deliver의 price_tier가 구식 API라 동작하지 않음 → ASC 웹 또는 appPriceSchedules API로 설정
+      app_rating_config_path: "./fastlane/rating_config.json",
       force: true # HTML 미리보기 확인 생략
     )
   end
