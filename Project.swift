@@ -8,7 +8,7 @@ private let deploymentTargets: DeploymentTargets = .iOS("17.0")
 private let baseSettings: SettingsDictionary = [
     "DEVELOPMENT_TEAM": "2D8WKJP7C4",
     "SWIFT_VERSION": "5.0",
-    "MARKETING_VERSION": "1.0",
+    "MARKETING_VERSION": "1.0.0",
     "CURRENT_PROJECT_VERSION": "1",
 ]
 
@@ -60,6 +60,9 @@ let project = Project(
             bundleId: "\(bundlePrefix).Vellure",
             deploymentTargets: deploymentTargets,
             infoPlist: .extendingDefault(with: [
+                // 리터럴로 구워지지 않도록 빌드 설정 변수를 참조시킨다 (빌드 번호 주입에 필요)
+                "CFBundleShortVersionString": "$(MARKETING_VERSION)",
+                "CFBundleVersion": "$(CURRENT_PROJECT_VERSION)",
                 "ITSAppUsesNonExemptEncryption": false,
                 "UILaunchScreen": [
                     "UIColorName": "LaunchBackground",
