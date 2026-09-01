@@ -79,6 +79,14 @@ App Store 배포
 
 스크린샷만 App Store Connect에 업로드 (바이너리/메타데이터 제외)
 
+### ios submit_review
+
+```sh
+[bundle exec] fastlane ios submit_review
+```
+
+심사 제출 (업로드된 빌드 지정, 승인 시 자동 출시)
+
 ### ios certificates
 
 ```sh
