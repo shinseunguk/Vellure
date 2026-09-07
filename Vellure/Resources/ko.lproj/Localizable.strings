@@ -1,3 +1,8 @@
+/* Tab */
+"tab.memo" = "메모";
+"tab.widget" = "위젯";
+"home.widget.title" = "위젯";
+
 /* Home */
 "home.title" = "메모";
 "home.section.active" = "잠금화면 표시 중";

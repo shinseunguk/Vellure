@@ -10,7 +10,11 @@ struct SearchFilterBar: View {
 
     @Binding var searchText: String
     @Binding var typeFilter: RenderType?
-    @Binding var displayFilter: DisplayFilter
+    /// 표시 상태 필터. nil이면 세그먼트를 감춘다.
+    /// 위젯 탭은 앱이 켜고 끄는 표시 상태 개념이 없어 축 자체가 성립하지 않는다.
+    var displayFilter: Binding<DisplayFilter>?
+    /// 칩으로 노출할 타입. 탭이 담당하는 표면의 타입만 넘긴다.
+    var types: [RenderType]
 
     var body: some View {
         VStack(spacing: Self.rowSpacing) {
@@ -18,14 +22,16 @@ struct SearchFilterBar: View {
 
             // 성격이 다른 두 축을 같은 칩으로 나열하면 무엇이 무엇인지 구분되지 않는다.
             // 표시 상태는 세그먼트, 타입은 칩으로 시각 언어를 나눈다.
-            displayPicker
+            if let displayFilter {
+                displayPicker(displayFilter)
+            }
 
             typeChips
         }
     }
 
-    private var displayPicker: some View {
-        Picker("", selection: $displayFilter) {
+    private func displayPicker(_ selection: Binding<DisplayFilter>) -> some View {
+        Picker("", selection: selection) {
             ForEach(DisplayFilter.allCases, id: \.self) { filter in
                 Text(LocalizedStringKey(filter.labelKey)).tag(filter)
             }
@@ -42,7 +48,7 @@ struct SearchFilterBar: View {
                     typeFilter = nil
                 }
 
-                ForEach(RenderType.allCases, id: \.self) { type in
+                ForEach(types, id: \.self) { type in
                     chip(
                         title: Text(LocalizedStringKey(typeLabelKey(type))),
                         isSelected: typeFilter == type

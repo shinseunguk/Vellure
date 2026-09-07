@@ -28,7 +28,7 @@ struct VellureApp: App {
             ZStack {
                 Group {
                     if hasCompletedOnboarding {
-                        HomeView()
+                        ContentView()
                             .environment(repository)
                     } else {
                         OnboardingView {
