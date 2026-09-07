@@ -3,7 +3,7 @@
 ## 프로젝트 개요
 
 - **플랫폼**: iOS (SwiftUI)
-- **최소 지원 버전**: iOS 26.4
+- **최소 지원 버전**: iOS 17.0
 - **언어**: Swift 5.0
 - **Bundle ID**: com.uk.Vellure
 - **빌드 도구**: Xcode 26.4.1
