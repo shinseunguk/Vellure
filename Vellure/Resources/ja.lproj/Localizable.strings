@@ -207,3 +207,15 @@
 "a11y.search.clear" = "検索をクリア";
 "filter.type.all" = "すべてのタイプ";
 "la.expired" = "更新停止";
+
+/* Widget */
+"widget.entity.memo" = "メモ";
+"widget.config.title" = "メモを選択";
+"widget.config.description" = "ウィジェットに表示するメモを選びます。";
+"widget.config.memo" = "メモ";
+"widget.lockScreen.name" = "Vellure ロック画面";
+"widget.lockScreen.description" = "D-dayや進捗をロック画面に表示します。";
+"widget.homeScreen.name" = "Vellure";
+"widget.homeScreen.description" = "D-dayや進捗をホーム画面に表示します。";
+"widget.missing" = "メモを選択してください";
+"widget.empty" = "D-dayを作成";
