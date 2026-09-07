@@ -39,8 +39,7 @@ struct MemoCardView: View {
         switch memo.renderType {
         case .dday:
             guard let target = memo.targetDate else { return nil }
-            let days = Calendar.current.dateComponents([.day], from: .now, to: target).day ?? 0
-            return days >= 0 ? "D-\(days)" : "D+\(abs(days))"
+            return DDayFormatter.string(for: target)
         case .countdown:
             guard let target = memo.targetDate else { return nil }
             let remaining = target.timeIntervalSince(.now)
