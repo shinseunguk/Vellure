@@ -69,6 +69,9 @@
 "empty.title" = "메모가 없습니다";
 "empty.description" = "첫 번째 메모를 작성하고\n잠금화면에서 확인해보세요";
 "empty.cta" = "새 메모 작성";
+"empty.widget.title" = "위젯 메모가 없습니다";
+"empty.widget.description" = "D-day나 진행바를 만들면\n홈·잠금화면 위젯에 띄울 수 있어요";
+"empty.widget.cta" = "D-day 만들기";
 
 /* Onboarding */
 "onboarding.page1.title" = "메모가 잠금화면에서\n살아 움직여요";

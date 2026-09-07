@@ -69,6 +69,9 @@
 "empty.title" = "メモがありません";
 "empty.description" = "最初のメモを作成して\nロック画面で確認しましょう";
 "empty.cta" = "メモを作成";
+"empty.widget.title" = "ウィジェットのメモがありません";
+"empty.widget.description" = "D-dayや進捗バーを作成すると\nウィジェットに表示できます";
+"empty.widget.cta" = "D-dayを作成";
 
 /* Onboarding */
 "onboarding.page1.title" = "メモがロック画面で\n動き出します";

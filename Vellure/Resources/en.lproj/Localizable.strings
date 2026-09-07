@@ -69,6 +69,9 @@
 "empty.title" = "No Memos";
 "empty.description" = "Create your first memo\nand see it on your lock screen";
 "empty.cta" = "Create Memo";
+"empty.widget.title" = "No widget memos";
+"empty.widget.description" = "Create a D-day or progress memo\nto show it in a widget";
+"empty.widget.cta" = "Create a D-day";
 
 /* Onboarding */
 "onboarding.page1.title" = "Notes that live\non your lock screen";
