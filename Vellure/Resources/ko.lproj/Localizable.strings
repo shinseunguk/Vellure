@@ -54,6 +54,7 @@
 "edit.section.color" = "색상";
 "edit.save.cta" = "잠금화면에 올리기";
 "edit.update.cta" = "저장";
+"edit.save.widget.cta" = "저장";
 "edit.delete" = "메모 삭제";
 
 /* Type Names */
@@ -219,3 +220,18 @@
 "widget.homeScreen.description" = "D-day와 달성률을 홈화면에 표시합니다.";
 "widget.missing" = "메모를 선택해주세요";
 "widget.empty" = "D-day를 만들어보세요";
+
+/* Widget Guide */
+"guide.title" = "위젯 추가하기";
+"guide.done" = "완료";
+"guide.intro" = "위젯은 직접 배치해야 합니다. 아래 순서대로 한 번만 설정하면 됩니다.";
+"guide.home.title" = "홈화면";
+"guide.home.step1" = "홈화면 빈 곳을 길게 누릅니다";
+"guide.home.step2" = "왼쪽 위 + 를 누르고 Vellure를 찾습니다";
+"guide.home.step3" = "크기를 고르고 '위젯 추가'를 누릅니다";
+"guide.lock.title" = "잠금화면";
+"guide.lock.step1" = "잠금화면을 길게 누르고 '사용자화'를 누릅니다";
+"guide.lock.step2" = "'잠금 화면'을 고른 뒤 위젯 칸을 누릅니다";
+"guide.lock.step3" = "목록에서 Vellure를 고릅니다";
+"guide.tip" = "위젯을 길게 눌러 '위젯 편집'을 고르면 어떤 메모를 보여줄지 바꿀 수 있어요. D-day가 여러 개면 위젯을 여러 개 놓고 각각 다르게 지정하세요.";
+"guide.entry" = "위젯은 어떻게 추가하나요?";

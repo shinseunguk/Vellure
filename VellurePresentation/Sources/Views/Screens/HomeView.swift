@@ -14,6 +14,9 @@ public struct HomeView: View {
     @State private var showNewMemo = false
     @State private var selectedMemo: Memo?
     @State private var showSettings = false
+    @State private var showWidgetGuide = false
+    /// 위젯 안내를 한 번이라도 본 적 있는지. 매번 띄우면 성가시다.
+    @AppStorage("hasSeenWidgetGuide") private var hasSeenWidgetGuide = false
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var isReordering = false
     @State private var reorderHaptic = UISelectionFeedbackGenerator()
@@ -79,12 +82,18 @@ public struct HomeView: View {
                 )
             )
             .sheet(isPresented: $showNewMemo) {
-                MemoEditView(memo: nil)
+                MemoEditView(memo: nil, surface: surface)
                     .environment(repository)
-                    .onDisappear { viewModel?.refresh() }
+                    .onDisappear {
+                        viewModel?.refresh()
+                        presentWidgetGuideIfNeeded()
+                    }
+            }
+            .sheet(isPresented: $showWidgetGuide) {
+                WidgetGuideView()
             }
             .sheet(item: $selectedMemo) { memo in
-                MemoEditView(memo: memo)
+                MemoEditView(memo: memo, surface: surface)
                     .environment(repository)
                     .onDisappear { viewModel?.refresh() }
             }
@@ -102,6 +111,15 @@ public struct HomeView: View {
                 viewModel?.refresh()
             }
         }
+    }
+
+    /// 위젯 메모를 처음 만든 직후 한 번만 배치 방법을 알린다.
+    /// 앱이 위젯을 대신 설치할 수 없어, 안내가 없으면 "위젯이 안 나온다"로 끝난다.
+    private func presentWidgetGuideIfNeeded() {
+        guard surface == .widget, !hasSeenWidgetGuide else { return }
+        guard viewModel?.memos.isEmpty == false else { return }
+        hasSeenWidgetGuide = true
+        showWidgetGuide = true
     }
 
     // MARK: - Header
@@ -162,6 +180,10 @@ public struct HomeView: View {
                 } else {
                     sectionedList(vm)
                 }
+
+                if surface == .widget && !vm.isFiltering {
+                    widgetGuideEntry
+                }
             }
             .padding(.bottom, 20)
         }
@@ -199,7 +221,7 @@ public struct HomeView: View {
                 let active = vm.activeMemos
                 if !active.isEmpty {
                     MemoSectionHeader(kind: .active, count: active.count)
-                    reorderableSection(active, matches: { $0.activityId != nil }, vm: vm)
+                    reorderSection(active, matches: { $0.activityId != nil }, vm: vm)
                 }
             }
 
@@ -209,7 +231,7 @@ public struct HomeView: View {
                     : vm.memos.filter { $0.renderType == type }
                 if !group.isEmpty {
                     MemoSectionHeader(kind: .type(type), count: group.count)
-                    reorderableSection(
+                    reorderSection(
                         group,
                         matches: {
                             $0.renderType == type
@@ -220,6 +242,49 @@ public struct HomeView: View {
                 }
             }
         }
+    }
+
+    /// 드래그 정렬이 가능한 한 그룹.
+    private func reorderSection(
+        _ items: [Memo],
+        matches: @escaping (Memo) -> Bool,
+        vm: MemoListViewModel
+    ) -> some View {
+        MemoReorderableSection(
+            items: items,
+            matches: matches,
+            viewModel: vm,
+            isReordering: isReordering,
+            cardMidYs: activeCardMidYs,
+            onSelect: { selectedMemo = $0 },
+            onDelete: { deleteMemo($0, vm: vm) },
+            contextMenu: { memo in AnyView(memoContextMenu(for: memo, vm: vm)) }
+        )
+    }
+
+    /// 위젯 배치 방법으로 가는 입구.
+    /// 메모를 만들어도 위젯을 놓지 않으면 아무 데도 보이지 않으므로 목록 안에 상시 둔다.
+    private var widgetGuideEntry: some View {
+        Button {
+            showWidgetGuide = true
+        } label: {
+            HStack(spacing: 8) {
+                Image(systemName: "questionmark.circle")
+                    .scaledFont(13, weight: .semibold)
+                Text("guide.entry")
+                    .scaledFont(13, weight: .semibold)
+                Spacer(minLength: 0)
+                Image(systemName: "chevron.right")
+                    .scaledFont(11, weight: .semibold)
+            }
+            .foregroundStyle(Theme.textSecondary)
+            .padding(.horizontal, 14)
+            .padding(.vertical, 12)
+            .background(Theme.chipBackground)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+        }
+        .padding(.horizontal, 20)
+        .padding(.top, 14)
     }
 
     /// 검색·필터 결과가 없을 때
@@ -242,106 +307,6 @@ public struct HomeView: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.horizontal, 20)
-    }
-
-    // MARK: - Reorderable Section (custom drag)
-
-    @ViewBuilder
-    private func reorderableSection(
-        _ items: [Memo],
-        matches: @escaping (Memo) -> Bool,
-        vm: MemoListViewModel
-    ) -> some View {
-        VStack(spacing: 8) {
-            ForEach(items) { memo in
-                HStack(spacing: 4) {
-                    if isReordering {
-                        Image(systemName: "line.3.horizontal")
-                            .scaledFont(16, weight: .semibold)
-                            .foregroundStyle(Theme.textSecondary)
-                            .frame(width: 24, height: 44)
-                            .contentShape(Rectangle())
-                            .accessibilityLabel("a11y.reorder.handle")
-                            .highPriorityGesture(reorderGesture(memo: memo, items: items, matches: matches, vm: vm))
-                    }
-
-                    MemoCardView(
-                        memo: memo,
-                        onTap: { selectedMemo = memo },
-                        onToggleActivity: { vm.toggleActivity(for: memo) },
-                        onDelete: { deleteMemo(memo, vm: vm) },
-                        isActive: vm.isActive(memo)
-                    )
-                    // 정렬 모드에서 드래그 핸들이 붙어도 행 전체 폭이 늘지 않도록
-                    // 카드가 남은 폭을 받아 줄어들게 한다.
-                    .frame(maxWidth: .infinity)
-                    .contextMenu { memoContextMenu(for: memo, vm: vm) }
-                }
-                .frame(maxWidth: .infinity)
-                .background(
-                    GeometryReader { geo in
-                        Color.clear.preference(
-                            key: CardMidYKey.self,
-                            value: draggingId != nil
-                                ? [:]
-                                : [memo.id: geo.frame(in: .named("reorder")).midY]
-                        )
-                    }
-                )
-                .offset(y: draggingId == memo.id ? dragOffsetY : 0)
-                .zIndex(draggingId == memo.id ? 1 : 0)
-                .shadow(color: draggingId == memo.id ? .black.opacity(0.18) : .clear, radius: 8, y: 4)
-            }
-        }
-        .padding(.horizontal, 20)
-        .padding(.top, 6)
-        .padding(.bottom, 8)
-        .animation(.snappy(duration: 0.22), value: draggingId)
-    }
-
-    private func reorderGesture(
-        memo: Memo,
-        items: [Memo],
-        matches: @escaping (Memo) -> Bool,
-        vm: MemoListViewModel
-    ) -> some Gesture {
-        DragGesture(minimumDistance: 2, coordinateSpace: .named("reorder"))
-            .onChanged { value in
-                if draggingId != memo.id {
-                    draggingId = memo.id
-                    reorderMidYs = activeCardMidYs
-                    dragBaseMidY = activeCardMidYs[memo.id] ?? value.startLocation.y
-                    dropTargetIndex = items.firstIndex { $0.id == memo.id }
-                    reorderHaptic.prepare()
-                }
-                dragOffsetY = value.translation.height
-                let centerY = dragBaseMidY + dragOffsetY
-                let newIndex = items
-                    .filter { $0.id != memo.id && (reorderMidYs[$0.id] ?? 0) < centerY }
-                    .count
-                if newIndex != dropTargetIndex {
-                    dropTargetIndex = newIndex
-                    reorderHaptic.selectionChanged()
-                    reorderHaptic.prepare()
-                }
-            }
-            .onEnded { _ in
-                if let from = items.firstIndex(where: { $0.id == memo.id }),
-                   let target = dropTargetIndex, from != target {
-                    vm.moveInGroup(items, fromIndex: from, toIndex: target, matches: matches)
-                    vm.commitReorder()
-                }
-                draggingId = nil
-                dragOffsetY = 0
-                dropTargetIndex = nil
-            }
-    }
-}
-
-private struct CardMidYKey: PreferenceKey {
-    static let defaultValue: [UUID: CGFloat] = [:]
-    static func reduce(value: inout [UUID: CGFloat], nextValue: () -> [UUID: CGFloat]) {
-        value.merge(nextValue()) { _, new in new }
     }
 }
 
