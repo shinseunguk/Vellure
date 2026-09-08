@@ -35,6 +35,10 @@ struct VellureApp: App {
                             hasCompletedOnboarding = true
                         }
                         .environment(repository)
+                        // 신규 설치는 온보딩에서 현재 구조를 그대로 본다.
+                        // 여기서 표식을 남기지 않으면 온보딩 직후 홈에서
+                        // "구조가 바뀌었다"는 안내가 신규 사용자에게 뜬다.
+                        .onAppear { StructureNotice.markAsCurrent() }
                     }
                 }
                 .preferredColorScheme(selectedScheme)

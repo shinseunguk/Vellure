@@ -1,8 +1,8 @@
-First release.
+Home is now split into two tabs: Memos and Widgets.
 
-- Live Activity notes on Lock Screen & Dynamic Island
-- 5 types: plain, checklist, D-day, countdown, progress
-- Pin or auto-dismiss, real-time state sync
-- Siri & Shortcuts support
+- New Lock Screen and Home Screen widgets (D-day, progress)
+- Choose which memo each widget shows
+- D-day and progress moved to the Widgets tab (nothing was deleted)
+- Fixed D-day counts that disagreed between the app and the Lock Screen
 
 Feedback is always welcome.

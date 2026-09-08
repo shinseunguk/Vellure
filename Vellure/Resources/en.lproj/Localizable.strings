@@ -235,3 +235,11 @@ your lock screen for 8 hours.";
 "guide.lock.step3" = "Pick Vellure from the list";
 "guide.tip" = "Touch and hold a widget and choose Edit Widget to change which memo it shows. For several D-days, place several widgets and point each at a different memo.";
 "guide.entry" = "How do I add a widget?";
+
+/* Migration */
+"migration.title" = "Home is now two tabs";
+"migration.description" = "Memos are split by how long they live.\nNothing was deleted.";
+"migration.memo.detail" = "Plain, checklist, countdown — memos you post to the Lock Screen";
+"migration.widget.detail" = "D-day and progress — these moved to widgets";
+"migration.cta.widget" = "Show me the Widgets tab";
+"migration.cta.later" = "Later";
