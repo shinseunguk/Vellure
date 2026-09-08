@@ -1,3 +1,8 @@
+/* Tab */
+"tab.memo" = "Memos";
+"tab.widget" = "Widgets";
+"home.widget.title" = "Widgets";
+
 /* Home */
 "home.title" = "Memos";
 "home.section.active" = "On Lock Screen";

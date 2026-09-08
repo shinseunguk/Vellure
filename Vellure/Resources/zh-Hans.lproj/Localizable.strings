@@ -1,3 +1,8 @@
+/* Tab */
+"tab.memo" = "备忘";
+"tab.widget" = "小组件";
+"home.widget.title" = "小组件";
+
 /* Home */
 "home.title" = "备忘录";
 "home.section.active" = "锁屏显示中";

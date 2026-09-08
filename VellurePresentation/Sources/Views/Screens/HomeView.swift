@@ -6,6 +6,9 @@ import VellureData
 
 // swiftlint:disable:next type_body_length
 public struct HomeView: View {
+    /// 이 화면이 담당하는 표면. 탭마다 하나씩 띄운다.
+    private let surface: Surface
+
     @Environment(MemoRepository.self) private var repository
     @Environment(\.scenePhase) private var scenePhase
     @State private var viewModel: MemoListViewModel?
@@ -22,7 +25,9 @@ public struct HomeView: View {
     @State private var reorderMidYs: [UUID: CGFloat] = [:]
     @State private var dragBaseMidY: CGFloat = 0
 
-    public init() {}
+    public init(surface: Surface) {
+        self.surface = surface
+    }
 
     public var body: some View {
         NavigationStack {
@@ -42,10 +47,13 @@ public struct HomeView: View {
                             get: { viewModel.typeFilter },
                             set: { viewModel.typeFilter = $0 }
                         ),
-                        displayFilter: Binding(
-                            get: { viewModel.displayFilter },
-                            set: { viewModel.displayFilter = $0 }
-                        )
+                        displayFilter: viewModel.usesDisplayState
+                            ? Binding(
+                                get: { viewModel.displayFilter },
+                                set: { viewModel.displayFilter = $0 }
+                            )
+                            : nil,
+                        types: viewModel.availableTypes
                     )
                     .padding(.bottom, 10)
 
@@ -87,7 +95,7 @@ public struct HomeView: View {
         }
         .onAppear {
             if viewModel == nil {
-                viewModel = MemoListViewModel(repository: repository)
+                viewModel = MemoListViewModel(repository: repository, surface: surface)
             }
         }
         .onChange(of: scenePhase) { _, phase in
@@ -105,7 +113,7 @@ public struct HomeView: View {
                 Text(Date.now.formatted(.dateTime.month().day().weekday(.wide)))
                     .scaledFont(13, weight: .semibold)
                     .foregroundStyle(Theme.textSecondary)
-                Text("home.title")
+                Text(LocalizedStringKey(surface == .memo ? "home.title" : "home.widget.title"))
                     .scaledFont(27, weight: .heavy)
                     .foregroundStyle(Theme.textPrimary)
             }
@@ -252,23 +260,32 @@ public struct HomeView: View {
     @ViewBuilder
     private func sectionedList(_ vm: MemoListViewModel) -> some View {
         Group {
-            let active = vm.activeMemos
-            if !active.isEmpty {
+            // 표시 상태를 쓰는 표면(메모 탭)만 "잠금화면 표시 중" 그룹을 앞세운다.
+            // 위젯 탭은 앱이 켜고 끄는 개념이 없어 타입별 그룹만 남는다.
+            if vm.usesDisplayState {
+                let active = vm.activeMemos
+                if !active.isEmpty {
                     activeSectionHeader(count: active.count)
                     reorderableSection(active, matches: { $0.activityId != nil }, vm: vm)
                 }
+            }
 
-                ForEach(RenderType.allCases, id: \.self) { type in
-                    let group = vm.inactiveMemos(ofType: type)
-                    if !group.isEmpty {
-                        sectionHeader(type, count: group.count)
-                        reorderableSection(
-                            group,
-                            matches: { $0.activityId == nil && $0.renderType == type },
-                            vm: vm
-                        )
-                    }
+            ForEach(vm.availableTypes, id: \.self) { type in
+                let group = vm.usesDisplayState
+                    ? vm.inactiveMemos(ofType: type)
+                    : vm.memos.filter { $0.renderType == type }
+                if !group.isEmpty {
+                    sectionHeader(type, count: group.count)
+                    reorderableSection(
+                        group,
+                        matches: {
+                            $0.renderType == type
+                                && (!vm.usesDisplayState || $0.activityId == nil)
+                        },
+                        vm: vm
+                    )
                 }
+            }
         }
     }
 
@@ -448,9 +465,17 @@ private struct CardMidYKey: PreferenceKey {
 }
 
 #if DEBUG
-#Preview("메모 목록") {
+#Preview("메모 탭") {
     if let preview = PreviewSupport.makeRepository() {
-        HomeView()
+        HomeView(surface: .memo)
+            .environment(preview.repository)
+            .modelContainer(preview.container)
+    }
+}
+
+#Preview("위젯 탭") {
+    if let preview = PreviewSupport.makeRepository() {
+        HomeView(surface: .widget)
             .environment(preview.repository)
             .modelContainer(preview.container)
     }
@@ -458,7 +483,7 @@ private struct CardMidYKey: PreferenceKey {
 
 #Preview("빈 상태") {
     if let preview = PreviewSupport.makeRepository(seeded: false) {
-        HomeView()
+        HomeView(surface: .memo)
             .environment(preview.repository)
             .modelContainer(preview.container)
     }

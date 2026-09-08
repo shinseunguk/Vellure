@@ -1,3 +1,8 @@
+/* Tab */
+"tab.memo" = "メモ";
+"tab.widget" = "ウィジェット";
+"home.widget.title" = "ウィジェット";
+
 /* Home */
 "home.title" = "メモ";
 "home.section.active" = "ロック画面に表示中";
