@@ -235,3 +235,11 @@
 "guide.lock.step3" = "목록에서 Vellure를 고릅니다";
 "guide.tip" = "위젯을 길게 눌러 '위젯 편집'을 고르면 어떤 메모를 보여줄지 바꿀 수 있어요. D-day가 여러 개면 위젯을 여러 개 놓고 각각 다르게 지정하세요.";
 "guide.entry" = "위젯은 어떻게 추가하나요?";
+
+/* Migration */
+"migration.title" = "홈이 두 개의 탭으로 나뉘었어요";
+"migration.description" = "메모의 성격에 따라 자리를 나눴습니다.\n기존 메모는 그대로 있습니다.";
+"migration.memo.detail" = "일반·체크리스트·카운트다운. 잠금화면에 띄웠다 내리는 메모";
+"migration.widget.detail" = "D-day·진행바. 위젯으로 옮겼습니다";
+"migration.cta.widget" = "위젯 탭 보러 가기";
+"migration.cta.later" = "나중에";

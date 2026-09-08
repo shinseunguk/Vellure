@@ -235,3 +235,11 @@
 "guide.lock.step3" = "从列表中选择 Vellure";
 "guide.tip" = "长按小组件并选择“编辑小组件”即可更改显示的备忘。若有多个倒数日，可放置多个小组件并分别指定。";
 "guide.entry" = "如何添加小组件？";
+
+/* Migration */
+"migration.title" = "主页现在分为两个标签";
+"migration.description" = "按备忘的性质重新分类。\n原有备忘都还在。";
+"migration.memo.detail" = "普通·清单·倒计时。可在锁定屏幕显示的备忘";
+"migration.widget.detail" = "倒数日·进度条。已移至小组件";
+"migration.cta.widget" = "去看小组件标签";
+"migration.cta.later" = "稍后";

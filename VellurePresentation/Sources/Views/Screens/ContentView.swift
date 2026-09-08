@@ -8,6 +8,10 @@ import VellureCore
 /// 두 성격을 한 목록에 섞으면 "표시 중" 같은 상태 개념이 한쪽에만 성립해 화면이 어긋난다.
 public struct ContentView: View {
     @State private var selection: Surface = .memo
+    @State private var showMigrationNotice = false
+
+    /// 마지막으로 안내를 마친 구조 버전. v1.0에는 없던 키다.
+    @AppStorage(StructureNotice.storageKey) private var lastSeenStructureVersion = ""
 
     public init() {}
 
@@ -26,5 +30,22 @@ public struct ContentView: View {
                 .tag(Surface.widget)
         }
         .tint(Theme.accent)
+        .fullScreenCover(isPresented: $showMigrationNotice) {
+            MigrationNoticeView { selection = .widget }
+        }
+        .task { presentMigrationNoticeIfNeeded() }
+    }
+
+    /// v1.0에서 올라온 사용자에게만 탭 분리를 한 번 알린다.
+    ///
+    /// 신규 설치는 온보딩을 띄우는 시점에 이미 현재 버전이 찍히므로 여기 걸리지 않는다.
+    private func presentMigrationNoticeIfNeeded() {
+        guard lastSeenStructureVersion != StructureNotice.currentVersion else { return }
+
+        let needsNotice = StructureNotice.needsNotice(lastSeenVersion: lastSeenStructureVersion)
+        StructureNotice.markAsCurrent()
+        guard needsNotice else { return }
+
+        showMigrationNotice = true
     }
 }

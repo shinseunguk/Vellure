@@ -235,3 +235,11 @@
 "guide.lock.step3" = "一覧から Vellure を選びます";
 "guide.tip" = "ウィジェットを長押しして「ウィジェットを編集」を選ぶと、表示するメモを変更できます。D-day が複数ある場合は、ウィジェットを複数配置してそれぞれ指定してください。";
 "guide.entry" = "ウィジェットの追加方法";
+
+/* Migration */
+"migration.title" = "ホームが2つのタブに分かれました";
+"migration.description" = "メモの性質に合わせて配置を分けました。\n既存のメモはそのまま残っています。";
+"migration.memo.detail" = "メモ・チェックリスト・カウントダウン。ロック画面に表示するメモ";
+"migration.widget.detail" = "D-day・進捗バー。ウィジェットに移動しました";
+"migration.cta.widget" = "ウィジェットタブを見る";
+"migration.cta.later" = "あとで";
