@@ -6,6 +6,8 @@ import VellureData
 final class MemoEditViewModel {
     private let repository: MemoRepository
     private var existingMemo: Memo?
+    /// 작성 화면을 연 탭의 표면. 타입 선택지를 이 표면으로 한정한다.
+    let surface: Surface
 
     var content: String = ""
     var renderType: RenderType = .plain
@@ -20,8 +22,21 @@ final class MemoEditViewModel {
 
     var isEditing: Bool { existingMemo != nil }
 
-    init(repository: MemoRepository, memo: Memo? = nil) {
+    /// 이 화면에서 고를 수 있는 타입.
+    /// 표면을 넘나드는 변환은 막는다 — 저장하는 순간 메모가 다른 탭으로 사라져
+    /// 사용자에게는 삭제된 것처럼 보인다.
+    var availableTypes: [RenderType] { surface.renderTypes }
+
+    init(repository: MemoRepository, memo: Memo? = nil, surface: Surface = .memo) {
         self.repository = repository
+        // 기존 메모를 고칠 때는 그 메모가 속한 표면을 따른다.
+        // 그래야 현재 타입이 선택지에서 빠지는 일이 없다.
+        self.surface = memo?.renderType.surface ?? surface
+        // 새 메모는 작성 화면을 연 탭의 표면을 따른다.
+        // 메모 탭에서 + 를 눌렀는데 D-day가 기본으로 잡히면 저장 후 다른 탭으로 사라진다.
+        self.renderType = self.surface.renderTypes.first ?? .plain
+        self.clearTrigger = ClearTrigger.available(for: self.renderType).first ?? .hours
+
         if let memo {
             self.existingMemo = memo
             self.content = memo.content

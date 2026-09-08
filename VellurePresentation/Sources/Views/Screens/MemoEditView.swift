@@ -13,6 +13,8 @@ struct MemoEditView: View {
     @FocusState private var contentFocused: Bool
 
     let memo: Memo?
+    /// 작성 화면을 연 탭의 표면. 새 메모의 기본 타입과 선택지를 정한다.
+    var surface: Surface = .memo
 
     var body: some View {
         content
@@ -21,6 +23,13 @@ struct MemoEditView: View {
             .onChange(of: activityError) { _, error in
                 if error == nil && didAttemptStart { dismiss() }
             }
+    }
+
+    /// 하단 버튼 문구.
+    /// 위젯 표면은 저장이 곧 완료다. 잠금화면 게시는 이 화면의 동작이 아니다.
+    private func primaryActionKey(_ vm: MemoEditViewModel) -> LocalizedStringKey {
+        if vm.isEditing { return "edit.update.cta" }
+        return vm.surface == .memo ? "edit.save.cta" : "edit.save.widget.cta"
     }
 
     /// 새 메모를 저장한 직후 Live Activity를 띄운다.
@@ -57,13 +66,16 @@ struct MemoEditView: View {
                     Divider()
                     Button {
                         let saved = vm.save()
-                        guard vm.isEditing else {
-                            startActivity(for: saved)
+                        // 위젯 표면 메모는 사용자가 위젯을 배치해야 보인다.
+                        // 여기서 Live Activity를 띄우면 방금 만든 D-day가 8시간 뒤 사라져
+                        // "위젯에 넣으려고 만든 것"과 다른 결과가 된다.
+                        guard !vm.isEditing, vm.surface == .memo else {
+                            dismiss()
                             return
                         }
-                        dismiss()
+                        startActivity(for: saved)
                     } label: {
-                        Text(vm.isEditing ? "edit.update.cta" : "edit.save.cta")
+                        Text(primaryActionKey(vm))
                             .scaledFont(15, weight: .bold)
                             .foregroundStyle(.white)
                             .frame(maxWidth: .infinity)
@@ -90,7 +102,7 @@ struct MemoEditView: View {
         }
         .onAppear {
             if viewModel == nil {
-                viewModel = MemoEditViewModel(repository: repository, memo: memo)
+                viewModel = MemoEditViewModel(repository: repository, memo: memo, surface: surface)
             }
         }
     }
@@ -122,7 +134,7 @@ struct MemoEditView: View {
         VStack(alignment: .leading, spacing: 8) {
             sectionLabel(String(localized: "edit.section.type"))
             LazyVGrid(columns: columns, spacing: 8) {
-                ForEach(RenderType.allCases, id: \.self) { type in
+                ForEach(vm.availableTypes, id: \.self) { type in
                     typeChip(type, selected: vm.renderType == type) {
                         vm.renderType = type
                         let available = ClearTrigger.available(for: type)
