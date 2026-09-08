@@ -54,7 +54,8 @@ struct MemoReorderableSection: View {
                 onTap: { onSelect(memo) },
                 onToggleActivity: { viewModel.toggleActivity(for: memo) },
                 onDelete: { onDelete(memo) },
-                isActive: viewModel.isActive(memo)
+                isActive: viewModel.isActive(memo),
+                allowsPublishing: viewModel.usesDisplayState
             )
             // 정렬 모드에서 드래그 핸들이 붙어도 행 전체 폭이 늘지 않도록
             // 카드가 남은 폭을 받아 줄어들게 한다.
