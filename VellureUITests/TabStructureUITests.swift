@@ -13,12 +13,15 @@ final class TabStructureUITests: XCTestCase {
         static let unpublish = "잠금화면에서 내리기"
         static let newMemo = "새 메모 작성"
         static let skipOnboarding = "건너뛰기"
+        static let displayMode = "표시 모드"
     }
 
     private var app: XCUIApplication!
 
     override func setUpWithError() throws {
         continueAfterFailure = false
+        // 방향이 남아 있으면 레이아웃이 달라져 요소를 못 찾는 경우가 생긴다.
+        XCUIDevice.shared.orientation = .portrait
         app = XCUIApplication()
         app.launch()
         skipOnboardingIfNeeded()
@@ -81,6 +84,26 @@ final class TabStructureUITests: XCTestCase {
         XCTAssertTrue(app.buttons["D-day"].waitForExistence(timeout: 3))
         XCTAssertFalse(app.buttons["일반"].exists, "위젯 탭 작성 화면에 일반이 노출된다")
         XCTAssertFalse(app.buttons["체크리스트"].exists, "위젯 탭 작성 화면에 체크리스트가 노출된다")
+    }
+
+    // MARK: - 표시 모드 (LA 전용 설정)
+
+    /// 위젯은 사용자가 뺄 때까지 사라지지 않는다. 소멸 시점을 정하는 설정이 있으면
+    /// 곧 없어진다는 뜻으로 읽혀 위젯이 약속하는 것과 반대가 된다.
+    func test_createFlow_inWidgetTab_shouldNotOfferDisplayMode() {
+        selectTab(Label.widgetTab)
+        openNewMemo()
+
+        XCTAssertTrue(app.buttons["D-day"].waitForExistence(timeout: 3), "작성 화면이 열려야 한다")
+        XCTAssertFalse(app.staticTexts[Label.displayMode].exists, "위젯 작성 화면에 표시 모드가 노출된다")
+    }
+
+    func test_createFlow_inMemoTab_shouldOfferDisplayMode() {
+        selectTab(Label.memoTab)
+        openNewMemo()
+
+        XCTAssertTrue(app.staticTexts[Label.displayMode].waitForExistence(timeout: 3),
+                      "메모 작성 화면에는 표시 모드가 있어야 한다")
     }
 
     // MARK: - Helpers
