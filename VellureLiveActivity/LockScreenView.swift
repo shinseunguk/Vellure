@@ -10,15 +10,13 @@ struct LockScreenView: View {
     /// 브랜드 표시와 본문 사이 여백
     private static let brandSpacing: CGFloat = 6
     /// 본문과 타입별 콘텐츠 사이 여백
-    private static let contentSpacing: CGFloat = 8
+    private static let contentSpacing = Theme.Metric.contentSpacing
     /// 체크리스트 행 간격
     private static let checkRowSpacing: CGFloat = 5
     /// 본문 글자 크기
-    private static let contentFontSize: CGFloat = 15
+    private static let contentFontSize = Theme.Metric.contentFontSize
     /// 체크리스트 항목 글자 크기
     private static let itemFontSize: CGFloat = 13
-    /// D-day·카운트다운 강조 숫자 크기
-    private static let highlightFontSize: CGFloat = 24
 
     /// 카드 배경. 라이트=흰색, 다크=검은색
     private static let background = Color(uiColor: .systemBackground)
@@ -30,7 +28,7 @@ struct LockScreenView: View {
     let context: ActivityViewContext<MemoAttributes>
 
     private var state: MemoAttributes.ContentState { context.state }
-    private var tint: Color { colorFromTag(state.colorTag) }
+    private var tint: Color { Theme.memoColor(for: state.colorTag) }
     private var hasContent: Bool {
         !state.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
@@ -121,21 +119,15 @@ struct LockScreenView: View {
         switch state.renderType {
         case "dday":
             if let target = state.targetDate {
-                Text(ddayString(target))
-                    .font(.system(size: Self.highlightFontSize, weight: .heavy))
+                Text(DDayFormatter.string(for: target))
+                    .memoHighlightStyle()
                     .foregroundStyle(tint)
-                    .monospacedDigit()
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.7)
             }
         case "countdown":
             if let target = state.targetDate {
                 Text(timerInterval: Date.now...target, countsDown: true)
-                    .font(.system(size: Self.highlightFontSize, weight: .heavy))
+                    .memoHighlightStyle()
                     .foregroundStyle(tint)
-                    .monospacedDigit()
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.7)
             }
         case "checklist":
             if let items = state.items {
@@ -234,28 +226,5 @@ struct LockScreenView: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel(direction == "up" ? "a11y.progress.increase" : "a11y.progress.decrease")
-    }
-
-    // MARK: - Helpers
-
-    private func ddayString(_ target: Date) -> String {
-        let days = Calendar.current.dateComponents(
-            [.day],
-            from: Calendar.current.startOfDay(for: .now),
-            to: Calendar.current.startOfDay(for: target)
-        ).day ?? 0
-        if days > 0 { return "D-\(days)" }
-        if days == 0 { return "D-Day" }
-        return "D+\(abs(days))"
-    }
-
-    private func colorFromTag(_ tag: String) -> Color {
-        switch tag {
-        case "green": Color(red: 31 / 255, green: 169 / 255, blue: 124 / 255)
-        case "gold": Color(red: 239 / 255, green: 150 / 255, blue: 69 / 255)
-        case "blue": Color(red: 75 / 255, green: 150 / 255, blue: 243 / 255)
-        case "rose": Color(red: 238 / 255, green: 123 / 255, blue: 162 / 255)
-        default: Color(red: 31 / 255, green: 169 / 255, blue: 124 / 255)
-        }
     }
 }
