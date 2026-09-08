@@ -207,3 +207,15 @@
 "a11y.search.clear" = "검색어 지우기";
 "filter.type.all" = "모든 타입";
 "la.expired" = "업데이트 멈춤";
+
+/* Widget */
+"widget.entity.memo" = "메모";
+"widget.config.title" = "메모 선택";
+"widget.config.description" = "위젯에 표시할 메모를 고릅니다.";
+"widget.config.memo" = "메모";
+"widget.lockScreen.name" = "Vellure 잠금화면";
+"widget.lockScreen.description" = "D-day와 달성률을 잠금화면에 표시합니다.";
+"widget.homeScreen.name" = "Vellure";
+"widget.homeScreen.description" = "D-day와 달성률을 홈화면에 표시합니다.";
+"widget.missing" = "메모를 선택해주세요";
+"widget.empty" = "D-day를 만들어보세요";

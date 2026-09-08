@@ -207,3 +207,15 @@ your lock screen for 8 hours.";
 "a11y.search.clear" = "Clear search";
 "filter.type.all" = "All types";
 "la.expired" = "Updates stopped";
+
+/* Widget */
+"widget.entity.memo" = "Memo";
+"widget.config.title" = "Choose Memo";
+"widget.config.description" = "Pick which memo this widget shows.";
+"widget.config.memo" = "Memo";
+"widget.lockScreen.name" = "Vellure Lock Screen";
+"widget.lockScreen.description" = "Show a D-day or progress on your Lock Screen.";
+"widget.homeScreen.name" = "Vellure";
+"widget.homeScreen.description" = "Show a D-day or progress on your Home Screen.";
+"widget.missing" = "Choose a memo";
+"widget.empty" = "Create a D-day";
