@@ -54,6 +54,7 @@
 "edit.section.color" = "Color";
 "edit.save.cta" = "Publish to Lock Screen";
 "edit.update.cta" = "Save";
+"edit.save.widget.cta" = "Save";
 "edit.delete" = "Delete Memo";
 
 /* Type Names */
@@ -219,3 +220,18 @@ your lock screen for 8 hours.";
 "widget.homeScreen.description" = "Show a D-day or progress on your Home Screen.";
 "widget.missing" = "Choose a memo";
 "widget.empty" = "Create a D-day";
+
+/* Widget Guide */
+"guide.title" = "Add a Widget";
+"guide.done" = "Done";
+"guide.intro" = "Widgets have to be placed by hand. Follow these steps once.";
+"guide.home.title" = "Home Screen";
+"guide.home.step1" = "Touch and hold an empty area";
+"guide.home.step2" = "Tap + at the top left, then find Vellure";
+"guide.home.step3" = "Pick a size and tap Add Widget";
+"guide.lock.title" = "Lock Screen";
+"guide.lock.step1" = "Touch and hold the Lock Screen, then tap Customize";
+"guide.lock.step2" = "Choose Lock Screen and tap a widget slot";
+"guide.lock.step3" = "Pick Vellure from the list";
+"guide.tip" = "Touch and hold a widget and choose Edit Widget to change which memo it shows. For several D-days, place several widgets and point each at a different memo.";
+"guide.entry" = "How do I add a widget?";

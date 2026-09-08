@@ -54,6 +54,7 @@
 "edit.section.color" = "颜色";
 "edit.save.cta" = "显示到锁屏";
 "edit.update.cta" = "保存";
+"edit.save.widget.cta" = "保存";
 "edit.delete" = "删除备忘录";
 
 /* Type Names */
@@ -219,3 +220,18 @@
 "widget.homeScreen.description" = "在主屏幕显示倒数日或进度。";
 "widget.missing" = "请选择备忘";
 "widget.empty" = "创建倒数日";
+
+/* Widget Guide */
+"guide.title" = "添加小组件";
+"guide.done" = "完成";
+"guide.intro" = "小组件需要您自己添加。按以下步骤设置一次即可。";
+"guide.home.title" = "主屏幕";
+"guide.home.step1" = "长按主屏幕空白处";
+"guide.home.step2" = "点按左上角的 +，找到 Vellure";
+"guide.home.step3" = "选择尺寸后点按“添加小组件”";
+"guide.lock.title" = "锁定屏幕";
+"guide.lock.step1" = "长按锁定屏幕，点按“自定义”";
+"guide.lock.step2" = "选择“锁定屏幕”，点按小组件栏位";
+"guide.lock.step3" = "从列表中选择 Vellure";
+"guide.tip" = "长按小组件并选择“编辑小组件”即可更改显示的备忘。若有多个倒数日，可放置多个小组件并分别指定。";
+"guide.entry" = "如何添加小组件？";

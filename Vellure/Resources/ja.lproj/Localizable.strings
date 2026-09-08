@@ -54,6 +54,7 @@
 "edit.section.color" = "カラー";
 "edit.save.cta" = "ロック画面に表示";
 "edit.update.cta" = "保存";
+"edit.save.widget.cta" = "保存";
 "edit.delete" = "メモを削除";
 
 /* Type Names */
@@ -219,3 +220,18 @@
 "widget.homeScreen.description" = "D-dayや進捗をホーム画面に表示します。";
 "widget.missing" = "メモを選択してください";
 "widget.empty" = "D-dayを作成";
+
+/* Widget Guide */
+"guide.title" = "ウィジェットを追加";
+"guide.done" = "完了";
+"guide.intro" = "ウィジェットはご自身で配置する必要があります。以下の手順を一度だけ行ってください。";
+"guide.home.title" = "ホーム画面";
+"guide.home.step1" = "ホーム画面の空いている場所を長押しします";
+"guide.home.step2" = "左上の + をタップし、Vellure を探します";
+"guide.home.step3" = "サイズを選び「ウィジェットを追加」をタップします";
+"guide.lock.title" = "ロック画面";
+"guide.lock.step1" = "ロック画面を長押しし「カスタマイズ」をタップします";
+"guide.lock.step2" = "「ロック画面」を選び、ウィジェット枠をタップします";
+"guide.lock.step3" = "一覧から Vellure を選びます";
+"guide.tip" = "ウィジェットを長押しして「ウィジェットを編集」を選ぶと、表示するメモを変更できます。D-day が複数ある場合は、ウィジェットを複数配置してそれぞれ指定してください。";
+"guide.entry" = "ウィジェットの追加方法";
