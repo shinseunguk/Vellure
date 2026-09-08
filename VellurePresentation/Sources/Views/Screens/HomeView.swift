@@ -4,7 +4,6 @@ import SwiftData
 import VellureCore
 import VellureData
 
-// swiftlint:disable:next type_body_length
 public struct HomeView: View {
     /// 이 화면이 담당하는 표면. 탭마다 하나씩 띄운다.
     private let surface: Surface
@@ -66,7 +65,7 @@ public struct HomeView: View {
                     }
                 } else {
                     Spacer()
-                    EmptyStateView { showNewMemo = true }
+                    EmptyStateView(surface: surface) { showNewMemo = true }
                     Spacer()
                 }
             }
@@ -108,79 +107,13 @@ public struct HomeView: View {
     // MARK: - Header
 
     private var header: some View {
-        HStack(alignment: .center) {
-            VStack(alignment: .leading, spacing: 2) {
-                Text(Date.now.formatted(.dateTime.month().day().weekday(.wide)))
-                    .scaledFont(13, weight: .semibold)
-                    .foregroundStyle(Theme.textSecondary)
-                Text(LocalizedStringKey(surface == .memo ? "home.title" : "home.widget.title"))
-                    .scaledFont(27, weight: .heavy)
-                    .foregroundStyle(Theme.textPrimary)
-            }
-
-            Spacer(minLength: 12)
-
-            HStack(spacing: 8) {
-                if isReordering {
-                    Button {
-                        withAnimation { isReordering = false }
-                    } label: {
-                        Text("home.done")
-                            .scaledFont(13, weight: .bold)
-                            .foregroundStyle(.white)
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 7)
-                            .background(Theme.accent)
-                            .clipShape(Capsule())
-                    }
-                } else {
-                    if viewModel?.memos.isEmpty == false {
-                        Button {
-                            reorderHaptic.prepare()
-                            withAnimation { isReordering = true }
-                        } label: {
-                            Image(systemName: "arrow.up.arrow.down")
-                                .scaledFont(14, weight: .bold)
-                                .foregroundStyle(Theme.textSecondary)
-                                .frame(width: 34, height: 34)
-                                .background(Theme.chipBackground)
-                                .clipShape(Circle())
-                        }
-                        .accessibilityLabel("a11y.header.reorder")
-                    }
-
-                    Button { showNewMemo = true } label: {
-                        HStack(spacing: 4) {
-                            Image(systemName: "plus")
-                                .scaledFont(12, weight: .bold)
-                            // 접근성 글자 크기에서는 라벨이 여러 줄로 접혀 버튼이 뭉개진다.
-                            // 아이콘만 남긴다. VoiceOver는 접근성 레이블로 읽으므로 정보 손실이 없다.
-                            if !dynamicTypeSize.isAccessibilitySize {
-                                Text("home.new")
-                                    .scaledFont(13, weight: .bold)
-                                    .lineLimit(1)
-                            }
-                        }
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 7)
-                        .background(Theme.accent)
-                        .clipShape(Capsule())
-                    }
-                    .accessibilityLabel("a11y.header.newMemo")
-
-                    Button { showSettings = true } label: {
-                        Image(systemName: "gearshape")
-                            .scaledFont(15)
-                            .foregroundStyle(Theme.textSecondary)
-                            .frame(width: 34, height: 34)
-                            .background(Theme.chipBackground)
-                            .clipShape(Circle())
-                    }
-                    .accessibilityLabel("a11y.header.settings")
-                }
-            }
-        }
+        MemoListHeader(
+            surface: surface,
+            canReorder: viewModel?.memos.isEmpty == false,
+            isReordering: $isReordering,
+            onNewMemo: { showNewMemo = true },
+            onSettings: { showSettings = true }
+        )
     }
 
     // MARK: - Memo List
@@ -265,7 +198,7 @@ public struct HomeView: View {
             if vm.usesDisplayState {
                 let active = vm.activeMemos
                 if !active.isEmpty {
-                    activeSectionHeader(count: active.count)
+                    MemoSectionHeader(kind: .active, count: active.count)
                     reorderableSection(active, matches: { $0.activityId != nil }, vm: vm)
                 }
             }
@@ -275,7 +208,7 @@ public struct HomeView: View {
                     ? vm.inactiveMemos(ofType: type)
                     : vm.memos.filter { $0.renderType == type }
                 if !group.isEmpty {
-                    sectionHeader(type, count: group.count)
+                    MemoSectionHeader(kind: .type(type), count: group.count)
                     reorderableSection(
                         group,
                         matches: {
@@ -402,58 +335,6 @@ public struct HomeView: View {
                 dragOffsetY = 0
                 dropTargetIndex = nil
             }
-    }
-
-    private func activeSectionHeader(count: Int) -> some View {
-        HStack(spacing: 5) {
-            Image(systemName: "lock.fill")
-                .scaledFont(11, weight: .semibold)
-            Text("home.section.active")
-                .scaledFont(13, weight: .bold)
-            Text("\(count)")
-                .scaledFont(12, weight: .semibold)
-        }
-        .foregroundStyle(Theme.accent)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.horizontal, 20)
-        .padding(.top, 14)
-        .padding(.bottom, 2)
-    }
-
-    private func sectionHeader(_ type: RenderType, count: Int) -> some View {
-        HStack(spacing: 5) {
-            Image(systemName: typeIconName(type))
-                .scaledFont(11, weight: .semibold)
-            Text(typeDisplayName(type))
-                .scaledFont(13, weight: .bold)
-            Text("\(count)")
-                .scaledFont(12, weight: .semibold)
-        }
-        .foregroundStyle(Theme.textSecondary)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.horizontal, 20)
-        .padding(.top, 14)
-        .padding(.bottom, 2)
-    }
-
-    private func typeIconName(_ type: RenderType) -> String {
-        switch type {
-        case .plain: "note.text"
-        case .checklist: "checklist"
-        case .dday: "calendar"
-        case .countdown: "timer"
-        case .progress: "chart.bar.fill"
-        }
-    }
-
-    private func typeDisplayName(_ type: RenderType) -> String {
-        switch type {
-        case .plain: String(localized: "type.plain")
-        case .checklist: String(localized: "type.checklist")
-        case .dday: String(localized: "type.dday")
-        case .countdown: String(localized: "type.countdown")
-        case .progress: String(localized: "type.progress")
-        }
     }
 }
 

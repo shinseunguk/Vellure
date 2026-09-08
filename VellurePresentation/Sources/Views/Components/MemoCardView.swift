@@ -15,26 +15,6 @@ struct MemoCardView: View {
         Theme.memoColor(for: memo.colorTag)
     }
 
-    private var typeIcon: String {
-        switch memo.renderType {
-        case .plain: "note.text"
-        case .checklist: "checklist"
-        case .dday: "calendar"
-        case .countdown: "timer"
-        case .progress: "chart.bar.fill"
-        }
-    }
-
-    private var typeLabel: String {
-        switch memo.renderType {
-        case .plain: String(localized: "type.plain")
-        case .checklist: String(localized: "type.checklist")
-        case .dday: String(localized: "type.dday")
-        case .countdown: String(localized: "type.countdown")
-        case .progress: String(localized: "type.progress")
-        }
-    }
-
     private var sideValue: String? {
         switch memo.renderType {
         case .dday:
@@ -128,14 +108,14 @@ struct MemoCardView: View {
                     .fill(tintColor.opacity(0.15))
                     .frame(width: 38, height: 38)
                     .overlay {
-                        Image(systemName: typeIcon)
+                        Image(systemName: memo.renderType.iconName)
                             .scaledFont(15, weight: .semibold)
                             .foregroundStyle(tintColor)
                     }
 
                 VStack(alignment: .leading, spacing: 2) {
                     HStack(spacing: 7) {
-                        Text(typeLabel)
+                        Text(memo.renderType.displayName)
                             .scaledFont(11, weight: .bold)
                             .foregroundStyle(tintColor)
                             .lineLimit(1)
