@@ -8,7 +8,9 @@ on:
 
 jobs:
   build:
-    runs-on: macos-15
+    # 배포 워크플로우와 같은 러너를 쓴다.
+    # 러너가 다르면 Xcode 버전이 갈려 CI는 통과하는데 배포에서 깨질 수 있다.
+    runs-on: macos-26
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -30,12 +32,32 @@ jobs:
       - name: Run SwiftLint
         run: swiftlint lint --strict
 
+      # 기기 이름을 고정하면 Xcode가 올라갈 때마다 CI가 깨진다.
+      # (iPhone 16 고정 → 러너에서 해당 시뮬레이터가 사라지며 실패)
+      - name: Select simulator
+        id: sim
+        run: |
+          DEVICE=$(xcrun simctl list devices available --json | python3 -c "
+          import json, re, sys
+          devices = json.load(sys.stdin)['devices']
+          names = sorted({d['name'] for rt, ds in devices.items() if 'iOS' in rt for d in ds})
+          if not names:
+              sys.exit('사용 가능한 iOS 시뮬레이터가 없습니다')
+          # 'iPhone 17' 처럼 숫자가 붙은 모델 중 가장 높은 번호를 고른다.
+          # 알파벳 정렬은 'iPhone Air'가 'iPhone 17 Pro'보다 뒤로 가 의도와 어긋난다.
+          numbered = [(int(m.group(1)), n) for n in names if (m := re.match(r'iPhone (\d+)', n))]
+          print(max(numbered)[1] if numbered else names[0])
+          ")
+          echo "선택된 시뮬레이터: $DEVICE"
+          echo "device=$DEVICE" >> "$GITHUB_OUTPUT"
+
+      # 빌드는 특정 기기가 필요 없다.
       - name: Build
         run: |
           xcodebuild build \
             -workspace Vellure.xcworkspace \
             -scheme Vellure \
-            -destination 'platform=iOS Simulator,name=iPhone 16' \
+            -destination 'generic/platform=iOS Simulator' \
             -configuration Debug \
             CODE_SIGNING_ALLOWED=NO
 
@@ -44,6 +66,6 @@ jobs:
           xcodebuild test \
             -workspace Vellure.xcworkspace \
             -scheme Vellure \
-            -destination 'platform=iOS Simulator,name=iPhone 16' \
+            -destination "platform=iOS Simulator,name=${{ steps.sim.outputs.device }}" \
             -configuration Debug \
             CODE_SIGNING_ALLOWED=NO
