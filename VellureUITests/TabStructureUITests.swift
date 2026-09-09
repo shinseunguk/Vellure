@@ -123,7 +123,13 @@ final class TabStructureUITests: XCTestCase {
     /// CI 러너는 실행이 느려 첫 화면이 늦게 뜬다. 넉넉히 기다린다.
     private func selectTab(_ label: String) {
         let tab = app.tabBars.buttons[label]
-        XCTAssertTrue(tab.waitForExistence(timeout: 20), "\(label) 탭을 찾을 수 없다")
+        if !tab.waitForExistence(timeout: 20) {
+            // 무엇이 떠 있는지 모르면 원인을 짐작만 하게 된다. 로그에 남긴다.
+            print("=== APP STATE: \(app.state.rawValue) ===")
+            print("=== UI HIERARCHY ===")
+            print(app.debugDescription)
+        }
+        XCTAssertTrue(tab.exists, "\(label) 탭을 찾을 수 없다")
         tab.tap()
     }
 
