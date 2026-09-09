@@ -14,6 +14,9 @@ final class TabStructureUITests: XCTestCase {
         static let newMemo = "새 메모 작성"
         static let skipOnboarding = "건너뛰기"
         static let displayMode = "표시 모드"
+        /// 화면 상단 제목. 탭 라벨과 글자가 같아 이름만 구분해 둔다.
+        static let memoTitle = "메모"
+        static let widgetTitle = "위젯"
     }
 
     private var app: XCUIApplication!
@@ -23,6 +26,8 @@ final class TabStructureUITests: XCTestCase {
         // 방향이 남아 있으면 레이아웃이 달라져 요소를 못 찾는 경우가 생긴다.
         XCUIDevice.shared.orientation = .portrait
         app = XCUIApplication()
+        // 기기에 남은 데이터에 기대면 빈 상태로 시작하는 CI에서 무너진다.
+        app.launchArguments = ["-uiTestSeed"]
         app.launch()
         skipOnboardingIfNeeded()
         dismissMigrationNoticeIfNeeded()
@@ -40,11 +45,12 @@ final class TabStructureUITests: XCTestCase {
     }
 
     func test_tabs_shouldSwitchBetweenSurfaces() {
+        // 화면 제목으로 판정한다. 목록 내용은 데이터에 따라 달라진다.
         selectTab(Label.widgetTab)
-        XCTAssertTrue(app.staticTexts["D-day"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.staticTexts[Label.widgetTitle].waitForExistence(timeout: 3))
 
         selectTab(Label.memoTab)
-        XCTAssertTrue(app.staticTexts["일반"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.staticTexts[Label.memoTitle].waitForExistence(timeout: 3))
     }
 
     // MARK: - 잠금화면 게시 버튼 (#92)
@@ -119,10 +125,12 @@ final class TabStructureUITests: XCTestCase {
         tab.tap()
     }
 
+    /// 헤더의 새 메모 버튼을 집는다.
+    /// 빈 상태 화면에도 같은 라벨의 버튼이 있어, 첫 번째 것만 골라야 모호해지지 않는다.
     private func openNewMemo() {
-        let button = app.buttons[Label.newMemo]
-        XCTAssertTrue(button.waitForExistence(timeout: 5), "새 메모 버튼을 찾을 수 없다")
-        button.tap()
+        let buttons = app.buttons.matching(identifier: Label.newMemo)
+        XCTAssertTrue(buttons.firstMatch.waitForExistence(timeout: 5), "새 메모 버튼을 찾을 수 없다")
+        buttons.firstMatch.tap()
     }
 
     /// 신규 설치 상태로 실행되면 온보딩이 먼저 뜬다.
