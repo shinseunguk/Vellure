@@ -145,13 +145,16 @@ public struct HomeView: View {
 
     @ViewBuilder
     private func memoContextMenu(for memo: Memo, vm: MemoListViewModel) -> some View {
-        Button {
-            vm.toggleActivity(for: memo)
-        } label: {
-            Label(
-                memo.activityId != nil ? "context.stopActivity" : "context.startActivity",
-                systemImage: memo.activityId != nil ? "stop.circle" : "play.circle"
-            )
+        // 위젯 탭에서는 새로 올리지 않는다. 이미 떠 있는 것만 내릴 수 있다.
+        if vm.usesDisplayState || vm.isActive(memo) {
+            Button {
+                vm.toggleActivity(for: memo)
+            } label: {
+                Label(
+                    memo.activityId != nil ? "context.stopActivity" : "context.startActivity",
+                    systemImage: memo.activityId != nil ? "stop.circle" : "play.circle"
+                )
+            }
         }
 
         Button {
@@ -201,7 +204,8 @@ public struct HomeView: View {
                     onTap: { selectedMemo = memo },
                     onToggleActivity: { vm.toggleActivity(for: memo) },
                     onDelete: { deleteMemo(memo, vm: vm) },
-                    isActive: vm.isActive(memo)
+                    isActive: vm.isActive(memo),
+                    allowsPublishing: vm.usesDisplayState
                 )
                 .frame(maxWidth: .infinity)
                 .contextMenu { memoContextMenu(for: memo, vm: vm) }

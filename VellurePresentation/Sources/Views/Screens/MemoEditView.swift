@@ -56,7 +56,12 @@ struct MemoEditView: View {
                             typeSection(vm)
                             contentSection(vm)
                             dynamicSection(vm)
-                            displayModeSection(vm)
+                            // 표시 모드는 Live Activity가 잠금화면에서 언제 사라지는지를 정한다.
+                            // 위젯은 사용자가 뺄 때까지 사라지지 않으므로 정할 것이 없고,
+                            // "자동소멸 8시간"이 붙어 있으면 곧 없어진다는 뜻으로 읽혀 오해를 만든다.
+                            if vm.surface == .memo {
+                                displayModeSection(vm)
+                            }
                             colorSection(vm)
                             actionSection(vm)
                         }
