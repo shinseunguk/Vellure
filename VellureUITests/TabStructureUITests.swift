@@ -29,6 +29,7 @@ final class TabStructureUITests: XCTestCase {
         // 기기에 남은 데이터에 기대면 빈 상태로 시작하는 CI에서 무너진다.
         app.launchArguments = ["-uiTestSeed"]
         app.launch()
+        dismissStorageNoticeIfNeeded()
         skipOnboardingIfNeeded()
         dismissMigrationNoticeIfNeeded()
     }
@@ -132,6 +133,14 @@ final class TabStructureUITests: XCTestCase {
         let buttons = app.buttons.matching(identifier: Label.newMemo)
         XCTAssertTrue(buttons.firstMatch.waitForExistence(timeout: 5), "새 메모 버튼을 찾을 수 없다")
         buttons.firstMatch.tap()
+    }
+
+    /// 서명 없이 빌드하면 App Group을 쓸 수 없어 저장소가 메모리로 폴백하고,
+    /// 그 사실을 알리는 알럿이 화면을 덮는다. CI가 이 상태다.
+    private func dismissStorageNoticeIfNeeded() {
+        let alert = app.alerts.firstMatch
+        guard alert.waitForExistence(timeout: 5) else { return }
+        alert.buttons.firstMatch.tap()
     }
 
     /// 신규 설치 상태로 실행되면 온보딩이 먼저 뜬다.
