@@ -16,11 +16,33 @@ final class MemoEditViewModel {
     var clearAfterHours: Int = Memo.maxClearAfterHours
     var font: String = "default"
     var colorTag: String = "green"
-    var targetDate: Date = Calendar.current.date(byAdding: .day, value: 7, to: Date()) ?? Date()
+    var targetDate: Date = MemoEditViewModel.defaultTargetDate()
     var checklistItems: [ChecklistItem] = []
     var progress: Double = 0.0
 
     var isEditing: Bool { existingMemo != nil }
+
+    /// 목표일을 정하지 않았을 때 쓰는 기본값.
+    static func defaultTargetDate(from now: Date = .now) -> Date {
+        Calendar.current.date(byAdding: .day, value: 7, to: now) ?? now
+    }
+
+    /// 타입을 바꾸고 딸린 값들을 새 타입에 맞게 맞춘다.
+    ///
+    /// 지난 날짜를 고른 D-day에서 카운트다운으로 넘어가면 목표 시각이 이미 지나 있어
+    /// 저장하자마자 완료된 카운트다운이 된다. 그때는 기본값으로 되돌린다.
+    func selectType(_ type: RenderType) {
+        renderType = type
+
+        let available = ClearTrigger.available(for: type)
+        if !available.contains(clearTrigger) {
+            clearTrigger = available.first ?? .hours
+        }
+
+        if !type.allowsPastTarget, targetDate < .now {
+            targetDate = Self.defaultTargetDate()
+        }
+    }
 
     /// 이 화면에서 고를 수 있는 타입.
     /// 표면을 넘나드는 변환은 막는다 — 저장하는 순간 메모가 다른 탭으로 사라져
