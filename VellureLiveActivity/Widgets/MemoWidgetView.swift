@@ -4,9 +4,14 @@ import WidgetKit
 
 /// 위젯 한 칸의 내용. 패밀리에 따라 표현을 바꾼다.
 struct MemoWidgetView: View {
-    @Environment(\.widgetFamily) private var family
+    @Environment(\.widgetFamily) private var environmentFamily
 
     let entry: MemoWidgetEntry
+    /// 렌더 테스트에서 패밀리를 직접 지정하기 위한 통로.
+    /// `widgetFamily` 환경값은 쓰기가 막혀 있어 위젯 밖에서는 바꿀 수 없다.
+    var familyOverride: WidgetFamily?
+
+    private var family: WidgetFamily { familyOverride ?? environmentFamily }
 
     var body: some View {
         if entry.isMissing {
@@ -118,48 +123,109 @@ private struct RectangularMemoView: View {
 
 // MARK: - 홈화면
 
-/// 정사각 칸. Live Activity 카드를 압축한 형태로, 여기서는 컬러 태그가 살아난다.
+/// 메모 타입을 나타내는 라운드 타일.
+/// 앱 카드와 같은 표식이라 위젯이 같은 제품으로 읽힌다.
+private struct TypeTile: View {
+    let renderType: RenderType
+    let tint: Color
+    var size: CGFloat = 30
+
+    var body: some View {
+        RoundedRectangle(cornerRadius: size * 0.34, style: .continuous)
+            .fill(tint.opacity(0.15))
+            .frame(width: size, height: size)
+            .overlay {
+                Image(systemName: renderType.iconName)
+                    .font(.system(size: size * 0.42, weight: .semibold))
+                    .foregroundStyle(tint)
+            }
+    }
+}
+
+/// 값 칩. 앱 카드의 보조 값과 같은 모양이다.
+private struct ValueChip: View {
+    let text: String
+    let tint: Color
+    var fontSize: CGFloat = 12
+
+    var body: some View {
+        Text(text)
+            .font(.system(size: fontSize, weight: .heavy))
+            .foregroundStyle(tint)
+            .monospacedDigit()
+            .lineLimit(1)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 3)
+            .background(tint.opacity(0.12), in: Capsule())
+    }
+}
+
+/// 정사각 칸. 위쪽에 타입을 밝히고 아래쪽에 제목과 값을 모은다.
+/// 값을 가운데 띄우면 여백만 커지고 시선이 흩어진다.
 private struct SmallMemoView: View {
     let memo: MemoSnapshot
 
     private var tint: Color { Theme.memoColor(for: memo.colorTag) }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack(spacing: 4) {
-                Image(systemName: memo.renderType.iconName)
-                    .font(.system(size: 11, weight: .semibold))
+        VStack(alignment: .leading, spacing: 0) {
+            HStack(spacing: 7) {
+                TypeTile(renderType: memo.renderType, tint: tint)
                 Text(memo.renderType.displayName)
                     .font(.system(size: 11, weight: .bold))
-                    .lineLimit(1)
-            }
-            .foregroundStyle(tint)
-
-            Text(memo.title)
-                .font(.system(size: 14, weight: .bold))
-                .foregroundStyle(Theme.textPrimary)
-                .lineLimit(2)
-                .multilineTextAlignment(.leading)
-
-            Spacer(minLength: 0)
-
-            if memo.renderType == .progress {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("\(Int((memo.progress ?? 0) * 100))%")
-                        .font(.system(size: 20, weight: .heavy))
-                        .foregroundStyle(tint)
-                        .monospacedDigit()
-                    ProgressView(value: memo.progress ?? 0)
-                        .progressViewStyle(.linear)
-                        .tint(tint)
-                }
-            } else {
-                Text(memo.headlineValue)
-                    .memoHighlightStyle()
                     .foregroundStyle(tint)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+            }
+
+            Spacer(minLength: 10)
+
+            VStack(alignment: .leading, spacing: 5) {
+                Text(memo.title)
+                    .font(.system(size: 13.5, weight: .semibold))
+                    .foregroundStyle(Theme.textPrimary)
+                    .lineLimit(2)
+                    .multilineTextAlignment(.leading)
+
+                if memo.renderType == .progress {
+                    progressBlock
+                } else {
+                    Text(memo.headlineValue)
+                        .memoHighlightStyle(size: 27)
+                        .foregroundStyle(tint)
+                }
             }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+    }
+
+    private var progressBlock: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(memo.headlineValue)
+                .memoHighlightStyle(size: 24)
+                .foregroundStyle(tint)
+            ProgressBar(value: memo.progress ?? 0, tint: tint, height: 6)
+        }
+    }
+}
+
+/// 앱 카드와 같은 모양의 진행 막대.
+private struct ProgressBar: View {
+    let value: Double
+    let tint: Color
+    var height: CGFloat = 5
+
+    var body: some View {
+        GeometryReader { geo in
+            Capsule()
+                .fill(tint.opacity(0.15))
+                .overlay(alignment: .leading) {
+                    Capsule()
+                        .fill(tint)
+                        .frame(width: geo.size.width * min(max(value, 0), 1))
+                }
+        }
+        .frame(height: height)
     }
 }
 
@@ -171,51 +237,40 @@ private struct MediumMemoView: View {
     let memos: [MemoSnapshot]
 
     var body: some View {
-        VStack(spacing: 8) {
-            ForEach(Array(memos.prefix(Self.rowLimit).enumerated()), id: \.offset) { _, memo in
-                row(memo)
+        VStack(spacing: 0) {
+            // 건수가 적을 때 위로 몰리면 아래가 텅 빈다. 가운데로 모은다.
+            Spacer(minLength: 0)
+            VStack(spacing: 12) {
+                ForEach(Array(memos.prefix(Self.rowLimit).enumerated()), id: \.offset) { _, memo in
+                    row(memo)
+                }
             }
-            if memos.count < Self.rowLimit {
-                Spacer(minLength: 0)
-            }
+            Spacer(minLength: 0)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     private func row(_ memo: MemoSnapshot) -> some View {
         let tint = Theme.memoColor(for: memo.colorTag)
-        return HStack(spacing: 8) {
-            // 컬러 태그를 세로 막대로 둔다. 아이콘을 쓰면 제목이 밀려 폭을 잃는다.
-            Capsule()
-                .fill(tint)
-                .frame(width: 3, height: 22)
+        return HStack(spacing: 10) {
+            TypeTile(renderType: memo.renderType, tint: tint, size: 28)
 
-            Text(memo.title)
-                .font(.system(size: 13, weight: .semibold))
-                .foregroundStyle(Theme.textPrimary)
-                .lineLimit(1)
-                .truncationMode(.tail)
-
-            Spacer(minLength: 6)
-
-            if memo.renderType == .progress {
-                HStack(spacing: 5) {
-                    ProgressView(value: memo.progress ?? 0)
-                        .progressViewStyle(.linear)
-                        .tint(tint)
-                        .frame(width: 44)
-                    Text("\(Int((memo.progress ?? 0) * 100))%")
-                        .font(.system(size: 12, weight: .heavy))
-                        .foregroundStyle(tint)
-                        .monospacedDigit()
-                }
-            } else {
-                Text(memo.headlineValue)
-                    .font(.system(size: 15, weight: .heavy))
-                    .foregroundStyle(tint)
-                    .monospacedDigit()
+            VStack(alignment: .leading, spacing: 4) {
+                Text(memo.title)
+                    .font(.system(size: 13.5, weight: .semibold))
+                    .foregroundStyle(Theme.textPrimary)
                     .lineLimit(1)
+                    .truncationMode(.tail)
+
+                if memo.renderType == .progress {
+                    ProgressBar(value: memo.progress ?? 0, tint: tint, height: 4)
+                        .frame(maxWidth: 120)
+                }
             }
+
+            Spacer(minLength: 8)
+
+            ValueChip(text: memo.headlineValue, tint: tint)
         }
     }
 }
