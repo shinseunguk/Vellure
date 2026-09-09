@@ -40,7 +40,7 @@ final class TabStructureUITests: XCTestCase {
     // MARK: - 탭 전환
 
     func test_tabBar_shouldOfferMemoAndWidgetTabs() {
-        XCTAssertTrue(app.tabBars.buttons[Label.memoTab].exists)
+        XCTAssertTrue(app.tabBars.buttons[Label.memoTab].waitForExistence(timeout: 20))
         XCTAssertTrue(app.tabBars.buttons[Label.widgetTab].exists)
     }
 
@@ -119,9 +119,10 @@ final class TabStructureUITests: XCTestCase {
         app.buttons.matching(identifier: label).count
     }
 
+    /// CI 러너는 실행이 느려 첫 화면이 늦게 뜬다. 넉넉히 기다린다.
     private func selectTab(_ label: String) {
         let tab = app.tabBars.buttons[label]
-        XCTAssertTrue(tab.waitForExistence(timeout: 5), "\(label) 탭을 찾을 수 없다")
+        XCTAssertTrue(tab.waitForExistence(timeout: 20), "\(label) 탭을 찾을 수 없다")
         tab.tap()
     }
 

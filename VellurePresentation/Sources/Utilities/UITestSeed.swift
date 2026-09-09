@@ -15,8 +15,14 @@ public enum UITestSeed {
     }
 
     /// 두 표면 모두에 메모를 채운다. 한쪽이 비면 그 탭의 테스트가 의미를 잃는다.
+    ///
+    /// 온보딩과 구조 변경 안내도 함께 넘긴다. 이걸 화면에서 탭으로 넘기게 두면
+    /// 러너가 느릴 때 첫 화면이 늦게 떠 탭바를 찾지 못한 채 테스트가 무너진다.
     @MainActor
     public static func apply(to repository: MemoRepository) {
+        UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
+        StructureNotice.markAsCurrent()
+
         for memo in repository.fetchAll() {
             repository.delete(memo)
         }
