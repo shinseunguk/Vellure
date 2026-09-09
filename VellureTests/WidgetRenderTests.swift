@@ -28,24 +28,33 @@ final class WidgetRenderTests: XCTestCase {
             (.accessoryInline, CGSize(width: 250, height: 26), "inline")
         ]
 
-        for (family, size, name) in families {
-            let image = try render(family: family, size: size)
-            XCTAssertGreaterThan(image.size.width, 0, "\(name) 렌더링 실패")
-            try write(image, named: name)
+        // 대부분의 사용자가 다크 모드로 본다. 배경 그라디언트는 두 모드에서 전혀 다르게 보인다.
+        for scheme in [ColorScheme.light, .dark] {
+            for (family, size, name) in families {
+                let image = try render(family: family, size: size, scheme: scheme)
+                XCTAssertGreaterThan(image.size.width, 0, "\(name) 렌더링 실패")
+                try write(image, named: "\(name)-\(scheme == .dark ? "dark" : "light")")
+            }
         }
     }
 
     // MARK: - Helpers
 
-    private func render(family: WidgetFamily, size: CGSize) throws -> UIImage {
+    private func render(family: WidgetFamily, size: CGSize, scheme: ColorScheme) throws -> UIImage {
         // 잠금화면 계열은 시스템이 단색(vibrant)으로 칠한다.
         // 배경만 어둡게 두면 검은 글씨가 묻히므로 전경색까지 흉내낸다.
         let content = MemoWidgetView(entry: Self.sample, familyOverride: family)
             .foregroundStyle(family.isAccessory ? Color.white : Theme.textPrimary)
             .frame(width: size.width, height: size.height)
-            .background(family.isAccessory ? Color.black : Theme.cardBackground)
+            .background {
+                if family.isAccessory {
+                    Color.black
+                } else {
+                    WidgetBackground(tint: Self.sample.backgroundTint(for: family))
+                }
+            }
 
-        let renderer = ImageRenderer(content: content)
+        let renderer = ImageRenderer(content: content.environment(\.colorScheme, scheme))
         renderer.scale = 3
         return try XCTUnwrap(renderer.uiImage)
     }
