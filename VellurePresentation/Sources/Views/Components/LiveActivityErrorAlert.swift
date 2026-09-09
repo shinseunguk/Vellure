@@ -37,6 +37,7 @@ private struct LiveActivityErrorAlert: ViewModifier {
         case .notEnabled: "liveActivity.error.notEnabled"
         case .tooManyActivities: "liveActivity.error.tooMany"
         case .contentTooLarge: "liveActivity.error.tooLarge"
+        case .unsupportedType: "liveActivity.error.unsupportedType"
         case .unknown: "liveActivity.error.unknown"
         }
     }
