@@ -141,11 +141,7 @@ struct MemoEditView: View {
             LazyVGrid(columns: columns, spacing: 8) {
                 ForEach(vm.availableTypes, id: \.self) { type in
                     typeChip(type, selected: vm.renderType == type) {
-                        vm.renderType = type
-                        let available = ClearTrigger.available(for: type)
-                        if !available.contains(vm.clearTrigger) {
-                            vm.clearTrigger = available.first ?? .hours
-                        }
+                        vm.selectType(type)
                     }
                 }
             }
@@ -175,7 +171,9 @@ struct MemoEditView: View {
             DatePicker(
                 "",
                 selection: Bindable(vm).targetDate,
-                in: Date()...,
+                // D-day는 지난 날짜도 고를 수 있어야 한다 (D+N 카운트업).
+                // 카운트다운은 남은 시간을 세므로 미래로 제한한다.
+                in: (vm.renderType.allowsPastTarget ? Date.distantPast : Date())...,
                 displayedComponents: vm.renderType == .dday ? [.date] : [.date, .hourAndMinute]
             )
             .datePickerStyle(.graphical)
