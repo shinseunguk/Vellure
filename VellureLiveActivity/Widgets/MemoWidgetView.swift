@@ -121,6 +121,38 @@ private struct RectangularMemoView: View {
     }
 }
 
+// MARK: - 배경
+
+/// 홈화면 위젯 배경.
+///
+/// 단색으로 두면 앱 카드와 달리 밋밋하다. 메모 색을 아주 옅게 깔아
+/// 위젯마다 성격이 드러나게 하되, 본문 대비를 해치지 않을 만큼만 쓴다.
+struct WidgetBackground: View {
+    let tint: Color
+
+    var body: some View {
+        ZStack {
+            Theme.cardBackground
+            // 위에서 아래로 색이 고이게 한다.
+            // 위쪽을 진하게 하면 아이콘 타일(틴트 15%)이 배경에 묻혀 사라진다.
+            LinearGradient(
+                colors: [tint.opacity(0.03), tint.opacity(0.16)],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+        }
+    }
+}
+
+extension MemoWidgetEntry {
+    /// 배경에 쓸 색.
+    /// 목록은 여러 색이 섞이므로 특정 메모 색 대신 브랜드 강조색을 쓴다.
+    func backgroundTint(for family: WidgetFamily) -> Color {
+        guard family != .systemMedium, let memo else { return Theme.accent }
+        return Theme.memoColor(for: memo.colorTag)
+    }
+}
+
 // MARK: - 홈화면
 
 /// 메모 타입을 나타내는 라운드 타일.

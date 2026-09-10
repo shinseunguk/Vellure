@@ -174,6 +174,7 @@
 "liveActivity.error.notEnabled" = "请在“设置 > Vellure”中开启“实时活动”。";
 "liveActivity.error.tooMany" = "已达到可显示的数量上限，请先移除其他备忘。";
 "liveActivity.error.tooLarge" = "备忘内容过长，减少项目后即可显示。";
+"liveActivity.error.unsupportedType" = "倒数日与进度条通过小组件显示，无法添加到锁定屏幕。";
 "liveActivity.error.unknown" = "请稍后再试。";
 "liveActivity.error.openSettings" = "打开设置";
 "common.close" = "关闭";
