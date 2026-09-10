@@ -61,6 +61,11 @@ struct LockScreenContent: View {
         !state.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
+    /// 일반 메모는 본문이 카드의 전부라 가운데에 둔다.
+    /// 다른 타입은 본문 아래에 체크리스트·숫자가 이어지므로 왼쪽 정렬을 유지해야
+    /// 아래 내용과 시작선이 맞는다.
+    private var isCentered: Bool { state.renderType == "plain" }
+
     var body: some View {
         VStack(alignment: .leading, spacing: Self.contentSpacing) {
             VStack(alignment: .leading, spacing: Self.brandSpacing) {
@@ -76,7 +81,8 @@ struct LockScreenContent: View {
                         .foregroundStyle(Self.label)
                         .lineLimit(contentLineLimit)
                         .truncationMode(.tail)
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .multilineTextAlignment(isCentered ? .center : .leading)
+                        .frame(maxWidth: .infinity, alignment: isCentered ? .center : .leading)
                 }
             }
 
