@@ -118,7 +118,13 @@ let project = Project(
             product: .unitTests,
             bundleId: "\(bundlePrefix).VellureTests",
             deploymentTargets: deploymentTargets,
-            sources: ["VellureTests/**/*.swift"],
+            // 위젯 뷰는 확장 타깃에 있어 테스트에서 임포트할 수 없다.
+            // 렌더링을 눈으로 확인하려면 소스를 함께 컴파일해야 한다.
+            sources: [
+                "VellureTests/**/*.swift",
+                "VellureLiveActivity/Widgets/MemoWidgetView.swift",
+                "VellureLiveActivity/Widgets/MemoWidgetEntry.swift",
+            ],
             dependencies: [.target(name: "Vellure")]
         ),
         .target(

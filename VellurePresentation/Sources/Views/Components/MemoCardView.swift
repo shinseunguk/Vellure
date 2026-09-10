@@ -10,6 +10,13 @@ struct MemoCardView: View {
     /// 실제로 잠금화면에 떠 있는지. 저장된 activityId가 아니라
     /// 실행 중인 Activity 목록에서 판정한 값을 주입받는다.
     var isActive: Bool = false
+    /// 이 표면에서 잠금화면 게시를 허용하는지.
+    /// 위젯 탭은 위젯을 다루는 자리라 게시 버튼을 두지 않는다.
+    var allowsPublishing: Bool = true
+
+    /// 게시 토글을 보여줄지.
+    /// 게시를 허용하지 않는 표면이라도, 이미 떠 있는 Live Activity는 내릴 수 있어야 한다.
+    private var showsActivityToggle: Bool { allowsPublishing || isActive }
 
     private var tintColor: Color {
         Theme.memoColor(for: memo.colorTag)
@@ -174,17 +181,19 @@ struct MemoCardView: View {
 
                 if showsActions {
                     HStack(spacing: 6) {
-                        Button(action: onToggleActivity) {
-                            Image(systemName: isActive ? "arrow.down" : "arrow.up")
-                                .accessibilityHidden(true)
-                                .scaledFont(13, weight: .bold)
-                                .foregroundStyle(isActive ? .white : tintColor)
-                                .frame(width: 34, height: 34)
-                                .background(isActive ? tintColor : tintColor.opacity(0.15))
-                                .clipShape(Circle())
+                        if showsActivityToggle {
+                            Button(action: onToggleActivity) {
+                                Image(systemName: isActive ? "arrow.down" : "arrow.up")
+                                    .accessibilityHidden(true)
+                                    .scaledFont(13, weight: .bold)
+                                    .foregroundStyle(isActive ? .white : tintColor)
+                                    .frame(width: 34, height: 34)
+                                    .background(isActive ? tintColor : tintColor.opacity(0.15))
+                                    .clipShape(Circle())
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityLabel(isActive ? "a11y.card.unpublish" : "a11y.card.publish")
                         }
-                        .buttonStyle(.plain)
-                        .accessibilityLabel(isActive ? "a11y.card.unpublish" : "a11y.card.publish")
 
                         Button(action: onDelete) {
                             Image(systemName: "trash")
