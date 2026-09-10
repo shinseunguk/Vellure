@@ -12,6 +12,20 @@ final class LiveActivityRenderTests: XCTestCase {
     /// 잠금화면 카드의 대략적인 크기.
     private static let cardSize = CGSize(width: 360, height: 160)
 
+    /// 메모 색이 카드 배경이므로 네 색을 모두 확인해야 한다.
+    func test_render_allColors() throws {
+        for tag in ["green", "gold", "blue", "rose"] {
+            let state = MemoAttributes.ContentState.sample(
+                renderType: "plain",
+                content: "주차 위치 B2 구역 47",
+                colorTag: tag
+            )
+            let image = try render(state, scheme: .dark)
+            XCTAssertGreaterThan(image.size.width, 0, "\(tag) 렌더링 실패")
+            try write(image, named: "la-color-\(tag)")
+        }
+    }
+
     func test_render_lockScreenCards() throws {
         let cases: [(String, MemoAttributes.ContentState)] = [
             ("plain", .sample(renderType: "plain", content: "주차 위치 B2 구역 47")),
@@ -67,7 +81,8 @@ private extension MemoAttributes.ContentState {
         renderType: String,
         content: String,
         items: [LiveChecklistItem]? = nil,
-        targetDate: Date? = nil
+        targetDate: Date? = nil,
+        colorTag: String = "green"
     ) -> Self {
         MemoAttributes.ContentState(
             renderType: renderType,
@@ -75,7 +90,7 @@ private extension MemoAttributes.ContentState {
             items: items,
             targetDate: targetDate,
             font: "default",
-            colorTag: "green",
+            colorTag: colorTag,
             updatedAt: .now,
             expiresAt: Calendar.current.date(byAdding: .hour, value: 6, to: .now)
         )
