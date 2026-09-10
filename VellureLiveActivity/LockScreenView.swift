@@ -5,39 +5,72 @@ import WidgetKit
 import VellureCore
 
 struct LockScreenView: View {
-    /// 카드 기본 여백
-    private static let cardPadding: CGFloat = 12
-    /// 브랜드 표시와 본문 사이 여백
-    private static let brandSpacing: CGFloat = 6
-    /// 본문과 타입별 콘텐츠 사이 여백
-    private static let contentSpacing = Theme.Metric.contentSpacing
-    /// 체크리스트 행 간격
-    private static let checkRowSpacing: CGFloat = 5
-    /// 본문 글자 크기
-    private static let contentFontSize = Theme.Metric.contentFontSize
-    /// 체크리스트 항목 글자 크기
-    private static let itemFontSize: CGFloat = 13
-
-    /// 카드 배경. 라이트=흰색, 다크=검은색
-    private static let background = Color(uiColor: .systemBackground)
-    /// 본문 글자색. 라이트=검은색, 다크=흰색
-    private static let label = Color(uiColor: .label)
-    /// 보조 글자색
-    private static let secondaryLabel = Color(uiColor: .secondaryLabel)
-
     let context: ActivityViewContext<MemoAttributes>
 
-    private var state: MemoAttributes.ContentState { context.state }
+    var body: some View {
+        LockScreenContent(
+            state: context.state,
+            memoId: context.attributes.memoId,
+            isStale: context.isStale
+        )
+        .activitySystemActionForegroundColor(LockScreenContent.label)
+    }
+}
+
+/// 잠금화면 카드의 실제 내용.
+///
+/// `ActivityViewContext`는 ActivityKit만 만들 수 있어 밖에서 그려볼 수 없다.
+/// 값만 받도록 떼어내 렌더 테스트로 결과를 확인할 수 있게 한다.
+struct LockScreenContent: View {
+    let state: MemoAttributes.ContentState
+    let memoId: String
+    let isStale: Bool
+
+    /// 카드 기본 여백
+    fileprivate static let cardPadding: CGFloat = 12
+    /// 브랜드 표시와 본문 사이 여백
+    fileprivate static let brandSpacing: CGFloat = 6
+    /// 본문과 타입별 콘텐츠 사이 여백
+    fileprivate static let contentSpacing = Theme.Metric.contentSpacing
+    /// 체크리스트 행 간격
+    fileprivate static let checkRowSpacing: CGFloat = 5
+    // 잠금화면은 손에 들고 흘긋 보는 화면이라 앱·위젯보다 글자가 커야 한다.
+    // 공용 토큰(Theme.Metric)은 위젯에 맞춰둔 값이므로 여기서 따로 정한다.
+
+    /// 본문 글자 크기
+    fileprivate static let contentFontSize: CGFloat = 17
+    /// 체크리스트 항목 글자 크기.
+    /// 항목이 실제 정보인데 본문보다 작으면 읽는 순서가 뒤집힌다.
+    fileprivate static let itemFontSize: CGFloat = 15.5
+    /// 체크박스 아이콘 크기. 항목 글자보다 살짝 크게 둔다.
+    fileprivate static let checkboxSize: CGFloat = 17
+    /// 브랜드 표시·만료 타이머 같은 보조 정보
+    fileprivate static let captionFontSize: CGFloat = 12.5
+    /// D-day·카운트다운 강조 숫자
+    fileprivate static let highlightFontSize: CGFloat = 30
+
+    /// 카드 배경. 라이트=흰색, 다크=검은색
+    fileprivate static let background = Color(uiColor: .systemBackground)
+    /// 본문 글자색. 라이트=검은색, 다크=흰색
+    fileprivate static let label = Color(uiColor: .label)
+    /// 보조 글자색
+    fileprivate static let secondaryLabel = Color(uiColor: .secondaryLabel)
+
     private var tint: Color { Theme.memoColor(for: state.colorTag) }
     private var hasContent: Bool {
         !state.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
+    /// 일반 메모는 본문이 카드의 전부라 가운데에 둔다.
+    /// 다른 타입은 본문 아래에 체크리스트·숫자가 이어지므로 왼쪽 정렬을 유지해야
+    /// 아래 내용과 시작선이 맞는다.
+    private var isCentered: Bool { state.renderType == "plain" }
+
     var body: some View {
         VStack(alignment: .leading, spacing: Self.contentSpacing) {
             VStack(alignment: .leading, spacing: Self.brandSpacing) {
                 HStack(spacing: 8) {
-                    BrandLabel(tint: tint, renderType: state.renderType)
+                    BrandLabel(tint: tint, renderType: state.renderType, fontSize: Self.captionFontSize)
                     Spacer(minLength: 4)
                     expiryTimer
                 }
@@ -48,7 +81,8 @@ struct LockScreenView: View {
                         .foregroundStyle(Self.label)
                         .lineLimit(contentLineLimit)
                         .truncationMode(.tail)
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .multilineTextAlignment(isCentered ? .center : .leading)
+                        .frame(maxWidth: .infinity, alignment: isCentered ? .center : .leading)
                 }
             }
 
@@ -62,7 +96,6 @@ struct LockScreenView: View {
         // (라이트 모드에서 흰 배경 + 흰 글씨가 되던 원인)
         // 같은 컨텍스트에서 함께 해석되도록 배경과 글자색을 모두 뷰 안에 둔다.
         .background(Self.background)
-        .activitySystemActionForegroundColor(Self.label)
     }
 
     /// 타입별 본문 최대 줄 수.
@@ -86,16 +119,16 @@ struct LockScreenView: View {
     private var expiryTimer: some View {
         if let expiresAt = state.expiresAt {
             HStack(spacing: 3) {
-                Image(systemName: context.isStale ? "exclamationmark.arrow.circlepath" : "timer")
-                    .font(.system(size: 9, weight: .semibold))
+                Image(systemName: isStale ? "exclamationmark.arrow.circlepath" : "timer")
+                    .font(.system(size: 10.5, weight: .semibold))
                     .accessibilityHidden(true)
 
                 // `expiresAt > .now` 비교로는 전환되지 않는다.
                 // 앱이 종료된 상태에서는 뷰를 다시 그릴 계기가 없어 타이머가 0:00에 멈춘 채 남는다.
                 // isStale은 staleDate 도달 시 ActivityKit이 뷰를 다시 그려주므로 이때만 신뢰할 수 있다.
-                if !context.isStale {
+                if !isStale {
                     Text(timerInterval: Date.now...expiresAt, countsDown: true)
-                        .font(.system(size: 11, weight: .semibold))
+                        .font(.system(size: Self.captionFontSize, weight: .semibold))
                         // 고정 폭을 주지 않는다. 자릿수가 줄면 그만큼 좁아지며
                         // 아이콘과 숫자가 계속 붙어 있다.
                         .monospacedDigit()
@@ -103,7 +136,7 @@ struct LockScreenView: View {
                     // 8시간이 지나면 갱신이 멈춘다. 타이머를 지우면 왜 멈췄는지 알 수 없으니
                     // 다시 올려야 한다는 사실을 알린다.
                     Text("la.expired")
-                        .font(.system(size: 11, weight: .semibold))
+                        .font(.system(size: Self.captionFontSize, weight: .semibold))
                         .lineLimit(1)
                 }
             }
@@ -120,13 +153,13 @@ struct LockScreenView: View {
         case "dday":
             if let target = state.targetDate {
                 Text(DDayFormatter.string(for: target))
-                    .memoHighlightStyle()
+                    .memoHighlightStyle(size: Self.highlightFontSize)
                     .foregroundStyle(tint)
             }
         case "countdown":
             if let target = state.targetDate {
                 Text(timerInterval: Date.now...target, countsDown: true)
-                    .memoHighlightStyle()
+                    .memoHighlightStyle(size: Self.highlightFontSize)
                     .foregroundStyle(tint)
             }
         case "checklist":
@@ -146,7 +179,7 @@ struct LockScreenView: View {
 
     /// 본문 유무에 따라 달라지는 최대 표시 행 수.
     /// 남은 개수 안내("외 N개")도 한 행을 차지하므로 같은 예산에서 함께 계산한다.
-    private var checklistCapacity: Int { hasContent ? 4 : 5 }
+    private var checklistCapacity: Int { hasContent ? 3 : 4 }
 
     @ViewBuilder
     private func checklistContent(_ items: [LiveChecklistItem]) -> some View {
@@ -159,7 +192,7 @@ struct LockScreenView: View {
             }
             if showsOverflow {
                 Text("외 \(items.count - visibleCount)개")
-                    .font(.system(size: 11))
+                    .font(.system(size: Self.captionFontSize))
                     .foregroundStyle(Self.secondaryLabel)
             }
         }
@@ -167,12 +200,12 @@ struct LockScreenView: View {
 
     private func checkRow(_ item: LiveChecklistItem) -> some View {
         Button(intent: ToggleItemIntent(
-            memoId: context.attributes.memoId,
+            memoId: memoId,
             itemId: item.id
         )) {
             HStack(spacing: 8) {
                 Image(systemName: item.done ? "checkmark.square.fill" : "square")
-                    .font(.system(size: 15))
+                    .font(.system(size: Self.checkboxSize))
                     .foregroundStyle(item.done ? tint : Self.secondaryLabel)
                 Text(item.title)
                     .font(.system(size: Self.itemFontSize))
@@ -196,7 +229,7 @@ struct LockScreenView: View {
     private func progressContent(_ progress: Double) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             Text("\(Int(progress * 100))%")
-                .font(.system(size: 11, weight: .bold))
+                .font(.system(size: 13, weight: .bold))
                 .foregroundStyle(Self.secondaryLabel)
                 .monospacedDigit()
 
@@ -215,7 +248,7 @@ struct LockScreenView: View {
 
     private func stepButton(direction: String, systemName: String) -> some View {
         Button(intent: StepProgressIntent(
-            memoId: context.attributes.memoId,
+            memoId: memoId,
             direction: direction
         )) {
             Image(systemName: systemName)
