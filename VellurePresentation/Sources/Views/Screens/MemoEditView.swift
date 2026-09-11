@@ -117,9 +117,10 @@ struct MemoEditView: View {
     @ViewBuilder
     private func contentSection(_ vm: MemoEditViewModel) -> some View {
         VStack(alignment: .leading, spacing: 8) {
-            sectionLabel(vm.renderType == .plain
-                ? String(localized: "edit.section.content")
-                : String(localized: "edit.section.content.optional"))
+            // 체크리스트만 항목으로 내용을 대신할 수 있다.
+            sectionLabel(vm.renderType == .checklist
+                ? String(localized: "edit.section.content.optional")
+                : String(localized: "edit.section.content"))
             TextField("edit.placeholder", text: Bindable(vm).content, axis: .vertical)
                 .lineLimit(3...8)
                 .focused($contentFocused)
