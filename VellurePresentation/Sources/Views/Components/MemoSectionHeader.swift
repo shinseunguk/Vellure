@@ -9,6 +9,8 @@ struct MemoSectionHeader: View {
         case active
         /// 타입별 그룹
         case type(RenderType)
+        /// 위젯에 나가는 순서. 이 목록의 순서가 곧 위젯 순서다.
+        case widgetOrder
     }
 
     let kind: Kind
@@ -35,6 +37,7 @@ struct MemoSectionHeader: View {
         switch kind {
         case .active: Text("home.section.active")
         case .type(let type): Text(type.displayName)
+        case .widgetOrder: Text("home.section.widgetOrder")
         }
     }
 
@@ -42,6 +45,7 @@ struct MemoSectionHeader: View {
         switch kind {
         case .active: "lock.fill"
         case .type(let type): type.iconName
+        case .widgetOrder: "arrow.up.arrow.down"
         }
     }
 
@@ -49,6 +53,7 @@ struct MemoSectionHeader: View {
         switch kind {
         case .active: Theme.accent
         case .type: Theme.textSecondary
+        case .widgetOrder: Theme.textSecondary
         }
     }
 }

@@ -6,6 +6,7 @@
 /* Home */
 "home.title" = "メモ";
 "home.section.active" = "ロック画面に表示中";
+"home.section.widgetOrder" = "ウィジェットに表示される順序";
 "home.reorder" = "並べ替え";
 "home.new" = "新規";
 "home.edit" = "編集";

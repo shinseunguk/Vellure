@@ -6,6 +6,7 @@
 /* Home */
 "home.title" = "메모";
 "home.section.active" = "잠금화면 표시 중";
+"home.section.widgetOrder" = "위젯에 표시되는 순서";
 "home.reorder" = "정렬";
 "home.new" = "새 메모";
 "home.edit" = "편집";

@@ -219,32 +219,46 @@ public struct HomeView: View {
     @ViewBuilder
     private func sectionedList(_ vm: MemoListViewModel) -> some View {
         Group {
-            // 표시 상태를 쓰는 표면(메모 탭)만 "잠금화면 표시 중" 그룹을 앞세운다.
-            // 위젯 탭은 앱이 켜고 끄는 개념이 없어 타입별 그룹만 남는다.
             if vm.usesDisplayState {
-                let active = vm.activeMemos
-                if !active.isEmpty {
-                    MemoSectionHeader(kind: .active, count: active.count)
-                    reorderSection(active, matches: { $0.activityId != nil }, vm: vm)
-                }
+                memoSections(vm)
+            } else {
+                widgetOrderSection(vm)
             }
+        }
+    }
 
-            ForEach(vm.availableTypes, id: \.self) { type in
-                let group = vm.usesDisplayState
-                    ? vm.inactiveMemos(ofType: type)
-                    : vm.memos.filter { $0.renderType == type }
-                if !group.isEmpty {
-                    MemoSectionHeader(kind: .type(type), count: group.count)
-                    reorderSection(
-                        group,
-                        matches: {
-                            $0.renderType == type
-                                && (!vm.usesDisplayState || $0.activityId == nil)
-                        },
-                        vm: vm
-                    )
-                }
+    /// 메모 탭: 잠금화면 표시 중 그룹을 앞세우고 나머지를 타입별로 묶는다.
+    @ViewBuilder
+    private func memoSections(_ vm: MemoListViewModel) -> some View {
+        let active = vm.activeMemos
+        if !active.isEmpty {
+            MemoSectionHeader(kind: .active, count: active.count)
+            reorderSection(active, matches: { $0.activityId != nil }, vm: vm)
+        }
+
+        ForEach(vm.availableTypes, id: \.self) { type in
+            let group = vm.inactiveMemos(ofType: type)
+            if !group.isEmpty {
+                MemoSectionHeader(kind: .type(type), count: group.count)
+                reorderSection(
+                    group,
+                    matches: { $0.activityId == nil && $0.renderType == type },
+                    vm: vm
+                )
             }
+        }
+    }
+
+    /// 위젯 탭: 타입으로 묶지 않는다.
+    ///
+    /// 이 목록의 순서가 그대로 위젯에 나가는데, 타입별로 묶으면 그룹 안에서만
+    /// 드래그할 수 있어 진행바를 D-day 위로 올릴 수 없다.
+    /// 화면에 보이는 순서와 위젯이 쓰는 순서가 어긋나기도 한다.
+    @ViewBuilder
+    private func widgetOrderSection(_ vm: MemoListViewModel) -> some View {
+        if !vm.memos.isEmpty {
+            MemoSectionHeader(kind: .widgetOrder, count: vm.memos.count)
+            reorderSection(vm.memos, matches: { _ in true }, vm: vm)
         }
     }
 
