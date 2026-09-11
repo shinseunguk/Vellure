@@ -38,6 +38,7 @@ final class LiveActivityRenderTests: XCTestCase {
                     LiveChecklistItem(id: "3", title: "이어폰", done: false)
                 ]
             )),
+            ("empty", .sample(renderType: "plain", content: "")),
             ("countdown", .sample(
                 renderType: "countdown",
                 content: "팀 회의 시작",

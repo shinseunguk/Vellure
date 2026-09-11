@@ -80,6 +80,9 @@ struct LockScreenContent: View {
                     Spacer(minLength: 4)
                     expiryTimer
                 }
+                // 본문이 비면 이 행이 내용만큼만 넓어져 타이머가 끝까지 밀리지 않는다.
+                // 카드 폭을 강제해 항상 우측 상단에 붙인다.
+                .frame(maxWidth: .infinity)
 
                 if hasContent {
                     Text(state.content)
