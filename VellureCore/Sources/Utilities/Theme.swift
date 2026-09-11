@@ -47,6 +47,25 @@ public enum Theme {
     public static func memoColor(for tag: String) -> Color {
         memoColors[tag] ?? accent
     }
+
+    /// 흰 글자를 얹는 카드 배경에 쓰는 메모 색.
+    ///
+    /// `memoColors`는 글자·강조용이라 밝다. 그대로 배경에 쓰면 흰 글자가
+    /// 2.3~3.0:1로 읽히지 않는다. 같은 색을 채도는 지키고 밝기만 낮춰
+    /// 흰 글자 기준(4.5:1)을 넘긴 값이다.
+    ///
+    /// 모드에 따라 바꾸지 않는다. 잠금화면 카드가 라이트·다크에서 다른 색이면
+    /// 같은 메모가 다른 메모처럼 보인다.
+    public static let memoSurfaces: [String: Color] = [
+        "green": Color(hex: "05885d"),
+        "gold": Color(hex: "b1631c"),
+        "blue": Color(hex: "2876d7"),
+        "rose": Color(hex: "be5277")
+    ]
+
+    public static func memoSurface(for tag: String) -> Color {
+        memoSurfaces[tag] ?? memoSurfaces["green"] ?? accent
+    }
 }
 
 // MARK: - Metric
@@ -80,39 +99,6 @@ public extension Color {
             blue: Double(blue) * factor,
             opacity: Double(alpha)
         )
-    }
-
-    /// 흰 글자를 읽을 수 있을 만큼만 어둡게 만든다.
-    ///
-    /// 메모 색 원본 위의 흰 글자는 대비가 2.3~3.0:1로 본문 기준(4.5:1)에 못 미친다.
-    /// 일괄로 같은 양을 깎으면 어두운 색은 필요 이상으로 탁해지므로,
-    /// 색마다 기준을 넘기는 최소한만 깎는다.
-    func darkenedForWhiteText(minimumContrast: Double = 4.5) -> Color {
-        let ui = UIColor(self)
-        var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 0
-        guard ui.getRed(&red, green: &green, blue: &blue, alpha: &alpha) else { return self }
-
-        var amount = 0.0
-        while amount < 0.7 {
-            let factor = 1 - amount
-            let contrast = Self.whiteContrast(
-                red: Double(red) * factor,
-                green: Double(green) * factor,
-                blue: Double(blue) * factor
-            )
-            if contrast >= minimumContrast { break }
-            amount += 0.01
-        }
-        return darkened(by: amount)
-    }
-
-    /// 흰색과의 명암비. WCAG 상대 휘도 공식을 따른다.
-    private static func whiteContrast(red: Double, green: Double, blue: Double) -> Double {
-        func channel(_ value: Double) -> Double {
-            value <= 0.03928 ? value / 12.92 : pow((value + 0.055) / 1.055, 2.4)
-        }
-        let luminance = 0.2126 * channel(red) + 0.7152 * channel(green) + 0.0722 * channel(blue)
-        return 1.05 / (luminance + 0.05)
     }
 }
 

@@ -56,7 +56,7 @@ struct LockScreenContent: View {
 
     /// 카드 배경. 메모마다 다른 색을 그대로 카드에 쓴다.
     private var background: Color {
-        Theme.memoColor(for: state.colorTag).darkenedForWhiteText()
+        Theme.memoSurface(for: state.colorTag)
     }
     private var hasContent: Bool {
         !state.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
@@ -71,7 +71,12 @@ struct LockScreenContent: View {
         VStack(alignment: .leading, spacing: Self.contentSpacing) {
             VStack(alignment: .leading, spacing: Self.brandSpacing) {
                 HStack(spacing: 8) {
-                    BrandLabel(tint: Self.label, renderType: state.renderType, fontSize: Self.captionFontSize)
+                    BrandLabel(
+                        tint: Self.label,
+                        renderType: state.renderType,
+                        fontSize: Self.captionFontSize,
+                        showsIcon: false
+                    )
                     Spacer(minLength: 4)
                     expiryTimer
                 }
