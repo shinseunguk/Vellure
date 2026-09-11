@@ -13,6 +13,12 @@ struct LockScreenView: View {
             memoId: context.attributes.memoId,
             isStale: context.isStale
         )
+        // 뷰 안에서만 배경을 칠하면 시스템 카드가 내용보다 클 때 가장자리가 비어
+        // 카드가 잘린 것처럼 보인다. 컨테이너 전체를 시스템이 칠하게 맡긴다.
+        //
+        // 적응형 색이었다면 시스템 외형 기준으로 해석돼 글자색과 어긋났겠지만,
+        // memoSurface는 모드와 무관한 고정색이라 그 문제가 없다.
+        .activityBackgroundTint(Theme.memoSurface(for: context.state.colorTag))
         .activitySystemActionForegroundColor(LockScreenContent.label)
     }
 }
@@ -49,14 +55,15 @@ struct LockScreenContent: View {
     /// D-day·카운트다운 강조 숫자
     fileprivate static let highlightFontSize: CGFloat = 30
 
-    /// 카드 배경. 라이트=흰색, 다크=검은색
-    fileprivate static let background = Color(uiColor: .systemBackground)
-    /// 본문 글자색. 라이트=검은색, 다크=흰색
-    fileprivate static let label = Color(uiColor: .label)
+    /// 본문 글자색. 배경이 메모 색이라 라이트·다크 모두 흰색으로 고정한다.
+    fileprivate static let label = Color.white
     /// 보조 글자색
-    fileprivate static let secondaryLabel = Color(uiColor: .secondaryLabel)
+    fileprivate static let secondaryLabel = Color.white.opacity(0.78)
 
-    private var tint: Color { Theme.memoColor(for: state.colorTag) }
+    /// 카드 배경. 메모마다 다른 색을 그대로 카드에 쓴다.
+    private var background: Color {
+        Theme.memoSurface(for: state.colorTag)
+    }
     private var hasContent: Bool {
         !state.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
@@ -70,10 +77,18 @@ struct LockScreenContent: View {
         VStack(alignment: .leading, spacing: Self.contentSpacing) {
             VStack(alignment: .leading, spacing: Self.brandSpacing) {
                 HStack(spacing: 8) {
-                    BrandLabel(tint: tint, renderType: state.renderType, fontSize: Self.captionFontSize)
+                    BrandLabel(
+                        tint: Self.label,
+                        renderType: state.renderType,
+                        fontSize: Self.captionFontSize,
+                        showsIcon: false
+                    )
                     Spacer(minLength: 4)
                     expiryTimer
                 }
+                // 본문이 비면 이 행이 내용만큼만 넓어져 타이머가 끝까지 밀리지 않는다.
+                // 카드 폭을 강제해 항상 우측 상단에 붙인다.
+                .frame(maxWidth: .infinity)
 
                 if hasContent {
                     Text(state.content)
@@ -87,15 +102,19 @@ struct LockScreenContent: View {
             }
 
             lockScreenExtraContent
+                .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .padding(Self.cardPadding)
+        // 폭을 여기서 먼저 확정해야 안쪽 행들이 카드 폭을 물려받는다.
+        // 패딩 뒤에 붙이면 스택은 이미 내용만큼만 넓어진 뒤라,
+        // 만료 타이머가 우측 끝까지 밀리지 않는다.
         .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(Self.cardPadding)
         // 배경을 뷰 안에서 직접 칠한다.
         // activityBackgroundTint에 적응형 색을 넘기면 시스템 외형 기준으로 해석되는 반면
         // 본문 글자색은 잠금화면 렌더 컨텍스트 기준으로 해석돼 서로 어긋난다.
         // (라이트 모드에서 흰 배경 + 흰 글씨가 되던 원인)
         // 같은 컨텍스트에서 함께 해석되도록 배경과 글자색을 모두 뷰 안에 둔다.
-        .background(Self.background)
+        .background(background)
     }
 
     /// 타입별 본문 최대 줄 수.
@@ -154,13 +173,13 @@ struct LockScreenContent: View {
             if let target = state.targetDate {
                 Text(DDayFormatter.string(for: target))
                     .memoHighlightStyle(size: Self.highlightFontSize)
-                    .foregroundStyle(tint)
+                    .foregroundStyle(Self.label)
             }
         case "countdown":
             if let target = state.targetDate {
                 Text(timerInterval: Date.now...target, countsDown: true)
                     .memoHighlightStyle(size: Self.highlightFontSize)
-                    .foregroundStyle(tint)
+                    .foregroundStyle(Self.label)
             }
         case "checklist":
             if let items = state.items {
@@ -206,7 +225,7 @@ struct LockScreenContent: View {
             HStack(spacing: 8) {
                 Image(systemName: item.done ? "checkmark.square.fill" : "square")
                     .font(.system(size: Self.checkboxSize))
-                    .foregroundStyle(item.done ? tint : Self.secondaryLabel)
+                    .foregroundStyle(item.done ? Self.label : Self.secondaryLabel)
                 Text(item.title)
                     .font(.system(size: Self.itemFontSize))
                     .foregroundStyle(item.done ? Self.secondaryLabel : Self.label)
@@ -238,7 +257,7 @@ struct LockScreenContent: View {
 
                 ProgressView(value: progress)
                     .progressViewStyle(.linear)
-                    .tint(tint)
+                    .tint(Self.label)
                     .frame(maxWidth: .infinity)
 
                 stepButton(direction: "up", systemName: "plus")
