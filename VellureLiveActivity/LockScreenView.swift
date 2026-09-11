@@ -13,6 +13,12 @@ struct LockScreenView: View {
             memoId: context.attributes.memoId,
             isStale: context.isStale
         )
+        // 뷰 안에서만 배경을 칠하면 시스템 카드가 내용보다 클 때 가장자리가 비어
+        // 카드가 잘린 것처럼 보인다. 컨테이너 전체를 시스템이 칠하게 맡긴다.
+        //
+        // 적응형 색이었다면 시스템 외형 기준으로 해석돼 글자색과 어긋났겠지만,
+        // memoSurface는 모드와 무관한 고정색이라 그 문제가 없다.
+        .activityBackgroundTint(Theme.memoSurface(for: context.state.colorTag))
         .activitySystemActionForegroundColor(LockScreenContent.label)
     }
 }
@@ -96,9 +102,13 @@ struct LockScreenContent: View {
             }
 
             lockScreenExtraContent
+                .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .padding(Self.cardPadding)
+        // 폭을 여기서 먼저 확정해야 안쪽 행들이 카드 폭을 물려받는다.
+        // 패딩 뒤에 붙이면 스택은 이미 내용만큼만 넓어진 뒤라,
+        // 만료 타이머가 우측 끝까지 밀리지 않는다.
         .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(Self.cardPadding)
         // 배경을 뷰 안에서 직접 칠한다.
         // activityBackgroundTint에 적응형 색을 넘기면 시스템 외형 기준으로 해석되는 반면
         // 본문 글자색은 잠금화면 렌더 컨텍스트 기준으로 해석돼 서로 어긋난다.

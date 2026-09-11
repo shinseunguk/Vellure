@@ -58,10 +58,14 @@ final class LiveActivityRenderTests: XCTestCase {
     // MARK: - Helpers
 
     private func render(_ state: MemoAttributes.ContentState, scheme: ColorScheme) throws -> UIImage {
-        let content = LockScreenContent(state: state, memoId: "preview", isStale: false)
-            .frame(width: Self.cardSize.width)
-            .frame(minHeight: Self.cardSize.height, alignment: .top)
-            .environment(\.colorScheme, scheme)
+        // 폭을 강제하면 내용이 카드 폭을 채우지 못하는 문제를 가린다.
+        // 실제 잠금화면처럼 컨테이너만 주고 내용이 스스로 넓어지게 둔다.
+        let content = VStack(spacing: 0) {
+            LockScreenContent(state: state, memoId: "preview", isStale: false)
+        }
+        .frame(width: Self.cardSize.width, alignment: .leading)
+        .frame(minHeight: Self.cardSize.height, alignment: .top)
+        .environment(\.colorScheme, scheme)
 
         let renderer = ImageRenderer(content: content)
         renderer.scale = 3
