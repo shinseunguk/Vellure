@@ -47,6 +47,25 @@ public enum Theme {
     public static func memoColor(for tag: String) -> Color {
         memoColors[tag] ?? accent
     }
+
+    /// 흰 글자를 얹는 카드 배경에 쓰는 메모 색.
+    ///
+    /// `memoColors`는 글자·강조용이라 밝다. 그대로 배경에 쓰면 흰 글자가
+    /// 2.3~3.0:1로 읽히지 않는다. 같은 색을 채도는 지키고 밝기만 낮춰
+    /// 흰 글자 기준(4.5:1)을 넘긴 값이다.
+    ///
+    /// 모드에 따라 바꾸지 않는다. 잠금화면 카드가 라이트·다크에서 다른 색이면
+    /// 같은 메모가 다른 메모처럼 보인다.
+    public static let memoSurfaces: [String: Color] = [
+        "green": Color(hex: "05885d"),
+        "gold": Color(hex: "b1631c"),
+        "blue": Color(hex: "2876d7"),
+        "rose": Color(hex: "be5277")
+    ]
+
+    public static func memoSurface(for tag: String) -> Color {
+        memoSurfaces[tag] ?? memoSurfaces["green"] ?? accent
+    }
 }
 
 // MARK: - Metric
@@ -65,6 +84,23 @@ public extension Theme {
 }
 
 // MARK: - Color Helpers
+
+public extension Color {
+    /// 색을 어둡게 만든다.
+    func darkened(by amount: Double) -> Color {
+        let ui = UIColor(self)
+        var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 0
+        guard ui.getRed(&red, green: &green, blue: &blue, alpha: &alpha) else { return self }
+
+        let factor = 1 - amount
+        return Color(
+            red: Double(red) * factor,
+            green: Double(green) * factor,
+            blue: Double(blue) * factor,
+            opacity: Double(alpha)
+        )
+    }
+}
 
 public extension Color {
     init(hex: String) {

@@ -12,6 +12,20 @@ final class LiveActivityRenderTests: XCTestCase {
     /// 잠금화면 카드의 대략적인 크기.
     private static let cardSize = CGSize(width: 360, height: 160)
 
+    /// 메모 색이 카드 배경이므로 네 색을 모두 확인해야 한다.
+    func test_render_allColors() throws {
+        for tag in ["green", "gold", "blue", "rose"] {
+            let state = MemoAttributes.ContentState.sample(
+                renderType: "plain",
+                content: "주차 위치 B2 구역 47",
+                colorTag: tag
+            )
+            let image = try render(state, scheme: .dark)
+            XCTAssertGreaterThan(image.size.width, 0, "\(tag) 렌더링 실패")
+            try write(image, named: "la-color-\(tag)")
+        }
+    }
+
     func test_render_lockScreenCards() throws {
         let cases: [(String, MemoAttributes.ContentState)] = [
             ("plain", .sample(renderType: "plain", content: "주차 위치 B2 구역 47")),
@@ -24,6 +38,7 @@ final class LiveActivityRenderTests: XCTestCase {
                     LiveChecklistItem(id: "3", title: "이어폰", done: false)
                 ]
             )),
+            ("empty", .sample(renderType: "plain", content: "")),
             ("countdown", .sample(
                 renderType: "countdown",
                 content: "팀 회의 시작",
@@ -43,10 +58,14 @@ final class LiveActivityRenderTests: XCTestCase {
     // MARK: - Helpers
 
     private func render(_ state: MemoAttributes.ContentState, scheme: ColorScheme) throws -> UIImage {
-        let content = LockScreenContent(state: state, memoId: "preview", isStale: false)
-            .frame(width: Self.cardSize.width)
-            .frame(minHeight: Self.cardSize.height, alignment: .top)
-            .environment(\.colorScheme, scheme)
+        // 폭을 강제하면 내용이 카드 폭을 채우지 못하는 문제를 가린다.
+        // 실제 잠금화면처럼 컨테이너만 주고 내용이 스스로 넓어지게 둔다.
+        let content = VStack(spacing: 0) {
+            LockScreenContent(state: state, memoId: "preview", isStale: false)
+        }
+        .frame(width: Self.cardSize.width, alignment: .leading)
+        .frame(minHeight: Self.cardSize.height, alignment: .top)
+        .environment(\.colorScheme, scheme)
 
         let renderer = ImageRenderer(content: content)
         renderer.scale = 3
@@ -67,7 +86,8 @@ private extension MemoAttributes.ContentState {
         renderType: String,
         content: String,
         items: [LiveChecklistItem]? = nil,
-        targetDate: Date? = nil
+        targetDate: Date? = nil,
+        colorTag: String = "green"
     ) -> Self {
         MemoAttributes.ContentState(
             renderType: renderType,
@@ -75,7 +95,7 @@ private extension MemoAttributes.ContentState {
             items: items,
             targetDate: targetDate,
             font: "default",
-            colorTag: "green",
+            colorTag: colorTag,
             updatedAt: .now,
             expiresAt: Calendar.current.date(byAdding: .hour, value: 6, to: .now)
         )
