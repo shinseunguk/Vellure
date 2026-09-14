@@ -35,9 +35,13 @@ public struct LiveActivityCard: View {
     }
 
     /// 카드 기본 여백
-    public static let cardPadding: CGFloat = 12
+    public static let cardPadding: CGFloat = 16
     /// 브랜드 표시와 본문 사이 여백
-    public static let brandSpacing: CGFloat = 6
+    public static let brandSpacing: CGFloat = 10
+    /// 본문이 한 줄뿐일 때 카드가 납작해지지 않게 두는 최소 높이.
+    /// 잠금화면 카드는 내용만큼만 높아져서, 일반 메모처럼 짧은 글은
+    /// 띠처럼 얇아져 흘긋 봐도 눈에 들어오지 않는다.
+    public static let bodyMinHeight: CGFloat = 52
     /// 본문과 타입별 콘텐츠 사이 여백
     public static let contentSpacing = Theme.Metric.contentSpacing
     /// 체크리스트 행 간격
@@ -99,6 +103,9 @@ public struct LiveActivityCard: View {
                         .truncationMode(.tail)
                         .multilineTextAlignment(isCentered ? .center : .leading)
                         .frame(maxWidth: .infinity, alignment: isCentered ? .center : .leading)
+                        // 본문이 전부인 타입만 높인다.
+                        // 체크리스트·D-day는 아래에 내용이 더 붙어 이미 높이가 나온다.
+                        .frame(minHeight: isCentered ? Self.bodyMinHeight * scale : nil)
                 }
             }
 
@@ -147,22 +154,46 @@ public struct LiveActivityCard: View {
                 // 앱이 종료된 상태에서는 뷰를 다시 그릴 계기가 없어 타이머가 0:00에 멈춘 채 남는다.
                 // isStale은 staleDate 도달 시 ActivityKit이 뷰를 다시 그려주므로 이때만 신뢰할 수 있다.
                 if !isStale {
-                    Text(timerInterval: Date.now...expiresAt, countsDown: true)
-                        .font(.system(size: Self.captionFontSize * scale, weight: .semibold))
-                        // 고정 폭을 주지 않는다. 자릿수가 줄면 그만큼 좁아지며
-                        // 아이콘과 숫자가 계속 붙어 있다.
+                    // 잠금화면에서 이 텍스트는 시스템이 갱신하는 타이머 뷰로 그려지는데,
+                    // 주는 폭을 그대로 다 쓴다. 상한이 없으면 남은 자리를 통째로 먹어
+                    // Spacer가 접히고 숫자가 브랜드 표시 옆에 붙어 보이고,
+                    // 반대로 폭을 어림잡아 주면 실제 글자보다 넓어 아이콘과 숫자가 벌어진다.
+                    //
+                    // 같은 서체로 그린 자리표시 문자열을 숨겨 자리만 잡게 하고 그 위에 타이머를
+                    // 얹는다. 폭을 어림잡지 않고 글자에 정확히 맞출 수 있다.
+                    Text(verbatim: timerPlaceholder)
+                        .font(timerFont)
                         .monospacedDigit()
+                        .hidden()
+                        .overlay(alignment: .trailing) {
+                            Text(timerInterval: Date.now...expiresAt, countsDown: true)
+                                .font(timerFont)
+                                .monospacedDigit()
+                                .multilineTextAlignment(.trailing)
+                        }
                 } else {
                     // 8시간이 지나면 갱신이 멈춘다. 타이머를 지우면 왜 멈췄는지 알 수 없으니
                     // 다시 올려야 한다는 사실을 알린다.
                     Text("la.expired")
-                        .font(.system(size: Self.captionFontSize * scale, weight: .semibold))
+                        .font(timerFont)
                         .lineLimit(1)
                 }
             }
             .foregroundStyle(Self.secondaryLabel)
             .lineLimit(1)
         }
+    }
+
+    private var timerFont: Font {
+        .system(size: Self.captionFontSize * scale, weight: .semibold)
+    }
+
+    /// 타이머가 차지할 자리를 잡는 문자열.
+    /// 표시 상한이 8시간이라 한 시간이 남기 전까지는 "H:MM:SS" 표기다.
+    private var timerPlaceholder: String {
+        guard let expiresAt = state.expiresAt,
+              expiresAt.timeIntervalSince(.now) >= 3600 else { return "00:00" }
+        return "0:00:00"
     }
 
     // MARK: - Extra Content (타입별 본문 콘텐츠)
