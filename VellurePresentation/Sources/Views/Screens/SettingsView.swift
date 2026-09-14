@@ -10,6 +10,10 @@ struct SettingsView: View {
     @Environment(\.requestReview) private var requestReview
     @Environment(\.scenePhase) private var scenePhase
     @AppStorage("appearanceMode") private var appearanceMode: String = AppearanceMode.system.rawValue
+    /// 확장과 함께 읽어야 해서 App Group 저장소를 쓴다.
+    @AppStorage(TextScale.storageKey, store: TextScale.sharedDefaults)
+    private var textScale: Double = Double(TextScale.default)
+    @Environment(MemoRepository.self) private var repository
 
     @State private var activitySupported = LiveActivityService.shared.isSupported
 
@@ -21,6 +25,7 @@ struct SettingsView: View {
                     siriSection
                     automationSection
                     themeSection
+                    textScaleSection
                     miscSection
                     versionLabel
                 }
@@ -242,28 +247,25 @@ struct SettingsView: View {
 
     // MARK: - Theme
 
-    private var themeSection: some View {
-        VStack(spacing: 0) {
-            HStack {
-                Text("settings.appearance")
-                    .scaledFont(14)
-                    .foregroundStyle(Theme.textPrimary)
-                Spacer()
-                Picker("", selection: $appearanceMode) {
-                    ForEach(AppearanceMode.allCases) { mode in
-                        Text(mode.displayName).tag(mode.rawValue)
-                    }
-                }
-                .pickerStyle(.menu)
-                .tint(Theme.accent)
+    /// 잠금화면 글자 크기.
+    /// 앱 화면은 Dynamic Type을 따르지만 Live Activity는 고정 크기로 그려
+    /// 시스템 설정이 닿지 않는다. 그래서 따로 고르게 한다.
+    private var textScaleSection: some View {
+        TextScaleRow(scale: $textScale)
+            .onChange(of: textScale) { _, newValue in
+                // 확장은 App Group을 통해서만 설정을 볼 수 있다.
+                TextScale.save(CGFloat(newValue))
+                Task { await LiveActivityService.shared.refreshAll(repository: repository) }
             }
-            .padding(15)
-        }
-        .background(Theme.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 20))
-        .overlay(
-            RoundedRectangle(cornerRadius: 20)
-                .stroke(Theme.divider, lineWidth: 1)
+    }
+
+    private var themeSection: some View {
+        SettingsPickerRow(
+            title: String(localized: "settings.appearance"),
+            options: AppearanceMode.allCases,
+            optionLabel: \.displayName,
+            optionTag: \.rawValue,
+            selection: $appearanceMode
         )
     }
 

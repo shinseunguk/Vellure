@@ -54,6 +54,7 @@ struct MemoEditView: View {
                     ScrollView {
                         VStack(spacing: 20) {
                             typeSection(vm)
+                            LiveActivityPreview(state: vm.previewState)
                             contentSection(vm)
                             dynamicSection(vm)
                             // 표시 모드는 Live Activity가 잠금화면에서 언제 사라지는지를 정한다.

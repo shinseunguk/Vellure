@@ -31,6 +31,7 @@
 "edit.section.content.optional" = "내용 (선택)";
 "edit.placeholder" = "메모를 입력하세요";
 "edit.section.type" = "타입";
+"edit.section.preview" = "잠금화면 미리보기";
 "edit.section.targetDate" = "목표일";
 "edit.section.targetTime" = "목표 시각";
 "edit.section.checklist" = "체크리스트";
@@ -244,3 +245,11 @@
 "migration.widget.detail" = "D-day·진행바. 위젯으로 옮겼습니다";
 "migration.cta.widget" = "위젯 탭 보러 가기";
 "migration.cta.later" = "나중에";
+
+/* Text Scale */
+"settings.textScale" = "잠금화면 글자 크기";
+"settings.textScale.hint" = "잠금화면에 띄운 메모에 적용돼요";
+"settings.textScale.sample" = "주차 위치 B2 구역 47";
+"textScale.small" = "작게";
+"textScale.medium" = "보통";
+"textScale.large" = "크게";

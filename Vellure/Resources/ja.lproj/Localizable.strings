@@ -31,6 +31,7 @@
 "edit.section.content.optional" = "内容 (任意)";
 "edit.placeholder" = "メモを入力してください";
 "edit.section.type" = "タイプ";
+"edit.section.preview" = "ロック画面プレビュー";
 "edit.section.targetDate" = "目標日";
 "edit.section.targetTime" = "目標時刻";
 "edit.section.checklist" = "チェックリスト";
@@ -244,3 +245,11 @@
 "migration.widget.detail" = "D-day・進捗バー。ウィジェットに移動しました";
 "migration.cta.widget" = "ウィジェットタブを見る";
 "migration.cta.later" = "あとで";
+
+/* Text Scale */
+"settings.textScale" = "ロック画面の文字サイズ";
+"settings.textScale.hint" = "ロック画面のメモに適用されます";
+"settings.textScale.sample" = "駐車位置 B2 区域 47";
+"textScale.small" = "小";
+"textScale.medium" = "中";
+"textScale.large" = "大";

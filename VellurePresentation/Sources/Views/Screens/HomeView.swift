@@ -99,6 +99,7 @@ public struct HomeView: View {
             }
             .sheet(isPresented: $showSettings) {
                 SettingsView()
+                    .environment(repository)
             }
         }
         .onAppear {

@@ -124,10 +124,6 @@ let project = Project(
                 "VellureTests/**/*.swift",
                 "VellureLiveActivity/Widgets/MemoWidgetView.swift",
                 "VellureLiveActivity/Widgets/MemoWidgetEntry.swift",
-                "VellureLiveActivity/LockScreenView.swift",
-                "VellureLiveActivity/BrandLabel.swift",
-                "VellureLiveActivity/ToggleItemIntent.swift",
-                "VellureLiveActivity/StepProgressIntent.swift",
             ],
             dependencies: [.target(name: "Vellure")]
         ),
