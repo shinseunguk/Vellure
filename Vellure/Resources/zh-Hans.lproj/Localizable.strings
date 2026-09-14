@@ -6,6 +6,7 @@
 /* Home */
 "home.title" = "备忘录";
 "home.section.active" = "锁屏显示中";
+"home.section.widgetOrder" = "小组件中的显示顺序";
 "home.reorder" = "排序";
 "home.new" = "新建";
 "home.edit" = "编辑";
