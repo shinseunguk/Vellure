@@ -32,6 +32,12 @@
 "edit.placeholder" = "메모를 입력하세요";
 "edit.section.type" = "타입";
 "edit.section.preview" = "잠금화면 미리보기";
+"edit.section.widgetPreview" = "위젯 미리보기";
+"edit.widgetPreview.home" = "작게";
+"edit.widgetPreview.list" = "목록";
+"edit.widgetPreview.home.hint" = "홈화면에 위젯을 추가하면 이렇게 보여요";
+"edit.widgetPreview.list.hint" = "위젯 탭 정렬 순서대로 표시돼요";
+"edit.widgetPreview.list.overflow" = "이 메모는 목록 위젯에 담기지 않아요. 위젯 탭에서 순서를 올리면 보여요";
 "edit.section.targetDate" = "목표일";
 "edit.section.targetTime" = "목표 시각";
 "edit.section.checklist" = "체크리스트";

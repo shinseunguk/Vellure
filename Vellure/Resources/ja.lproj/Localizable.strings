@@ -32,6 +32,12 @@
 "edit.placeholder" = "メモを入力してください";
 "edit.section.type" = "タイプ";
 "edit.section.preview" = "ロック画面プレビュー";
+"edit.section.widgetPreview" = "ウィジェットプレビュー";
+"edit.widgetPreview.home" = "小";
+"edit.widgetPreview.list" = "リスト";
+"edit.widgetPreview.home.hint" = "ホーム画面にウィジェットを追加するとこのように表示されます";
+"edit.widgetPreview.list.hint" = "ウィジェットタブの並び順で表示されます";
+"edit.widgetPreview.list.overflow" = "このメモはリストウィジェットに入りません。ウィジェットタブで順番を上げると表示されます";
 "edit.section.targetDate" = "目標日";
 "edit.section.targetTime" = "目標時刻";
 "edit.section.checklist" = "チェックリスト";

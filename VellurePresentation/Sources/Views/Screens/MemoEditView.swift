@@ -54,7 +54,11 @@ struct MemoEditView: View {
                     ScrollView {
                         VStack(spacing: 20) {
                             typeSection(vm)
-                            LiveActivityPreview(state: vm.previewState)
+                            if vm.surface == .memo {
+                                LiveActivityPreview(state: vm.previewState)
+                            } else {
+                                WidgetPreview(preview: vm.widgetPreview)
+                            }
                             contentSection(vm)
                             dynamicSection(vm)
                             // 표시 모드는 Live Activity가 잠금화면에서 언제 사라지는지를 정한다.
@@ -322,37 +326,47 @@ struct MemoEditView: View {
         }
     }
 
-    private let colorOrder = ["green", "gold", "blue", "rose"]
+    /// 한 줄에 놓을 색 개수. 8색을 한 줄에 늘어놓으면 좁은 기기에서 원이 눌린다.
+    private static let colorsPerRow = 4
 
-    @ViewBuilder
     private func colorSection(_ vm: MemoEditViewModel) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             sectionLabel(String(localized: "edit.section.color"))
-            HStack(spacing: 14) {
-                ForEach(colorOrder, id: \.self) { key in
-                    Button {
-                        vm.colorTag = key
-                    } label: {
-                        Circle()
-                            .fill(Theme.memoColors[key] ?? Theme.accent)
-                            .frame(width: 40, height: 40)
-                            .overlay {
-                                if vm.colorTag == key {
-                                    Image(systemName: "checkmark")
-                                        .scaledFont(14, weight: .bold)
-                                        .foregroundStyle(.white)
-                                }
-                            }
-                            .scaleEffect(vm.colorTag == key ? 1.12 : 1.0)
-                            .overlay(
-                                Circle()
-                                    .stroke(vm.colorTag == key ? Theme.textPrimary : Color.clear, lineWidth: 3)
-                            )
-                            .animation(.spring(response: 0.3, dampingFraction: 0.6), value: vm.colorTag == key)
-                    }
+            LazyVGrid(
+                columns: Array(
+                    repeating: GridItem(.flexible(), spacing: 14),
+                    count: Self.colorsPerRow
+                ),
+                spacing: 14
+            ) {
+                ForEach(Theme.memoColorOrder, id: \.self) { key in
+                    colorButton(key, isSelected: vm.colorTag == key) { vm.colorTag = key }
                 }
             }
         }
+    }
+
+    private func colorButton(_ key: String, isSelected: Bool, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Circle()
+                .fill(Theme.memoColor(for: key))
+                .frame(width: 40, height: 40)
+                .overlay {
+                    if isSelected {
+                        Image(systemName: "checkmark")
+                            .scaledFont(14, weight: .bold)
+                            .foregroundStyle(.white)
+                    }
+                }
+                .scaleEffect(isSelected ? 1.12 : 1.0)
+                .overlay(
+                    Circle()
+                        .stroke(isSelected ? Theme.textPrimary : Color.clear, lineWidth: 3)
+                )
+                .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isSelected)
+        }
+        .accessibilityLabel(key)
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 
     @ViewBuilder

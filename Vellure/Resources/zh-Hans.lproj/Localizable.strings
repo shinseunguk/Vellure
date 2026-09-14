@@ -32,6 +32,12 @@
 "edit.placeholder" = "请输入备忘录";
 "edit.section.type" = "类型";
 "edit.section.preview" = "锁定屏幕预览";
+"edit.section.widgetPreview" = "小组件预览";
+"edit.widgetPreview.home" = "小尺寸";
+"edit.widgetPreview.list" = "列表";
+"edit.widgetPreview.home.hint" = "将小组件添加到主屏幕后会是这样";
+"edit.widgetPreview.list.hint" = "按小组件标签页的排序显示";
+"edit.widgetPreview.list.overflow" = "此备忘录不会出现在列表小组件中。在小组件标签页中上移即可显示";
 "edit.section.targetDate" = "目标日期";
 "edit.section.targetTime" = "目标时间";
 "edit.section.checklist" = "清单";

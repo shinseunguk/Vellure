@@ -32,6 +32,12 @@
 "edit.placeholder" = "Enter your memo";
 "edit.section.type" = "Type";
 "edit.section.preview" = "Lock Screen preview";
+"edit.section.widgetPreview" = "Widget preview";
+"edit.widgetPreview.home" = "Small";
+"edit.widgetPreview.list" = "List";
+"edit.widgetPreview.home.hint" = "This is how it looks once you add the widget to your Home Screen";
+"edit.widgetPreview.list.hint" = "Shown in the order set on the Widget tab";
+"edit.widgetPreview.list.overflow" = "This memo does not fit in the list widget. Move it up on the Widget tab to show it";
 "edit.section.targetDate" = "Target Date";
 "edit.section.targetTime" = "Target Time";
 "edit.section.checklist" = "Checklist";

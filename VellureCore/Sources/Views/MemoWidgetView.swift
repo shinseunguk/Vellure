@@ -1,19 +1,27 @@
 import SwiftUI
-import VellureCore
 import WidgetKit
 
 /// 위젯 한 칸의 내용. 패밀리에 따라 표현을 바꾼다.
-struct MemoWidgetView: View {
+public struct MemoWidgetView: View {
     @Environment(\.widgetFamily) private var environmentFamily
 
     let entry: MemoWidgetEntry
-    /// 렌더 테스트에서 패밀리를 직접 지정하기 위한 통로.
+    /// 앱 미리보기·렌더 테스트에서 패밀리를 직접 지정하기 위한 통로.
     /// `widgetFamily` 환경값은 쓰기가 막혀 있어 위젯 밖에서는 바꿀 수 없다.
     var familyOverride: WidgetFamily?
 
+    /// medium 위젯이 담는 최대 행 수.
+    /// 이보다 뒤에 있는 메모는 위젯에 나오지 않으므로, 앱에서도 그 사실을 알려야 한다.
+    public static let listRowLimit = 3
+
+    public init(entry: MemoWidgetEntry, familyOverride: WidgetFamily? = nil) {
+        self.entry = entry
+        self.familyOverride = familyOverride
+    }
+
     private var family: WidgetFamily { familyOverride ?? environmentFamily }
 
-    var body: some View {
+    public var body: some View {
         if entry.isMissing {
             MissingMemoView()
         } else if let memo = entry.memo {
@@ -127,10 +135,14 @@ private struct RectangularMemoView: View {
 ///
 /// 단색으로 두면 앱 카드와 달리 밋밋하다. 메모 색을 아주 옅게 깔아
 /// 위젯마다 성격이 드러나게 하되, 본문 대비를 해치지 않을 만큼만 쓴다.
-struct WidgetBackground: View {
+public struct WidgetBackground: View {
     let tint: Color
 
-    var body: some View {
+    public init(tint: Color) {
+        self.tint = tint
+    }
+
+    public var body: some View {
         ZStack {
             Theme.cardBackground
             // 위에서 아래로 색이 고이게 한다.
@@ -144,7 +156,7 @@ struct WidgetBackground: View {
     }
 }
 
-extension MemoWidgetEntry {
+public extension MemoWidgetEntry {
     /// 배경에 쓸 색.
     /// 목록은 여러 색이 섞이므로 특정 메모 색 대신 브랜드 강조색을 쓴다.
     func backgroundTint(for family: WidgetFamily) -> Color {
@@ -264,7 +276,7 @@ private struct ProgressBar: View {
 /// 가로로 긴 칸. 위젯 탭 정렬 순서대로 여러 건을 담는다.
 private struct MediumMemoView: View {
     /// 표시할 최대 행 수. 더 넣으면 행 높이가 눌려 값이 읽히지 않는다.
-    private static let rowLimit = 3
+    private static let rowLimit = MemoWidgetView.listRowLimit
 
     let memos: [MemoSnapshot]
 
