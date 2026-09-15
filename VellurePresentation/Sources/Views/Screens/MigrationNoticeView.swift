@@ -49,7 +49,7 @@ struct MigrationNoticeView: View {
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 16)
-                        .background(Theme.accent)
+                        .background(Theme.accentSurface)
                         .clipShape(RoundedRectangle(cornerRadius: 14))
                 }
 

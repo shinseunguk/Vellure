@@ -99,7 +99,7 @@ struct SearchFilterBar: View {
                 .lineLimit(1)
                 .padding(.horizontal, 11)
                 .padding(.vertical, 6)
-                .background(isSelected ? Theme.accent : Theme.chipBackground)
+                .background(isSelected ? Theme.accentSurface : Theme.chipBackground)
                 .clipShape(Capsule())
                 .overlay(
                     Capsule()

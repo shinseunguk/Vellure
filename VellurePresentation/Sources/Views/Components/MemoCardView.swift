@@ -188,7 +188,13 @@ struct MemoCardView: View {
                                     .scaledFont(13, weight: .bold)
                                     .foregroundStyle(isActive ? .white : tintColor)
                                     .frame(width: 34, height: 34)
-                                    .background(isActive ? tintColor : tintColor.opacity(0.15))
+                                    // 흰 글리프를 얹을 때는 글자용 색을 그대로 쓸 수 없다.
+                                    // 다크 모드의 밝은 값 위에서는 흰색이 2.99:1로 읽히지 않는다.
+                                    .background(
+                                        isActive
+                                            ? Theme.memoSurface(for: memo.colorTag)
+                                            : tintColor.opacity(0.15)
+                                    )
                                     .clipShape(Circle())
                             }
                             .buttonStyle(.plain)

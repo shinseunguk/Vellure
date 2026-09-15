@@ -90,7 +90,7 @@ struct MemoEditView: View {
                             .foregroundStyle(.white)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 16)
-                            .background(vm.canSave ? Theme.accent : Theme.accent.opacity(0.4))
+                            .background(vm.canSave ? Theme.accentSurface : Theme.accentSurface.opacity(0.4))
                             .clipShape(RoundedRectangle(cornerRadius: 14))
                     }
                     .disabled(!vm.canSave)
