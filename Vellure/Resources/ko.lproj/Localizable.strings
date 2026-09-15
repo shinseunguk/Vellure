@@ -1,6 +1,12 @@
+/* Tab */
+"tab.memo" = "메모";
+"tab.widget" = "위젯";
+"home.widget.title" = "위젯";
+
 /* Home */
 "home.title" = "메모";
 "home.section.active" = "잠금화면 표시 중";
+"home.section.widgetOrder" = "위젯에 표시되는 순서";
 "home.reorder" = "정렬";
 "home.new" = "새 메모";
 "home.edit" = "편집";
@@ -26,6 +32,13 @@
 "edit.section.content.optional" = "내용 (선택)";
 "edit.placeholder" = "메모를 입력하세요";
 "edit.section.type" = "타입";
+"edit.section.preview" = "잠금화면 미리보기";
+"edit.section.widgetPreview" = "위젯 미리보기";
+"edit.widgetPreview.home" = "작게";
+"edit.widgetPreview.list" = "목록";
+"edit.widgetPreview.home.hint" = "홈화면에 위젯을 추가하면 이렇게 보여요";
+"edit.widgetPreview.list.hint" = "위젯 탭 정렬 순서대로 표시돼요";
+"edit.widgetPreview.list.overflow" = "이 메모는 목록 위젯에 담기지 않아요. 위젯 탭에서 순서를 올리면 보여요";
 "edit.section.targetDate" = "목표일";
 "edit.section.targetTime" = "목표 시각";
 "edit.section.checklist" = "체크리스트";
@@ -49,6 +62,7 @@
 "edit.section.color" = "색상";
 "edit.save.cta" = "잠금화면에 올리기";
 "edit.update.cta" = "저장";
+"edit.save.widget.cta" = "저장";
 "edit.delete" = "메모 삭제";
 
 /* Type Names */
@@ -64,6 +78,9 @@
 "empty.title" = "메모가 없습니다";
 "empty.description" = "첫 번째 메모를 작성하고\n잠금화면에서 확인해보세요";
 "empty.cta" = "새 메모 작성";
+"empty.widget.title" = "위젯 메모가 없습니다";
+"empty.widget.description" = "D-day나 진행바를 만들면\n홈·잠금화면 위젯에 띄울 수 있어요";
+"empty.widget.cta" = "D-day 만들기";
 
 /* Onboarding */
 "onboarding.page1.title" = "메모가 잠금화면에서\n살아 움직여요";
@@ -165,6 +182,7 @@
 "liveActivity.error.notEnabled" = "설정 > Vellure에서 ‘실시간 현황’을 켜주세요.";
 "liveActivity.error.tooMany" = "잠금화면에 올릴 수 있는 개수를 넘었어요. 다른 메모를 먼저 내려주세요.";
 "liveActivity.error.tooLarge" = "메모 내용이 너무 길어요. 항목을 줄이면 올릴 수 있어요.";
+"liveActivity.error.unsupportedType" = "D-day와 진행바는 위젯으로 표시합니다. 잠금화면에는 올릴 수 없어요.";
 "liveActivity.error.unknown" = "잠시 후 다시 시도해주세요.";
 "liveActivity.error.openSettings" = "설정 열기";
 "common.close" = "닫기";
@@ -199,3 +217,46 @@
 "a11y.search.clear" = "검색어 지우기";
 "filter.type.all" = "모든 타입";
 "la.expired" = "업데이트 멈춤";
+
+/* Widget */
+"widget.entity.memo" = "메모";
+"widget.config.title" = "메모 선택";
+"widget.config.description" = "위젯에 표시할 메모를 고릅니다.";
+"widget.config.memo" = "메모";
+"widget.lockScreen.name" = "Vellure 잠금화면";
+"widget.lockScreen.description" = "D-day와 달성률을 잠금화면에 표시합니다.";
+"widget.homeScreen.name" = "Vellure";
+"widget.homeScreen.description" = "D-day와 달성률을 홈화면에 표시합니다.";
+"widget.missing" = "메모를 선택해주세요";
+"widget.empty" = "D-day를 만들어보세요";
+
+/* Widget Guide */
+"guide.title" = "위젯 추가하기";
+"guide.done" = "완료";
+"guide.intro" = "위젯은 직접 배치해야 합니다. 아래 순서대로 한 번만 설정하면 됩니다.";
+"guide.home.title" = "홈화면";
+"guide.home.step1" = "홈화면 빈 곳을 길게 누릅니다";
+"guide.home.step2" = "왼쪽 위 + 를 누르고 Vellure를 찾습니다";
+"guide.home.step3" = "크기를 고르고 '위젯 추가'를 누릅니다";
+"guide.lock.title" = "잠금화면";
+"guide.lock.step1" = "잠금화면을 길게 누르고 '사용자화'를 누릅니다";
+"guide.lock.step2" = "'잠금 화면'을 고른 뒤 위젯 칸을 누릅니다";
+"guide.lock.step3" = "목록에서 Vellure를 고릅니다";
+"guide.tip" = "위젯을 길게 눌러 '위젯 편집'을 고르면 어떤 메모를 보여줄지 바꿀 수 있어요. D-day가 여러 개면 위젯을 여러 개 놓고 각각 다르게 지정하세요.";
+"guide.entry" = "위젯은 어떻게 추가하나요?";
+
+/* Migration */
+"migration.title" = "홈이 두 개의 탭으로 나뉘었어요";
+"migration.description" = "메모의 성격에 따라 자리를 나눴습니다.\n기존 메모는 그대로 있습니다.";
+"migration.memo.detail" = "일반·체크리스트·카운트다운. 잠금화면에 띄웠다 내리는 메모";
+"migration.widget.detail" = "D-day·진행바. 위젯으로 옮겼습니다";
+"migration.cta.widget" = "위젯 탭 보러 가기";
+"migration.cta.later" = "나중에";
+
+/* Text Scale */
+"settings.textScale" = "잠금화면 글자 크기";
+"settings.textScale.hint" = "잠금화면에 띄운 메모에 적용돼요";
+"settings.textScale.sample" = "주차 위치 B2 구역 47";
+"textScale.small" = "작게";
+"textScale.medium" = "보통";
+"textScale.large" = "크게";

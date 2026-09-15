@@ -1,6 +1,12 @@
+/* Tab */
+"tab.memo" = "メモ";
+"tab.widget" = "ウィジェット";
+"home.widget.title" = "ウィジェット";
+
 /* Home */
 "home.title" = "メモ";
 "home.section.active" = "ロック画面に表示中";
+"home.section.widgetOrder" = "ウィジェットに表示される順序";
 "home.reorder" = "並べ替え";
 "home.new" = "新規";
 "home.edit" = "編集";
@@ -26,6 +32,13 @@
 "edit.section.content.optional" = "内容 (任意)";
 "edit.placeholder" = "メモを入力してください";
 "edit.section.type" = "タイプ";
+"edit.section.preview" = "ロック画面プレビュー";
+"edit.section.widgetPreview" = "ウィジェットプレビュー";
+"edit.widgetPreview.home" = "小";
+"edit.widgetPreview.list" = "リスト";
+"edit.widgetPreview.home.hint" = "ホーム画面にウィジェットを追加するとこのように表示されます";
+"edit.widgetPreview.list.hint" = "ウィジェットタブの並び順で表示されます";
+"edit.widgetPreview.list.overflow" = "このメモはリストウィジェットに入りません。ウィジェットタブで順番を上げると表示されます";
 "edit.section.targetDate" = "目標日";
 "edit.section.targetTime" = "目標時刻";
 "edit.section.checklist" = "チェックリスト";
@@ -49,6 +62,7 @@
 "edit.section.color" = "カラー";
 "edit.save.cta" = "ロック画面に表示";
 "edit.update.cta" = "保存";
+"edit.save.widget.cta" = "保存";
 "edit.delete" = "メモを削除";
 
 /* Type Names */
@@ -64,6 +78,9 @@
 "empty.title" = "メモがありません";
 "empty.description" = "最初のメモを作成して\nロック画面で確認しましょう";
 "empty.cta" = "メモを作成";
+"empty.widget.title" = "ウィジェットのメモがありません";
+"empty.widget.description" = "D-dayや進捗バーを作成すると\nウィジェットに表示できます";
+"empty.widget.cta" = "D-dayを作成";
 
 /* Onboarding */
 "onboarding.page1.title" = "メモがロック画面で\n動き出します";
@@ -165,6 +182,7 @@
 "liveActivity.error.notEnabled" = "設定 > Vellure で「ライブアクティビティ」をオンにしてください。";
 "liveActivity.error.tooMany" = "表示できる数を超えました。ほかのメモを先に外してください。";
 "liveActivity.error.tooLarge" = "メモが長すぎます。項目を減らすと表示できます。";
+"liveActivity.error.unsupportedType" = "D-dayと進捗バーはウィジェットで表示します。ロック画面には表示できません。";
 "liveActivity.error.unknown" = "しばらくしてからもう一度お試しください。";
 "liveActivity.error.openSettings" = "設定を開く";
 "common.close" = "閉じる";
@@ -199,3 +217,46 @@
 "a11y.search.clear" = "検索をクリア";
 "filter.type.all" = "すべてのタイプ";
 "la.expired" = "更新停止";
+
+/* Widget */
+"widget.entity.memo" = "メモ";
+"widget.config.title" = "メモを選択";
+"widget.config.description" = "ウィジェットに表示するメモを選びます。";
+"widget.config.memo" = "メモ";
+"widget.lockScreen.name" = "Vellure ロック画面";
+"widget.lockScreen.description" = "D-dayや進捗をロック画面に表示します。";
+"widget.homeScreen.name" = "Vellure";
+"widget.homeScreen.description" = "D-dayや進捗をホーム画面に表示します。";
+"widget.missing" = "メモを選択してください";
+"widget.empty" = "D-dayを作成";
+
+/* Widget Guide */
+"guide.title" = "ウィジェットを追加";
+"guide.done" = "完了";
+"guide.intro" = "ウィジェットはご自身で配置する必要があります。以下の手順を一度だけ行ってください。";
+"guide.home.title" = "ホーム画面";
+"guide.home.step1" = "ホーム画面の空いている場所を長押しします";
+"guide.home.step2" = "左上の + をタップし、Vellure を探します";
+"guide.home.step3" = "サイズを選び「ウィジェットを追加」をタップします";
+"guide.lock.title" = "ロック画面";
+"guide.lock.step1" = "ロック画面を長押しし「カスタマイズ」をタップします";
+"guide.lock.step2" = "「ロック画面」を選び、ウィジェット枠をタップします";
+"guide.lock.step3" = "一覧から Vellure を選びます";
+"guide.tip" = "ウィジェットを長押しして「ウィジェットを編集」を選ぶと、表示するメモを変更できます。D-day が複数ある場合は、ウィジェットを複数配置してそれぞれ指定してください。";
+"guide.entry" = "ウィジェットの追加方法";
+
+/* Migration */
+"migration.title" = "ホームが2つのタブに分かれました";
+"migration.description" = "メモの性質に合わせて配置を分けました。\n既存のメモはそのまま残っています。";
+"migration.memo.detail" = "メモ・チェックリスト・カウントダウン。ロック画面に表示するメモ";
+"migration.widget.detail" = "D-day・進捗バー。ウィジェットに移動しました";
+"migration.cta.widget" = "ウィジェットタブを見る";
+"migration.cta.later" = "あとで";
+
+/* Text Scale */
+"settings.textScale" = "ロック画面の文字サイズ";
+"settings.textScale.hint" = "ロック画面のメモに適用されます";
+"settings.textScale.sample" = "駐車位置 B2 区域 47";
+"textScale.small" = "小";
+"textScale.medium" = "中";
+"textScale.large" = "大";

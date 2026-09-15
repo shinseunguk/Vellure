@@ -10,13 +10,11 @@ struct VellureLiveActivityWidget: Widget {
     /// 본문과 위아래 요소 사이에 추가로 두는 여백
     private static let contentVerticalPadding: CGFloat = 2
     /// 본문과 타입별 콘텐츠 사이 여백
-    private static let contentSpacing: CGFloat = 8
+    private static let contentSpacing = Theme.Metric.contentSpacing
     /// 본문 글자 크기
-    private static let contentFontSize: CGFloat = 15
+    private static let contentFontSize = Theme.Metric.contentFontSize
     /// 상단 띠 우측의 메모 종류 글자 크기. 브랜드 워드마크와 맞춘다.
     private static let typeLabelFontSize: CGFloat = 11
-    /// D-day·카운트다운 강조 숫자 크기
-    private static let highlightFontSize: CGFloat = 24
 
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: MemoAttributes.self) { context in
@@ -102,21 +100,15 @@ struct VellureLiveActivityWidget: Widget {
         switch state.renderType {
         case "dday":
             if let target = state.targetDate {
-                Text(ddayString(target))
-                    .font(.system(size: Self.highlightFontSize, weight: .heavy))
+                Text(DDayFormatter.string(for: target))
+                    .memoHighlightStyle()
                     .foregroundStyle(tint(context))
-                    .monospacedDigit()
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.7)
             }
         case "countdown":
             if let target = state.targetDate {
                 Text(timerInterval: Date.now...target, countsDown: true)
-                    .font(.system(size: Self.highlightFontSize, weight: .heavy))
+                    .memoHighlightStyle()
                     .foregroundStyle(tint(context))
-                    .monospacedDigit()
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.7)
             }
         case "progress":
             if let progress = state.progress {
@@ -153,7 +145,7 @@ struct VellureLiveActivityWidget: Widget {
         switch state.renderType {
         case "dday":
             if let target = state.targetDate {
-                Text(ddayString(target))
+                Text(DDayFormatter.string(for: target))
                     .font(.system(size: 12, weight: .bold))
                     .foregroundStyle(tint(context))
                     .monospacedDigit()
@@ -184,28 +176,7 @@ struct VellureLiveActivityWidget: Widget {
     // MARK: - Helpers
 
     private func tint(_ context: ActivityViewContext<MemoAttributes>) -> Color {
-        colorFromTag(context.state.colorTag)
-    }
-
-    private func ddayString(_ target: Date) -> String {
-        let days = Calendar.current.dateComponents(
-            [.day],
-            from: Calendar.current.startOfDay(for: .now),
-            to: Calendar.current.startOfDay(for: target)
-        ).day ?? 0
-        if days > 0 { return "D-\(days)" }
-        if days == 0 { return "D-Day" }
-        return "D+\(abs(days))"
-    }
-
-    private func colorFromTag(_ tag: String) -> Color {
-        switch tag {
-        case "green": Color(red: 31 / 255, green: 169 / 255, blue: 124 / 255)
-        case "gold": Color(red: 239 / 255, green: 150 / 255, blue: 69 / 255)
-        case "blue": Color(red: 75 / 255, green: 150 / 255, blue: 243 / 255)
-        case "rose": Color(red: 238 / 255, green: 123 / 255, blue: 162 / 255)
-        default: Color(red: 31 / 255, green: 169 / 255, blue: 124 / 255)
-        }
+        Theme.memoColor(for: context.state.colorTag)
     }
 }
 

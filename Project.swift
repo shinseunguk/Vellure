@@ -8,7 +8,7 @@ private let deploymentTargets: DeploymentTargets = .iOS("17.0")
 private let baseSettings: SettingsDictionary = [
     "DEVELOPMENT_TEAM": "2D8WKJP7C4",
     "SWIFT_VERSION": "5.0",
-    "MARKETING_VERSION": "1.0.0",
+    "MARKETING_VERSION": "1.1.0",
     "CURRENT_PROJECT_VERSION": "1",
 ]
 
@@ -118,7 +118,11 @@ let project = Project(
             product: .unitTests,
             bundleId: "\(bundlePrefix).VellureTests",
             deploymentTargets: deploymentTargets,
-            sources: ["VellureTests/**/*.swift"],
+            // 위젯 뷰는 확장 타깃에 있어 테스트에서 임포트할 수 없다.
+            // 렌더링을 눈으로 확인하려면 소스를 함께 컴파일해야 한다.
+            sources: [
+                "VellureTests/**/*.swift",
+            ],
             dependencies: [.target(name: "Vellure")]
         ),
         .target(

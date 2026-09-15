@@ -13,6 +13,8 @@ struct MemoEditView: View {
     @FocusState private var contentFocused: Bool
 
     let memo: Memo?
+    /// 작성 화면을 연 탭의 표면. 새 메모의 기본 타입과 선택지를 정한다.
+    var surface: Surface = .memo
 
     var body: some View {
         content
@@ -21,6 +23,13 @@ struct MemoEditView: View {
             .onChange(of: activityError) { _, error in
                 if error == nil && didAttemptStart { dismiss() }
             }
+    }
+
+    /// 하단 버튼 문구.
+    /// 위젯 표면은 저장이 곧 완료다. 잠금화면 게시는 이 화면의 동작이 아니다.
+    private func primaryActionKey(_ vm: MemoEditViewModel) -> LocalizedStringKey {
+        if vm.isEditing { return "edit.update.cta" }
+        return vm.surface == .memo ? "edit.save.cta" : "edit.save.widget.cta"
     }
 
     /// 새 메모를 저장한 직후 Live Activity를 띄운다.
@@ -45,9 +54,19 @@ struct MemoEditView: View {
                     ScrollView {
                         VStack(spacing: 20) {
                             typeSection(vm)
+                            if vm.surface == .memo {
+                                LiveActivityPreview(state: vm.previewState)
+                            } else {
+                                WidgetPreview(preview: vm.widgetPreview)
+                            }
                             contentSection(vm)
                             dynamicSection(vm)
-                            displayModeSection(vm)
+                            // 표시 모드는 Live Activity가 잠금화면에서 언제 사라지는지를 정한다.
+                            // 위젯은 사용자가 뺄 때까지 사라지지 않으므로 정할 것이 없고,
+                            // "자동소멸 8시간"이 붙어 있으면 곧 없어진다는 뜻으로 읽혀 오해를 만든다.
+                            if vm.surface == .memo {
+                                displayModeSection(vm)
+                            }
                             colorSection(vm)
                             actionSection(vm)
                         }
@@ -57,18 +76,21 @@ struct MemoEditView: View {
                     Divider()
                     Button {
                         let saved = vm.save()
-                        guard vm.isEditing else {
-                            startActivity(for: saved)
+                        // 위젯 표면 메모는 사용자가 위젯을 배치해야 보인다.
+                        // 여기서 Live Activity를 띄우면 방금 만든 D-day가 8시간 뒤 사라져
+                        // "위젯에 넣으려고 만든 것"과 다른 결과가 된다.
+                        guard !vm.isEditing, vm.surface == .memo else {
+                            dismiss()
                             return
                         }
-                        dismiss()
+                        startActivity(for: saved)
                     } label: {
-                        Text(vm.isEditing ? "edit.update.cta" : "edit.save.cta")
+                        Text(primaryActionKey(vm))
                             .scaledFont(15, weight: .bold)
                             .foregroundStyle(.white)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 16)
-                            .background(vm.canSave ? Theme.accent : Theme.accent.opacity(0.4))
+                            .background(vm.canSave ? Theme.accentSurface : Theme.accentSurface.opacity(0.4))
                             .clipShape(RoundedRectangle(cornerRadius: 14))
                     }
                     .disabled(!vm.canSave)
@@ -90,7 +112,7 @@ struct MemoEditView: View {
         }
         .onAppear {
             if viewModel == nil {
-                viewModel = MemoEditViewModel(repository: repository, memo: memo)
+                viewModel = MemoEditViewModel(repository: repository, memo: memo, surface: surface)
             }
         }
     }
@@ -100,9 +122,10 @@ struct MemoEditView: View {
     @ViewBuilder
     private func contentSection(_ vm: MemoEditViewModel) -> some View {
         VStack(alignment: .leading, spacing: 8) {
-            sectionLabel(vm.renderType == .plain
-                ? String(localized: "edit.section.content")
-                : String(localized: "edit.section.content.optional"))
+            // 체크리스트만 항목으로 내용을 대신할 수 있다.
+            sectionLabel(vm.renderType == .checklist
+                ? String(localized: "edit.section.content.optional")
+                : String(localized: "edit.section.content"))
             TextField("edit.placeholder", text: Bindable(vm).content, axis: .vertical)
                 .lineLimit(3...8)
                 .focused($contentFocused)
@@ -122,13 +145,9 @@ struct MemoEditView: View {
         VStack(alignment: .leading, spacing: 8) {
             sectionLabel(String(localized: "edit.section.type"))
             LazyVGrid(columns: columns, spacing: 8) {
-                ForEach(RenderType.allCases, id: \.self) { type in
+                ForEach(vm.availableTypes, id: \.self) { type in
                     typeChip(type, selected: vm.renderType == type) {
-                        vm.renderType = type
-                        let available = ClearTrigger.available(for: type)
-                        if !available.contains(vm.clearTrigger) {
-                            vm.clearTrigger = available.first ?? .hours
-                        }
+                        vm.selectType(type)
                     }
                 }
             }
@@ -158,7 +177,9 @@ struct MemoEditView: View {
             DatePicker(
                 "",
                 selection: Bindable(vm).targetDate,
-                in: Date()...,
+                // D-day는 지난 날짜도 고를 수 있어야 한다 (D+N 카운트업).
+                // 카운트다운은 남은 시간을 세므로 미래로 제한한다.
+                in: (vm.renderType.allowsPastTarget ? Date.distantPast : Date())...,
                 displayedComponents: vm.renderType == .dday ? [.date] : [.date, .hourAndMinute]
             )
             .datePickerStyle(.graphical)
@@ -306,37 +327,47 @@ struct MemoEditView: View {
         }
     }
 
-    private let colorOrder = ["green", "gold", "blue", "rose"]
+    /// 한 줄에 놓을 색 개수. 8색을 한 줄에 늘어놓으면 좁은 기기에서 원이 눌린다.
+    private static let colorsPerRow = 4
 
-    @ViewBuilder
     private func colorSection(_ vm: MemoEditViewModel) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             sectionLabel(String(localized: "edit.section.color"))
-            HStack(spacing: 14) {
-                ForEach(colorOrder, id: \.self) { key in
-                    Button {
-                        vm.colorTag = key
-                    } label: {
-                        Circle()
-                            .fill(Theme.memoColors[key] ?? Theme.accent)
-                            .frame(width: 40, height: 40)
-                            .overlay {
-                                if vm.colorTag == key {
-                                    Image(systemName: "checkmark")
-                                        .scaledFont(14, weight: .bold)
-                                        .foregroundStyle(.white)
-                                }
-                            }
-                            .scaleEffect(vm.colorTag == key ? 1.12 : 1.0)
-                            .overlay(
-                                Circle()
-                                    .stroke(vm.colorTag == key ? Theme.textPrimary : Color.clear, lineWidth: 3)
-                            )
-                            .animation(.spring(response: 0.3, dampingFraction: 0.6), value: vm.colorTag == key)
-                    }
+            LazyVGrid(
+                columns: Array(
+                    repeating: GridItem(.flexible(), spacing: 14),
+                    count: Self.colorsPerRow
+                ),
+                spacing: 14
+            ) {
+                ForEach(Theme.memoColorOrder, id: \.self) { key in
+                    colorButton(key, isSelected: vm.colorTag == key) { vm.colorTag = key }
                 }
             }
         }
+    }
+
+    private func colorButton(_ key: String, isSelected: Bool, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Circle()
+                .fill(Theme.memoColor(for: key))
+                .frame(width: 40, height: 40)
+                .overlay {
+                    if isSelected {
+                        Image(systemName: "checkmark")
+                            .scaledFont(14, weight: .bold)
+                            .foregroundStyle(.white)
+                    }
+                }
+                .scaleEffect(isSelected ? 1.12 : 1.0)
+                .overlay(
+                    Circle()
+                        .stroke(isSelected ? Theme.textPrimary : Color.clear, lineWidth: 3)
+                )
+                .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isSelected)
+        }
+        .accessibilityLabel(key)
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 
     @ViewBuilder

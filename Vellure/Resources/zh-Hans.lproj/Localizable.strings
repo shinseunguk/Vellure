@@ -1,6 +1,12 @@
+/* Tab */
+"tab.memo" = "备忘";
+"tab.widget" = "小组件";
+"home.widget.title" = "小组件";
+
 /* Home */
 "home.title" = "备忘录";
 "home.section.active" = "锁屏显示中";
+"home.section.widgetOrder" = "小组件中的显示顺序";
 "home.reorder" = "排序";
 "home.new" = "新建";
 "home.edit" = "编辑";
@@ -26,6 +32,13 @@
 "edit.section.content.optional" = "内容（可选）";
 "edit.placeholder" = "请输入备忘录";
 "edit.section.type" = "类型";
+"edit.section.preview" = "锁定屏幕预览";
+"edit.section.widgetPreview" = "小组件预览";
+"edit.widgetPreview.home" = "小尺寸";
+"edit.widgetPreview.list" = "列表";
+"edit.widgetPreview.home.hint" = "将小组件添加到主屏幕后会是这样";
+"edit.widgetPreview.list.hint" = "按小组件标签页的排序显示";
+"edit.widgetPreview.list.overflow" = "此备忘录不会出现在列表小组件中。在小组件标签页中上移即可显示";
 "edit.section.targetDate" = "目标日期";
 "edit.section.targetTime" = "目标时间";
 "edit.section.checklist" = "清单";
@@ -49,6 +62,7 @@
 "edit.section.color" = "颜色";
 "edit.save.cta" = "显示到锁屏";
 "edit.update.cta" = "保存";
+"edit.save.widget.cta" = "保存";
 "edit.delete" = "删除备忘录";
 
 /* Type Names */
@@ -64,6 +78,9 @@
 "empty.title" = "暂无备忘录";
 "empty.description" = "创建第一条备忘录\n在锁屏上查看";
 "empty.cta" = "创建备忘录";
+"empty.widget.title" = "暂无小组件备忘";
+"empty.widget.description" = "创建倒数日或进度条后\n即可显示在小组件中";
+"empty.widget.cta" = "创建倒数日";
 
 /* Onboarding */
 "onboarding.page1.title" = "备忘录在锁屏上\n活起来了";
@@ -165,6 +182,7 @@
 "liveActivity.error.notEnabled" = "请在“设置 > Vellure”中开启“实时活动”。";
 "liveActivity.error.tooMany" = "已达到可显示的数量上限，请先移除其他备忘。";
 "liveActivity.error.tooLarge" = "备忘内容过长，减少项目后即可显示。";
+"liveActivity.error.unsupportedType" = "倒数日与进度条通过小组件显示，无法添加到锁定屏幕。";
 "liveActivity.error.unknown" = "请稍后再试。";
 "liveActivity.error.openSettings" = "打开设置";
 "common.close" = "关闭";
@@ -199,3 +217,46 @@
 "a11y.search.clear" = "清除搜索";
 "filter.type.all" = "所有类型";
 "la.expired" = "已停止更新";
+
+/* Widget */
+"widget.entity.memo" = "备忘";
+"widget.config.title" = "选择备忘";
+"widget.config.description" = "选择此小组件显示的备忘。";
+"widget.config.memo" = "备忘";
+"widget.lockScreen.name" = "Vellure 锁屏";
+"widget.lockScreen.description" = "在锁定屏幕显示倒数日或进度。";
+"widget.homeScreen.name" = "Vellure";
+"widget.homeScreen.description" = "在主屏幕显示倒数日或进度。";
+"widget.missing" = "请选择备忘";
+"widget.empty" = "创建倒数日";
+
+/* Widget Guide */
+"guide.title" = "添加小组件";
+"guide.done" = "完成";
+"guide.intro" = "小组件需要您自己添加。按以下步骤设置一次即可。";
+"guide.home.title" = "主屏幕";
+"guide.home.step1" = "长按主屏幕空白处";
+"guide.home.step2" = "点按左上角的 +，找到 Vellure";
+"guide.home.step3" = "选择尺寸后点按“添加小组件”";
+"guide.lock.title" = "锁定屏幕";
+"guide.lock.step1" = "长按锁定屏幕，点按“自定义”";
+"guide.lock.step2" = "选择“锁定屏幕”，点按小组件栏位";
+"guide.lock.step3" = "从列表中选择 Vellure";
+"guide.tip" = "长按小组件并选择“编辑小组件”即可更改显示的备忘。若有多个倒数日，可放置多个小组件并分别指定。";
+"guide.entry" = "如何添加小组件？";
+
+/* Migration */
+"migration.title" = "主页现在分为两个标签";
+"migration.description" = "按备忘的性质重新分类。\n原有备忘都还在。";
+"migration.memo.detail" = "普通·清单·倒计时。可在锁定屏幕显示的备忘";
+"migration.widget.detail" = "倒数日·进度条。已移至小组件";
+"migration.cta.widget" = "去看小组件标签";
+"migration.cta.later" = "稍后";
+
+/* Text Scale */
+"settings.textScale" = "锁定屏幕文字大小";
+"settings.textScale.hint" = "应用于锁定屏幕上的备忘";
+"settings.textScale.sample" = "停车位 B2 区 47";
+"textScale.small" = "小";
+"textScale.medium" = "中";
+"textScale.large" = "大";

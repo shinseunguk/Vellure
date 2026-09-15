@@ -5,5 +5,7 @@ import SwiftUI
 struct VellureLiveActivityBundle: WidgetBundle {
     var body: some Widget {
         VellureLiveActivityWidget()
+        VellureLockScreenWidget()
+        VellureHomeScreenWidget()
     }
 }

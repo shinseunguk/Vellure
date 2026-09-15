@@ -1,6 +1,7 @@
 import Foundation
 import SwiftData
 import VellureCore
+import WidgetKit
 
 @Observable
 public final class MemoRepository {
@@ -137,5 +138,8 @@ public final class MemoRepository {
 
     private func save() {
         try? modelContext.save()
+        // 위젯은 자기 힘으로 변경을 알 수 없다.
+        // 저장할 때마다 타임라인을 다시 만들게 해서 앱과 값이 어긋나지 않게 한다.
+        WidgetCenter.shared.reloadAllTimelines()
     }
 }

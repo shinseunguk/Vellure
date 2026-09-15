@@ -10,37 +10,23 @@ struct MemoCardView: View {
     /// 실제로 잠금화면에 떠 있는지. 저장된 activityId가 아니라
     /// 실행 중인 Activity 목록에서 판정한 값을 주입받는다.
     var isActive: Bool = false
+    /// 이 표면에서 잠금화면 게시를 허용하는지.
+    /// 위젯 탭은 위젯을 다루는 자리라 게시 버튼을 두지 않는다.
+    var allowsPublishing: Bool = true
+
+    /// 게시 토글을 보여줄지.
+    /// 게시를 허용하지 않는 표면이라도, 이미 떠 있는 Live Activity는 내릴 수 있어야 한다.
+    private var showsActivityToggle: Bool { allowsPublishing || isActive }
 
     private var tintColor: Color {
         Theme.memoColor(for: memo.colorTag)
-    }
-
-    private var typeIcon: String {
-        switch memo.renderType {
-        case .plain: "note.text"
-        case .checklist: "checklist"
-        case .dday: "calendar"
-        case .countdown: "timer"
-        case .progress: "chart.bar.fill"
-        }
-    }
-
-    private var typeLabel: String {
-        switch memo.renderType {
-        case .plain: String(localized: "type.plain")
-        case .checklist: String(localized: "type.checklist")
-        case .dday: String(localized: "type.dday")
-        case .countdown: String(localized: "type.countdown")
-        case .progress: String(localized: "type.progress")
-        }
     }
 
     private var sideValue: String? {
         switch memo.renderType {
         case .dday:
             guard let target = memo.targetDate else { return nil }
-            let days = Calendar.current.dateComponents([.day], from: .now, to: target).day ?? 0
-            return days >= 0 ? "D-\(days)" : "D+\(abs(days))"
+            return DDayFormatter.string(for: target)
         case .countdown:
             guard let target = memo.targetDate else { return nil }
             let remaining = target.timeIntervalSince(.now)
@@ -129,14 +115,14 @@ struct MemoCardView: View {
                     .fill(tintColor.opacity(0.15))
                     .frame(width: 38, height: 38)
                     .overlay {
-                        Image(systemName: typeIcon)
+                        Image(systemName: memo.renderType.iconName)
                             .scaledFont(15, weight: .semibold)
                             .foregroundStyle(tintColor)
                     }
 
                 VStack(alignment: .leading, spacing: 2) {
                     HStack(spacing: 7) {
-                        Text(typeLabel)
+                        Text(memo.renderType.displayName)
                             .scaledFont(11, weight: .bold)
                             .foregroundStyle(tintColor)
                             .lineLimit(1)
@@ -195,17 +181,25 @@ struct MemoCardView: View {
 
                 if showsActions {
                     HStack(spacing: 6) {
-                        Button(action: onToggleActivity) {
-                            Image(systemName: isActive ? "arrow.down" : "arrow.up")
-                                .accessibilityHidden(true)
-                                .scaledFont(13, weight: .bold)
-                                .foregroundStyle(isActive ? .white : tintColor)
-                                .frame(width: 34, height: 34)
-                                .background(isActive ? tintColor : tintColor.opacity(0.15))
-                                .clipShape(Circle())
+                        if showsActivityToggle {
+                            Button(action: onToggleActivity) {
+                                Image(systemName: isActive ? "arrow.down" : "arrow.up")
+                                    .accessibilityHidden(true)
+                                    .scaledFont(13, weight: .bold)
+                                    .foregroundStyle(isActive ? .white : tintColor)
+                                    .frame(width: 34, height: 34)
+                                    // 흰 글리프를 얹을 때는 글자용 색을 그대로 쓸 수 없다.
+                                    // 다크 모드의 밝은 값 위에서는 흰색이 2.99:1로 읽히지 않는다.
+                                    .background(
+                                        isActive
+                                            ? Theme.memoSurface(for: memo.colorTag)
+                                            : tintColor.opacity(0.15)
+                                    )
+                                    .clipShape(Circle())
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityLabel(isActive ? "a11y.card.unpublish" : "a11y.card.publish")
                         }
-                        .buttonStyle(.plain)
-                        .accessibilityLabel(isActive ? "a11y.card.unpublish" : "a11y.card.publish")
 
                         Button(action: onDelete) {
                             Image(systemName: "trash")

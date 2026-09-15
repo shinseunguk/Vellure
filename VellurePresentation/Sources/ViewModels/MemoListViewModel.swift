@@ -7,6 +7,8 @@ import VellureData
 @Observable
 final class MemoListViewModel {
     private let repository: MemoRepository
+    /// 이 목록이 담당하는 표면. 탭마다 하나씩 둔다.
+    let surface: Surface
 
     var memos: [Memo] = []
     /// Live Activity를 띄우지 못한 이유. 뷰가 알럿으로 보여준다.
@@ -23,15 +25,24 @@ final class MemoListViewModel {
 
     private var hasPendingReorder = false
 
-    init(repository: MemoRepository) {
+    init(repository: MemoRepository, surface: Surface) {
         self.repository = repository
+        self.surface = surface
         refresh()
     }
 
     func refresh() {
-        memos = repository.fetchAll()
+        // 탭은 자기 표면의 메모만 다룬다.
+        memos = repository.fetchAll().filter { $0.renderType.surface == surface }
         runningMemoIds = LiveActivityService.shared.runningMemoIds
     }
+
+    /// 이 표면에서 필터 칩으로 노출할 타입.
+    var availableTypes: [RenderType] { surface.renderTypes }
+
+    /// 표시 상태(표시 중/대기) 구분을 쓰는 표면인지.
+    /// 위젯은 사용자가 배치하는 것이라 앱이 켜고 끄는 개념이 없다.
+    var usesDisplayState: Bool { surface == .memo }
 
     /// 저장된 activityId가 아니라 실제 실행 중인 Activity를 기준으로 판정한다.
     func isActive(_ memo: Memo) -> Bool {
@@ -53,7 +64,7 @@ final class MemoListViewModel {
     var isFiltering: Bool {
         !searchText.trimmingCharacters(in: .whitespaces).isEmpty
             || typeFilter != nil
-            || displayFilter != .all
+            || (usesDisplayState && displayFilter != .all)
     }
 
     /// 검색·필터를 통과한 메모. `isFiltering`일 때만 쓴다.
@@ -80,7 +91,8 @@ final class MemoListViewModel {
     }
 
     private func matchesDisplay(_ memo: Memo) -> Bool {
-        switch displayFilter {
+        guard usesDisplayState else { return true }
+        return switch displayFilter {
         case .all: true
         case .active: isActive(memo)
         case .inactive: !isActive(memo)

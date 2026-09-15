@@ -34,6 +34,13 @@ public final class LiveActivityService {
     /// 실패하면 이유를 담은 `LiveActivityError`를 던진다.
     /// (예전에는 nil을 반환해 호출부가 실패를 알 수 없었고, 사용자에게도 아무 안내가 없었다)
     public func start(memo: Memo) throws -> String {
+        // 위젯 표면 타입(디데이·달성률)은 잠금화면에 올리지 않는다.
+        // UI에서 막아뒀지만 시리·인텐트 등 다른 경로가 열려 있어 여기서 한 번 더 막는다.
+        guard memo.renderType.surface == .memo else {
+            logger.warning("Live Activity 시작 거부: 위젯 표면 타입")
+            throw LiveActivityError.unsupportedType
+        }
+
         guard isSupported else {
             logger.warning("Live Activity 시작 거부: 설정에서 비활성화됨")
             throw LiveActivityError.notEnabled
@@ -213,6 +220,17 @@ public final class LiveActivityService {
     public func refreshOrder(memos: [Memo]) async {
         let activeIds = Set(Activity<MemoAttributes>.activities.map { $0.attributes.memoId })
         for memo in memos where activeIds.contains(memo.id.uuidString) {
+            await update(memoId: memo.id.uuidString, memo: memo)
+        }
+    }
+
+    /// 떠 있는 카드를 모두 다시 그리게 한다.
+    ///
+    /// 글자 크기처럼 메모 내용과 무관한 설정이 바뀌었을 때 쓴다.
+    /// 확장은 설정을 그릴 때 읽으므로, 갱신을 한 번 밀어넣어야 반영된다.
+    public func refreshAll(repository: MemoRepository) async {
+        let activeIds = Set(Activity<MemoAttributes>.activities.map { $0.attributes.memoId })
+        for memo in repository.fetchAll() where activeIds.contains(memo.id.uuidString) {
             await update(memoId: memo.id.uuidString, memo: memo)
         }
     }

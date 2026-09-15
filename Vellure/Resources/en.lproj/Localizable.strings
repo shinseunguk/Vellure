@@ -1,6 +1,12 @@
+/* Tab */
+"tab.memo" = "Memos";
+"tab.widget" = "Widgets";
+"home.widget.title" = "Widgets";
+
 /* Home */
 "home.title" = "Memos";
 "home.section.active" = "On Lock Screen";
+"home.section.widgetOrder" = "Order shown in widgets";
 "home.reorder" = "Reorder";
 "home.new" = "New";
 "home.edit" = "Edit";
@@ -26,6 +32,13 @@
 "edit.section.content.optional" = "Content (Optional)";
 "edit.placeholder" = "Enter your memo";
 "edit.section.type" = "Type";
+"edit.section.preview" = "Lock Screen preview";
+"edit.section.widgetPreview" = "Widget preview";
+"edit.widgetPreview.home" = "Small";
+"edit.widgetPreview.list" = "List";
+"edit.widgetPreview.home.hint" = "This is how it looks once you add the widget to your Home Screen";
+"edit.widgetPreview.list.hint" = "Shown in the order set on the Widget tab";
+"edit.widgetPreview.list.overflow" = "This memo does not fit in the list widget. Move it up on the Widget tab to show it";
 "edit.section.targetDate" = "Target Date";
 "edit.section.targetTime" = "Target Time";
 "edit.section.checklist" = "Checklist";
@@ -49,6 +62,7 @@
 "edit.section.color" = "Color";
 "edit.save.cta" = "Publish to Lock Screen";
 "edit.update.cta" = "Save";
+"edit.save.widget.cta" = "Save";
 "edit.delete" = "Delete Memo";
 
 /* Type Names */
@@ -64,6 +78,9 @@
 "empty.title" = "No Memos";
 "empty.description" = "Create your first memo\nand see it on your lock screen";
 "empty.cta" = "Create Memo";
+"empty.widget.title" = "No widget memos";
+"empty.widget.description" = "Create a D-day or progress memo\nto show it in a widget";
+"empty.widget.cta" = "Create a D-day";
 
 /* Onboarding */
 "onboarding.page1.title" = "Notes that live\non your lock screen";
@@ -165,6 +182,7 @@ your lock screen for 8 hours.";
 "liveActivity.error.notEnabled" = "Turn on Live Activities in Settings > Vellure.";
 "liveActivity.error.tooMany" = "You’ve reached the limit. Remove another note from the Lock Screen first.";
 "liveActivity.error.tooLarge" = "This note is too long. Try removing some items.";
+"liveActivity.error.unsupportedType" = "D-day and progress memos are shown in widgets, not on the Lock Screen.";
 "liveActivity.error.unknown" = "Please try again in a moment.";
 "liveActivity.error.openSettings" = "Open Settings";
 "common.close" = "Close";
@@ -199,3 +217,46 @@ your lock screen for 8 hours.";
 "a11y.search.clear" = "Clear search";
 "filter.type.all" = "All types";
 "la.expired" = "Updates stopped";
+
+/* Widget */
+"widget.entity.memo" = "Memo";
+"widget.config.title" = "Choose Memo";
+"widget.config.description" = "Pick which memo this widget shows.";
+"widget.config.memo" = "Memo";
+"widget.lockScreen.name" = "Vellure Lock Screen";
+"widget.lockScreen.description" = "Show a D-day or progress on your Lock Screen.";
+"widget.homeScreen.name" = "Vellure";
+"widget.homeScreen.description" = "Show a D-day or progress on your Home Screen.";
+"widget.missing" = "Choose a memo";
+"widget.empty" = "Create a D-day";
+
+/* Widget Guide */
+"guide.title" = "Add a Widget";
+"guide.done" = "Done";
+"guide.intro" = "Widgets have to be placed by hand. Follow these steps once.";
+"guide.home.title" = "Home Screen";
+"guide.home.step1" = "Touch and hold an empty area";
+"guide.home.step2" = "Tap + at the top left, then find Vellure";
+"guide.home.step3" = "Pick a size and tap Add Widget";
+"guide.lock.title" = "Lock Screen";
+"guide.lock.step1" = "Touch and hold the Lock Screen, then tap Customize";
+"guide.lock.step2" = "Choose Lock Screen and tap a widget slot";
+"guide.lock.step3" = "Pick Vellure from the list";
+"guide.tip" = "Touch and hold a widget and choose Edit Widget to change which memo it shows. For several D-days, place several widgets and point each at a different memo.";
+"guide.entry" = "How do I add a widget?";
+
+/* Migration */
+"migration.title" = "Home is now two tabs";
+"migration.description" = "Memos are split by how long they live.\nNothing was deleted.";
+"migration.memo.detail" = "Plain, checklist, countdown — memos you post to the Lock Screen";
+"migration.widget.detail" = "D-day and progress — these moved to widgets";
+"migration.cta.widget" = "Show me the Widgets tab";
+"migration.cta.later" = "Later";
+
+/* Text Scale */
+"settings.textScale" = "Lock Screen text size";
+"settings.textScale.hint" = "Applies to memos on the Lock Screen";
+"settings.textScale.sample" = "Parking spot B2-47";
+"textScale.small" = "Small";
+"textScale.medium" = "Medium";
+"textScale.large" = "Large";

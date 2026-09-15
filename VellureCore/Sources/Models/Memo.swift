@@ -16,6 +16,41 @@ public enum RenderType: String, Codable, CaseIterable {
         case .plain, .dday, .countdown: false
         }
     }
+
+    /// 지난 날짜를 목표일로 쓸 수 있는지.
+    ///
+    /// D-day는 지난 날도 의미가 있다 — 만난 지 100일, 금연 30일차처럼 D+N으로 센다.
+    /// 카운트다운은 남은 시간을 세는 것이라 지난 시각이 성립하지 않는다.
+    public var allowsPastTarget: Bool {
+        switch self {
+        case .dday: true
+        case .plain, .checklist, .countdown, .progress: false
+        }
+    }
+
+    /// 이 타입을 보여줄 표면.
+    ///
+    /// 디데이·달성률은 며칠에서 몇 달 단위로 지속돼 Live Activity의 8시간 수명과 맞지 않는다.
+    /// 수명이 긴 타입은 사라지지 않는 위젯에 둔다.
+    public var surface: Surface {
+        switch self {
+        case .dday, .progress: .widget
+        case .plain, .checklist, .countdown: .memo
+        }
+    }
+}
+
+/// 메모를 보여주는 표면. 앱의 탭 구성도 이 값을 따른다.
+public enum Surface: String, Codable, CaseIterable {
+    /// Live Activity — 잠금화면에 띄웠다 내리는 하루 단위 메모
+    case memo
+    /// 위젯 — 사용자가 배치하면 사라지지 않는 장기 지속 메모
+    case widget
+
+    /// 이 표면에 속하는 메모 타입.
+    public var renderTypes: [RenderType] {
+        RenderType.allCases.filter { $0.surface == self }
+    }
 }
 
 public enum DisplayMode: String, Codable, CaseIterable {
