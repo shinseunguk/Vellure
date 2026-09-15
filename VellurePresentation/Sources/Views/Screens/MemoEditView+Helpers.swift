@@ -24,6 +24,11 @@ extension MemoEditView {
             .background(selected ? Theme.accent : Theme.chipBackground)
             .foregroundStyle(selected ? .white : Theme.textPrimary)
             .clipShape(Capsule())
+            // 고르지 않은 칩은 배경과 밝기가 가까워 어디까지가 버튼인지 보이지 않는다.
+            .overlay(
+                Capsule()
+                    .stroke(selected ? Color.clear : Theme.chipBorder, lineWidth: 1)
+            )
         }
     }
 
@@ -38,7 +43,7 @@ extension MemoEditView {
                 .clipShape(RoundedRectangle(cornerRadius: 14))
                 .overlay(
                     RoundedRectangle(cornerRadius: 14)
-                        .stroke(selected ? Color.clear : Theme.divider, lineWidth: 1)
+                        .stroke(selected ? Color.clear : Theme.chipBorder, lineWidth: 1)
                 )
         }
     }
