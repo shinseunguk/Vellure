@@ -109,7 +109,7 @@ private struct GuideSection: View {
                 .scaledFont(11, weight: .heavy)
                 .foregroundStyle(.white)
                 .frame(width: 20, height: 20)
-                .background(Theme.accent)
+                .background(Theme.accentSurface)
                 .clipShape(Circle())
 
             Text(LocalizedStringKey(key))

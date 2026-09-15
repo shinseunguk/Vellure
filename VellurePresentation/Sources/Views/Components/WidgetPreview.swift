@@ -93,7 +93,7 @@ struct WidgetPreview: View {
                         .foregroundStyle(place == candidate ? .white : Theme.textSecondary)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 9)
-                        .background(place == candidate ? Theme.accent : Theme.chipBackground)
+                        .background(place == candidate ? Theme.accentSurface : Theme.chipBackground)
                         .clipShape(Capsule())
                         .overlay(
                             Capsule()

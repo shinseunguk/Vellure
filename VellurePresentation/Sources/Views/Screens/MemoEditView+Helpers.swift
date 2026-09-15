@@ -21,7 +21,7 @@ extension MemoEditView {
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 8)
-            .background(selected ? Theme.accent : Theme.chipBackground)
+            .background(selected ? Theme.accentSurface : Theme.chipBackground)
             .foregroundStyle(selected ? .white : Theme.textPrimary)
             .clipShape(Capsule())
             // 고르지 않은 칩은 배경과 밝기가 가까워 어디까지가 버튼인지 보이지 않는다.
@@ -38,7 +38,7 @@ extension MemoEditView {
                 .scaledFont(13, weight: .semibold)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 12)
-                .background(selected ? Theme.accent : Theme.chipBackground)
+                .background(selected ? Theme.accentSurface : Theme.chipBackground)
                 .foregroundStyle(selected ? .white : Theme.textPrimary)
                 .clipShape(RoundedRectangle(cornerRadius: 14))
                 .overlay(

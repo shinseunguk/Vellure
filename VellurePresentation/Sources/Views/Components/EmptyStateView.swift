@@ -49,7 +49,7 @@ struct EmptyStateView: View {
                     .foregroundStyle(.white)
                     .padding(.horizontal, 28)
                     .padding(.vertical, 14)
-                    .background(Theme.accent)
+                    .background(Theme.accentSurface)
                     .clipShape(RoundedRectangle(cornerRadius: 14))
             }
         }

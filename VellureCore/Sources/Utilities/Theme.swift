@@ -2,8 +2,21 @@ import SwiftUI
 import UIKit
 
 public enum Theme {
-    public static let accent = Color(hex: "1fa97c")
+    /// 브랜드 강조색.
+    ///
+    /// 글자·아이콘·테두리로 쓰이므로 배경에 따라 값을 바꾼다.
+    /// 밝은 초록 하나로 두면 흰 카드 위에서 2.99:1로 읽히지 않는다.
+    public static let accent = Color(
+        light: UIColor(hex: "188360"),
+        dark: UIColor(hex: "1fa97c")
+    )
     public static let accentHover = Color(hex: "23b98a")
+
+    /// 흰 글자를 얹는 강조색 면(기본 버튼·고른 칩).
+    ///
+    /// 흰색은 모드를 타지 않으므로 이 값도 고정이다.
+    /// accent를 그대로 깔면 흰 글자가 2.99:1이라 읽히지 않는다.
+    public static let accentSurface = Color(hex: "188360")
 
     public static let background = Color(
         light: UIColor(hex: "eef0f4"),
@@ -47,15 +60,19 @@ public enum Theme {
 
     /// 메모 컬러 태그의 단일 정의.
     /// 앱·Live Activity·위젯이 모두 이 표를 통해 색을 얻는다.
+    /// 글자·아이콘으로 쓰는 값이라 배경에 따라 밝기를 바꾼다.
+    /// 밝은 쪽 하나로 두면 흰 카드 위에서 2.1~3.4:1로 읽히지 않고,
+    /// 어두운 쪽 하나로 두면 어두운 카드 위에서 같은 문제가 생긴다.
+    /// 각각 제 배경에서 4.6:1을 넘기는 선까지만 옮긴 값이다.
     public static let memoColors: [String: Color] = [
         "green": accent,
-        "teal": Color(hex: "2ec5c0"),
-        "blue": Color(hex: "4b96f3"),
-        "purple": Color(hex: "a97bf0"),
-        "rose": Color(hex: "ee7ba2"),
-        "red": Color(hex: "f26a5f"),
-        "gold": Color(hex: "ef9645"),
-        "slate": Color(hex: "7f8c9e")
+        "teal": Color(light: UIColor(hex: "1e827f"), dark: UIColor(hex: "2ec5c0")),
+        "blue": Color(light: UIColor(hex: "3b76c0"), dark: UIColor(hex: "4b96f3")),
+        "purple": Color(light: UIColor(hex: "8862c1"), dark: UIColor(hex: "ab7df3")),
+        "rose": Color(light: UIColor(hex: "af5a77"), dark: UIColor(hex: "ee7ba2")),
+        "red": Color(light: UIColor(hex: "bf534b"), dark: UIColor(hex: "f26a5f")),
+        "gold": Color(light: UIColor(hex: "a4672f"), dark: UIColor(hex: "ef9645")),
+        "slate": Color(light: UIColor(hex: "6b7686"), dark: UIColor(hex: "8896a9"))
     ]
 
     /// 색 선택 순서. 색상환을 따라 늘어놓아 고를 때 옆 색과 헷갈리지 않는다.
