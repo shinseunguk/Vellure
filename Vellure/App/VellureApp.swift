@@ -17,6 +17,14 @@ struct VellureApp: App {
     init() {
         container = AppModelContainer.shared
         repository = MemoRepository(modelContext: container.mainContext)
+
+        #if DEBUG
+        // UI 테스트는 기기에 남은 데이터에 기대면 안 된다.
+        // 실행 인자가 있을 때만 화면 상태를 고정한다.
+        if UITestSeed.isRequested {
+            MainActor.assumeIsolated { UITestSeed.apply(to: repository) }
+        }
+        #endif
     }
 
     private var selectedScheme: ColorScheme? {
