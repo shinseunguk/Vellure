@@ -35,6 +35,16 @@ public enum Theme {
         dark: UIColor(hex: "3a3a3c")
     )
 
+    /// 칩 위에 얹는 테두리.
+    ///
+    /// divider는 배경·카드 위에 긋는 선이라 칩 위에서는 칩 색과 거의 같아 보이지 않는다.
+    /// (다크 모드에서 3a3a3c 위의 38383a = 1.03:1)
+    /// 칩을 기준으로 한 단계 떨어뜨려, 고르지 않은 칩도 경계가 읽히게 한다.
+    public static let chipBorder = Color(
+        light: UIColor(hex: "c9d0d9"),
+        dark: UIColor(hex: "626266")
+    )
+
     /// 메모 컬러 태그의 단일 정의.
     /// 앱·Live Activity·위젯이 모두 이 표를 통해 색을 얻는다.
     public static let memoColors: [String: Color] = [

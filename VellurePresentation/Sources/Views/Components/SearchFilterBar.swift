@@ -101,6 +101,10 @@ struct SearchFilterBar: View {
                 .padding(.vertical, 6)
                 .background(isSelected ? Theme.accent : Theme.chipBackground)
                 .clipShape(Capsule())
+                .overlay(
+                    Capsule()
+                        .stroke(isSelected ? Color.clear : Theme.chipBorder, lineWidth: 1)
+                )
         }
         .buttonStyle(.plain)
     }

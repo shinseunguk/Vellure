@@ -95,6 +95,10 @@ struct WidgetPreview: View {
                         .padding(.vertical, 9)
                         .background(place == candidate ? Theme.accent : Theme.chipBackground)
                         .clipShape(Capsule())
+                        .overlay(
+                            Capsule()
+                                .stroke(place == candidate ? Color.clear : Theme.chipBorder, lineWidth: 1)
+                        )
                 }
                 .buttonStyle(.plain)
                 .accessibilityAddTraits(place == candidate ? .isSelected : [])
