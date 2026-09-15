@@ -6,6 +6,7 @@
 /* Home */
 "home.title" = "Memos";
 "home.section.active" = "On Lock Screen";
+"home.section.widgetOrder" = "Order shown in widgets";
 "home.reorder" = "Reorder";
 "home.new" = "New";
 "home.edit" = "Edit";
@@ -174,6 +175,7 @@ your lock screen for 8 hours.";
 "liveActivity.error.notEnabled" = "Turn on Live Activities in Settings > Vellure.";
 "liveActivity.error.tooMany" = "You’ve reached the limit. Remove another note from the Lock Screen first.";
 "liveActivity.error.tooLarge" = "This note is too long. Try removing some items.";
+"liveActivity.error.unsupportedType" = "D-day and progress memos are shown in widgets, not on the Lock Screen.";
 "liveActivity.error.unknown" = "Please try again in a moment.";
 "liveActivity.error.openSettings" = "Open Settings";
 "common.close" = "Close";

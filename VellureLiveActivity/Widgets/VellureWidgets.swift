@@ -25,6 +25,8 @@ struct VellureLockScreenWidget: Widget {
 /// 홈화면 위젯.
 /// small은 지정한 메모 하나를, medium은 위젯 탭 정렬 순서대로 여러 건을 보여준다.
 struct VellureHomeScreenWidget: Widget {
+    @Environment(\.widgetFamily) private var family
+
     var body: some WidgetConfiguration {
         AppIntentConfiguration(
             kind: WidgetKind.homeScreen,
@@ -33,7 +35,9 @@ struct VellureHomeScreenWidget: Widget {
         ) { entry in
             MemoWidgetView(entry: entry)
                 // iOS 17부터 위젯은 배경을 컨테이너에 선언해야 한다. 빠뜨리면 렌더링되지 않는다.
-                .containerBackground(Theme.cardBackground, for: .widget)
+                .containerBackground(for: .widget) {
+                    WidgetBackground(tint: entry.backgroundTint(for: family))
+                }
         }
         .configurationDisplayName("widget.homeScreen.name")
         .description("widget.homeScreen.description")

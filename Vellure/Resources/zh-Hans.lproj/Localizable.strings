@@ -6,6 +6,7 @@
 /* Home */
 "home.title" = "备忘录";
 "home.section.active" = "锁屏显示中";
+"home.section.widgetOrder" = "小组件中的显示顺序";
 "home.reorder" = "排序";
 "home.new" = "新建";
 "home.edit" = "编辑";
@@ -174,6 +175,7 @@
 "liveActivity.error.notEnabled" = "请在“设置 > Vellure”中开启“实时活动”。";
 "liveActivity.error.tooMany" = "已达到可显示的数量上限，请先移除其他备忘。";
 "liveActivity.error.tooLarge" = "备忘内容过长，减少项目后即可显示。";
+"liveActivity.error.unsupportedType" = "倒数日与进度条通过小组件显示，无法添加到锁定屏幕。";
 "liveActivity.error.unknown" = "请稍后再试。";
 "liveActivity.error.openSettings" = "打开设置";
 "common.close" = "关闭";

@@ -4,25 +4,23 @@ import SwiftUI
 /// 앱 아이콘 + 워드마크 + 메모 종류를 한 줄 높이로 담는다.
 struct BrandLabel: View {
     /// 아이콘 한 변 길이. 워드마크 높이에 맞춘다.
-    private static let iconSize: CGFloat = 13
+    private var iconSize: CGFloat { fontSize + 2 }
     /// 아이콘 모서리 곡률
-    private static let iconCornerRadius: CGFloat = 3.5
+    private var iconCornerRadius: CGFloat { iconSize * 0.27 }
 
     let tint: Color
     /// `MemoAttributes.ContentState.renderType` 원시값. nil이면 워드마크만 표시한다.
     var renderType: String?
     var fontSize: CGFloat = 11
+    /// 앱 아이콘을 함께 보일지.
+    /// 색이 있는 카드 위에서는 아이콘의 초록 배경이 카드 색과 부딪혀 겉돈다.
+    var showsIcon: Bool = true
 
     var body: some View {
         HStack(spacing: 5) {
-            Image("AppLogo")
-                .resizable()
-                .scaledToFill()
-                .frame(width: Self.iconSize, height: Self.iconSize)
-                .clipShape(
-                    RoundedRectangle(cornerRadius: Self.iconCornerRadius, style: .continuous)
-                )
-
+            if showsIcon {
+                icon
+            }
             Text(verbatim: brandText)
                 .font(.system(size: fontSize, weight: .semibold))
                 .foregroundStyle(tint)
@@ -31,6 +29,14 @@ struct BrandLabel: View {
                 // 잘리는 대신 살짝 줄어들도록 둔다.
                 .minimumScaleFactor(0.85)
         }
+    }
+
+    private var icon: some View {
+        Image("AppLogo")
+            .resizable()
+            .scaledToFill()
+            .frame(width: iconSize, height: iconSize)
+            .clipShape(RoundedRectangle(cornerRadius: iconCornerRadius, style: .continuous))
     }
 
     private var brandText: String {

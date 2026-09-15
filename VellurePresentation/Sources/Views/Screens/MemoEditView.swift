@@ -117,9 +117,10 @@ struct MemoEditView: View {
     @ViewBuilder
     private func contentSection(_ vm: MemoEditViewModel) -> some View {
         VStack(alignment: .leading, spacing: 8) {
-            sectionLabel(vm.renderType == .plain
-                ? String(localized: "edit.section.content")
-                : String(localized: "edit.section.content.optional"))
+            // 체크리스트만 항목으로 내용을 대신할 수 있다.
+            sectionLabel(vm.renderType == .checklist
+                ? String(localized: "edit.section.content.optional")
+                : String(localized: "edit.section.content"))
             TextField("edit.placeholder", text: Bindable(vm).content, axis: .vertical)
                 .lineLimit(3...8)
                 .focused($contentFocused)
@@ -141,11 +142,7 @@ struct MemoEditView: View {
             LazyVGrid(columns: columns, spacing: 8) {
                 ForEach(vm.availableTypes, id: \.self) { type in
                     typeChip(type, selected: vm.renderType == type) {
-                        vm.renderType = type
-                        let available = ClearTrigger.available(for: type)
-                        if !available.contains(vm.clearTrigger) {
-                            vm.clearTrigger = available.first ?? .hours
-                        }
+                        vm.selectType(type)
                     }
                 }
             }
@@ -175,7 +172,9 @@ struct MemoEditView: View {
             DatePicker(
                 "",
                 selection: Bindable(vm).targetDate,
-                in: Date()...,
+                // D-day는 지난 날짜도 고를 수 있어야 한다 (D+N 카운트업).
+                // 카운트다운은 남은 시간을 세므로 미래로 제한한다.
+                in: (vm.renderType.allowsPastTarget ? Date.distantPast : Date())...,
                 displayedComponents: vm.renderType == .dday ? [.date] : [.date, .hourAndMinute]
             )
             .datePickerStyle(.graphical)

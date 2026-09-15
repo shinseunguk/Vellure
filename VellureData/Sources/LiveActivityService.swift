@@ -34,6 +34,13 @@ public final class LiveActivityService {
     /// 실패하면 이유를 담은 `LiveActivityError`를 던진다.
     /// (예전에는 nil을 반환해 호출부가 실패를 알 수 없었고, 사용자에게도 아무 안내가 없었다)
     public func start(memo: Memo) throws -> String {
+        // 위젯 표면 타입(디데이·달성률)은 잠금화면에 올리지 않는다.
+        // UI에서 막아뒀지만 시리·인텐트 등 다른 경로가 열려 있어 여기서 한 번 더 막는다.
+        guard memo.renderType.surface == .memo else {
+            logger.warning("Live Activity 시작 거부: 위젯 표면 타입")
+            throw LiveActivityError.unsupportedType
+        }
+
         guard isSupported else {
             logger.warning("Live Activity 시작 거부: 설정에서 비활성화됨")
             throw LiveActivityError.notEnabled

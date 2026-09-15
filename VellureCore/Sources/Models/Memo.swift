@@ -17,6 +17,17 @@ public enum RenderType: String, Codable, CaseIterable {
         }
     }
 
+    /// 지난 날짜를 목표일로 쓸 수 있는지.
+    ///
+    /// D-day는 지난 날도 의미가 있다 — 만난 지 100일, 금연 30일차처럼 D+N으로 센다.
+    /// 카운트다운은 남은 시간을 세는 것이라 지난 시각이 성립하지 않는다.
+    public var allowsPastTarget: Bool {
+        switch self {
+        case .dday: true
+        case .plain, .checklist, .countdown, .progress: false
+        }
+    }
+
     /// 이 타입을 보여줄 표면.
     ///
     /// 디데이·달성률은 며칠에서 몇 달 단위로 지속돼 Live Activity의 8시간 수명과 맞지 않는다.

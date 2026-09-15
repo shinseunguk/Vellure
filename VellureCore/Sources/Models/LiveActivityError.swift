@@ -12,6 +12,8 @@ public enum LiveActivityError: Error, Equatable {
     case tooManyActivities
     /// 전달하려는 상태 데이터가 시스템 상한(4KB)을 넘음
     case contentTooLarge
+    /// 잠금화면에 올릴 수 없는 타입. 디데이·달성률은 위젯으로 보여준다.
+    case unsupportedType
     /// 그 밖의 실패. 원인 문자열을 함께 보관한다.
     case unknown(String)
 
@@ -21,6 +23,7 @@ public enum LiveActivityError: Error, Equatable {
         case .notEnabled: "notEnabled"
         case .tooManyActivities: "tooManyActivities"
         case .contentTooLarge: "contentTooLarge"
+        case .unsupportedType: "unsupportedType"
         case .unknown(let reason): "unknown(\(reason))"
         }
     }
