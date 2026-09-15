@@ -26,6 +26,31 @@ final class LiveActivityRenderTests: XCTestCase {
         }
     }
 
+    /// 글자 크기 설정이 실제로 카드에 반영되는지 눈으로 확인한다.
+    func test_render_textScales() throws {
+        let state = MemoAttributes.ContentState.sample(
+            renderType: "checklist",
+            content: "외출 준비물",
+            items: [
+                LiveChecklistItem(id: "1", title: "지갑", done: true),
+                LiveChecklistItem(id: "2", title: "충전기", done: false)
+            ]
+        )
+
+        // 범위의 양 끝과 기본값을 뽑아 실제 차이를 눈으로 본다.
+        let scales: [(String, CGFloat)] = [
+            ("min", TextScale.range.lowerBound),
+            ("default", TextScale.default),
+            ("max", TextScale.range.upperBound)
+        ]
+
+        for (name, scale) in scales {
+            let image = try render(state, scheme: .dark, scale: scale)
+            XCTAssertGreaterThan(image.size.width, 0, "\(name) 렌더링 실패")
+            try write(image, named: "la-scale-\(name)")
+        }
+    }
+
     func test_render_lockScreenCards() throws {
         let cases: [(String, MemoAttributes.ContentState)] = [
             ("plain", .sample(renderType: "plain", content: "주차 위치 B2 구역 47")),
@@ -57,11 +82,16 @@ final class LiveActivityRenderTests: XCTestCase {
 
     // MARK: - Helpers
 
-    private func render(_ state: MemoAttributes.ContentState, scheme: ColorScheme) throws -> UIImage {
+    private func render(
+        _ state: MemoAttributes.ContentState,
+        scheme: ColorScheme,
+        scale: CGFloat = TextScale.default
+    ) throws -> UIImage {
         // 폭을 강제하면 내용이 카드 폭을 채우지 못하는 문제를 가린다.
         // 실제 잠금화면처럼 컨테이너만 주고 내용이 스스로 넓어지게 둔다.
         let content = VStack(spacing: 0) {
-            LockScreenContent(state: state, memoId: "preview", isStale: false)
+            LiveActivityCard(state: state, scale: scale)
+                .background(Theme.memoSurface(for: state.colorTag))
         }
         .frame(width: Self.cardSize.width, alignment: .leading)
         .frame(minHeight: Self.cardSize.height, alignment: .top)

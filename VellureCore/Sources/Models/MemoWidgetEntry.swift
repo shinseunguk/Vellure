@@ -1,18 +1,24 @@
 import Foundation
-import VellureCore
 import WidgetKit
 
 /// 위젯 한 칸이 그릴 내용.
 /// SwiftData 모델을 그대로 넘기지 않는다. 타임라인 항목은 값 타입이어야 안전하다.
-struct MemoWidgetEntry: TimelineEntry {
-    let date: Date
-    let memo: MemoSnapshot?
+public struct MemoWidgetEntry: TimelineEntry {
+    public let date: Date
+    public let memo: MemoSnapshot?
     /// medium 패밀리가 쓰는 목록. 위젯 탭 정렬 순서를 그대로 따른다.
-    let listMemos: [MemoSnapshot]
+    public let listMemos: [MemoSnapshot]
     /// 사용자가 고른 메모가 지워졌는지. 조용히 다른 메모로 바꾸지 않고 안내를 띄운다.
-    let isMissing: Bool
+    public let isMissing: Bool
 
-    static func placeholder(_ renderType: RenderType = .dday) -> Self {
+    public init(date: Date, memo: MemoSnapshot?, listMemos: [MemoSnapshot], isMissing: Bool) {
+        self.date = date
+        self.memo = memo
+        self.listMemos = listMemos
+        self.isMissing = isMissing
+    }
+
+    public static func placeholder(_ renderType: RenderType = .dday) -> Self {
         let sample = MemoSnapshot(
             content: renderType == .dday ? "제주도 여행" : "러닝 30일",
             renderType: renderType,
@@ -45,14 +51,14 @@ struct MemoWidgetEntry: TimelineEntry {
 }
 
 /// 타임라인에 실어 보내는 메모의 사본.
-struct MemoSnapshot {
-    let content: String
-    let renderType: RenderType
-    let targetDate: Date?
-    let progress: Double?
-    let colorTag: String
+public struct MemoSnapshot {
+    public let content: String
+    public let renderType: RenderType
+    public let targetDate: Date?
+    public let progress: Double?
+    public let colorTag: String
 
-    init(content: String, renderType: RenderType, targetDate: Date?, progress: Double?, colorTag: String) {
+    public init(content: String, renderType: RenderType, targetDate: Date?, progress: Double?, colorTag: String) {
         self.content = content
         self.renderType = renderType
         self.targetDate = targetDate
@@ -60,7 +66,7 @@ struct MemoSnapshot {
         self.colorTag = colorTag
     }
 
-    init(memo: Memo) {
+    public init(memo: Memo) {
         self.init(
             content: memo.content,
             renderType: memo.renderType,
@@ -73,7 +79,7 @@ struct MemoSnapshot {
 
 // MARK: - 표시 값
 
-extension MemoSnapshot {
+public extension MemoSnapshot {
 
     /// 위젯에 보여줄 제목. 본문이 비어 있으면 타입 이름으로 대신한다.
     var title: String {

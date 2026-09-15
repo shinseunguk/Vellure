@@ -39,10 +39,17 @@ public enum Theme {
     /// 앱·Live Activity·위젯이 모두 이 표를 통해 색을 얻는다.
     public static let memoColors: [String: Color] = [
         "green": accent,
-        "gold": Color(hex: "ef9645"),
+        "teal": Color(hex: "2ec5c0"),
         "blue": Color(hex: "4b96f3"),
-        "rose": Color(hex: "ee7ba2")
+        "purple": Color(hex: "a97bf0"),
+        "rose": Color(hex: "ee7ba2"),
+        "red": Color(hex: "f26a5f"),
+        "gold": Color(hex: "ef9645"),
+        "slate": Color(hex: "7f8c9e")
     ]
+
+    /// 색 선택 순서. 색상환을 따라 늘어놓아 고를 때 옆 색과 헷갈리지 않는다.
+    public static let memoColorOrder = ["green", "teal", "blue", "purple", "rose", "red", "gold", "slate"]
 
     public static func memoColor(for tag: String) -> Color {
         memoColors[tag] ?? accent
@@ -58,9 +65,13 @@ public enum Theme {
     /// 같은 메모가 다른 메모처럼 보인다.
     public static let memoSurfaces: [String: Color] = [
         "green": Color(hex: "05885d"),
-        "gold": Color(hex: "b1631c"),
+        "teal": Color(hex: "1e8380"),
         "blue": Color(hex: "2876d7"),
-        "rose": Color(hex: "be5277")
+        "purple": Color(hex: "8963c3"),
+        "rose": Color(hex: "be5277"),
+        "red": Color(hex: "c2544c"),
+        "gold": Color(hex: "b1631c"),
+        "slate": Color(hex: "6c7787")
     ]
 
     public static func memoSurface(for tag: String) -> Color {

@@ -224,6 +224,17 @@ public final class LiveActivityService {
         }
     }
 
+    /// 떠 있는 카드를 모두 다시 그리게 한다.
+    ///
+    /// 글자 크기처럼 메모 내용과 무관한 설정이 바뀌었을 때 쓴다.
+    /// 확장은 설정을 그릴 때 읽으므로, 갱신을 한 번 밀어넣어야 반영된다.
+    public func refreshAll(repository: MemoRepository) async {
+        let activeIds = Set(Activity<MemoAttributes>.activities.map { $0.attributes.memoId })
+        for memo in repository.fetchAll() where activeIds.contains(memo.id.uuidString) {
+            await update(memoId: memo.id.uuidString, memo: memo)
+        }
+    }
+
     /// sortOrder가 작을수록(리스트 위) 높은 점수 → 잠금화면에서 우선 정렬된다.
     private func relevanceScore(for memo: Memo) -> Double {
         Double(max(0, 1000 - memo.sortOrder))

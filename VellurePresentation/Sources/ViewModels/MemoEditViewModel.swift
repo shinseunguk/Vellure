@@ -44,6 +44,55 @@ final class MemoEditViewModel {
         }
     }
 
+    /// 지금 입력 중인 내용을 잠금화면 카드가 그릴 수 있는 형태로 옮긴다.
+    /// 저장하지 않고도 결과를 볼 수 있어야 색·타입·글자를 고르는 판단이 선다.
+    var previewState: MemoAttributes.ContentState {
+        MemoAttributes.ContentState(
+            renderType: renderType.rawValue,
+            content: content,
+            items: renderType == .checklist
+                ? checklistItems.filter { !$0.title.trimmingCharacters(in: .whitespaces).isEmpty }
+                    .map { LiveChecklistItem(id: $0.id.uuidString, title: $0.title, done: $0.done) }
+                : nil,
+            targetDate: (renderType == .dday || renderType == .countdown) ? targetDate : nil,
+            progress: renderType == .progress ? progress : nil,
+            font: font,
+            colorTag: colorTag,
+            updatedAt: .now,
+            expiresAt: Calendar.current.date(byAdding: .hour, value: 8, to: .now)
+        )
+    }
+
+    /// 작성 중인 내용을 위젯이 그릴 값으로 옮긴다.
+    /// 위젯 탭 메모는 잠금화면에 올릴 수 없어 Live Activity 미리보기가 맞지 않는다.
+    ///
+    /// 목록(medium)은 이 메모 하나만 담으면 실제와 다르다.
+    /// 위젯 탭 정렬 순서 그대로 다른 메모들 사이에 놓아, 몇 번째로 보일지까지 드러낸다.
+    var widgetPreview: WidgetPreviewData {
+        let draft = MemoSnapshot(
+            content: content,
+            renderType: renderType,
+            targetDate: renderType == .dday ? targetDate : nil,
+            progress: renderType == .progress ? progress : nil,
+            colorTag: colorTag
+        )
+        let saved = repository.fetchAll().filter { $0.renderType.surface == .widget }
+
+        // 편집 중이면 그 자리를 지금 입력값으로 바꾸고, 새 메모면 맨 뒤에 붙인다.
+        let index = existingMemo.flatMap { memo in saved.firstIndex { $0.id == memo.id } } ?? saved.count
+        var list = saved.map(MemoSnapshot.init)
+        if index < list.count {
+            list[index] = draft
+        } else {
+            list.append(draft)
+        }
+
+        return WidgetPreviewData(
+            entry: MemoWidgetEntry(date: .now, memo: draft, listMemos: list, isMissing: false),
+            draftIndex: index
+        )
+    }
+
     /// 이 화면에서 고를 수 있는 타입.
     /// 표면을 넘나드는 변환은 막는다 — 저장하는 순간 메모가 다른 탭으로 사라져
     /// 사용자에게는 삭제된 것처럼 보인다.
@@ -176,4 +225,12 @@ final class MemoEditViewModel {
         let done = checklistItems.filter(\.done).count
         progress = Double(done) / Double(checklistItems.count)
     }
+}
+
+/// 위젯 미리보기에 필요한 값 묶음.
+struct WidgetPreviewData {
+    let entry: MemoWidgetEntry
+    /// 작성 중인 메모가 위젯 탭 목록에서 몇 번째인지.
+    /// 목록 위젯은 앞에서 몇 건만 담아서, 뒤로 밀리면 위젯에 나오지 않는다.
+    let draftIndex: Int
 }

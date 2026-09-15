@@ -32,6 +32,13 @@
 "edit.section.content.optional" = "内容（可选）";
 "edit.placeholder" = "请输入备忘录";
 "edit.section.type" = "类型";
+"edit.section.preview" = "锁定屏幕预览";
+"edit.section.widgetPreview" = "小组件预览";
+"edit.widgetPreview.home" = "小尺寸";
+"edit.widgetPreview.list" = "列表";
+"edit.widgetPreview.home.hint" = "将小组件添加到主屏幕后会是这样";
+"edit.widgetPreview.list.hint" = "按小组件标签页的排序显示";
+"edit.widgetPreview.list.overflow" = "此备忘录不会出现在列表小组件中。在小组件标签页中上移即可显示";
 "edit.section.targetDate" = "目标日期";
 "edit.section.targetTime" = "目标时间";
 "edit.section.checklist" = "清单";
@@ -245,3 +252,11 @@
 "migration.widget.detail" = "倒数日·进度条。已移至小组件";
 "migration.cta.widget" = "去看小组件标签";
 "migration.cta.later" = "稍后";
+
+/* Text Scale */
+"settings.textScale" = "锁定屏幕文字大小";
+"settings.textScale.hint" = "应用于锁定屏幕上的备忘";
+"settings.textScale.sample" = "停车位 B2 区 47";
+"textScale.small" = "小";
+"textScale.medium" = "中";
+"textScale.large" = "大";
