@@ -298,14 +298,22 @@ public final class LiveActivityService {
     /// 8시간 정각에 내리지 못하는 것은 앱이 꺼져 있으면 코드가 돌지 않기 때문이다.
     /// 앱을 여는 시점이 로컬 앱이 개입할 수 있는 가장 이른 순간이다.
     public func cleanupExpired(repository: MemoRepository) {
-        let runningIds = Set(Activity<MemoAttributes>.activities.map(\.id))
+        let running = Activity<MemoAttributes>.activities
+        let runningIds = Set(running.map(\.id))
+        let runningMemoIds = Set(running.map(\.attributes.memoId))
         let activeMemos = repository.fetchActive()
 
         for memo in activeMemos {
             guard let activityId = memo.activityId else { continue }
 
             // 이미 사라진(목록에 없는) Activity → activityId만 정리
-            if !runningIds.contains(activityId) {
+            //
+            // 저장된 id가 안 보여도 같은 메모의 카드가 떠 있을 수 있다.
+            // 그때는 사라진 게 아니므로 만료 판정을 건너뛰지 않는다.
+            let isGone = !runningIds.contains(activityId)
+                && !runningMemoIds.contains(memo.id.uuidString)
+            if isGone {
+                logDisappearance(memo)
                 repository.clearActivityId(memo)
                 continue
             }
@@ -323,6 +331,22 @@ public final class LiveActivityService {
                 repository.clearActivityId(memo)
             }
         }
+    }
+
+    /// 앱이 내린 적 없는 카드가 사라졌을 때, 얼마나 버텼는지 남긴다.
+    ///
+    /// 고정(pinned) 메모를 앱이 8시간 전에 내리는 경로는 없다.
+    /// 그보다 일찍 사라졌다면 앱 밖(재설치·재부팅·시스템 한도)에서 벌어진 일이므로,
+    /// 둘을 가려내려면 생존 시간이 필요하다.
+    private func logDisappearance(_ memo: Memo) {
+        guard let startedAt = memo.activityStartedAt else {
+            logger.info("카드 사라짐 (시작 시각 기록 없음)")
+            return
+        }
+        let lived = Int(Date().timeIntervalSince(startedAt) / 60)
+        let expected = Int(Memo.systemActiveDuration / 60)
+        let mode = memo.displayMode.rawValue
+        logger.info("카드 사라짐 (\(lived, privacy: .public)분 생존 / 예상 \(expected, privacy: .public)분, 모드 \(mode, privacy: .public))")
     }
 
     // MARK: - 실시간 동기화 (앱 사용 중 LA 제거 감지)
@@ -364,11 +388,18 @@ public final class LiveActivityService {
     /// 실행 목록에 없는(사라진) 저장 activityId를 정리한다.
     @MainActor
     public func reconcileActiveMemos(repository: MemoRepository) {
-        let runningIds = Set(Activity<MemoAttributes>.activities.map(\.id))
+        let running = Activity<MemoAttributes>.activities
+        let runningIds = Set(running.map(\.id))
+        let runningMemoIds = Set(running.map(\.attributes.memoId))
+
         for memo in repository.fetchActive() {
-            if let activityId = memo.activityId, !runningIds.contains(activityId) {
-                repository.clearActivityId(memo)
-            }
+            guard let activityId = memo.activityId, !runningIds.contains(activityId) else { continue }
+            // 저장된 id가 안 보여도 같은 메모의 카드가 떠 있으면 사라진 게 아니다.
+            // 여기서 지우면 화면에는 카드가 있는데 목록은 "표시 안 함"이 된다.
+            guard !runningMemoIds.contains(memo.id.uuidString) else { continue }
+
+            logDisappearance(memo)
+            repository.clearActivityId(memo)
         }
     }
 
