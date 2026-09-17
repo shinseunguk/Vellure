@@ -50,11 +50,8 @@ final class MemoListViewModel {
     }
 
     func delete(_ memo: Memo) {
-        if let activityId = memo.activityId {
-            Task {
-                await LiveActivityService.shared.end(activityId: activityId)
-            }
-        }
+        let memoId = memo.id.uuidString
+        Task { await LiveActivityService.shared.end(memoId: memoId) }
         repository.delete(memo)
         refresh()
     }
@@ -135,11 +132,14 @@ final class MemoListViewModel {
     }
 
     func toggleActivity(for memo: Memo) {
-        // 버튼 모양은 isActive(실행 목록)로 정하는데 동작을 activityId로 판단하면
-        // "올리기"라고 쓰여 있는 버튼이 실제로는 내리는 동작을 한다. 기준을 맞춘다.
-        if isActive(memo), let activityId = memo.activityId {
+        // 버튼 모양은 isActive(실행 목록)로 정한다. 동작도 같은 기준이어야 한다.
+        //
+        // 저장된 activityId를 조건에 함께 걸면, 카드는 떠 있는데 id만 비워진 상태에서
+        // "내리기"라고 쓰인 버튼이 내리지 않고 올리는 쪽으로 빠진다.
+        // 그러면 같은 메모가 두 장 뜨거나 한도에 걸려 아무 일도 안 일어난 것처럼 보인다.
+        if isActive(memo) {
             Task {
-                await LiveActivityService.shared.end(activityId: activityId)
+                await LiveActivityService.shared.end(memoId: memo.id.uuidString)
                 repository.clearActivityId(memo)
                 refresh()
             }
@@ -148,14 +148,16 @@ final class MemoListViewModel {
 
         // 실패하면 이유를 알럿으로 알린다.
         // (예전에는 조용히 아무 일도 일어나지 않아 "눌러도 안 올라간다"로만 보였다)
-        do {
-            let activityId = try LiveActivityService.shared.start(memo: memo)
-            repository.setActivity(memo, activityId: activityId)
-            refresh()
-        } catch let error as LiveActivityError {
-            activityError = error
-        } catch {
-            activityError = .unknown(String(describing: type(of: error)))
+        Task {
+            do {
+                let activityId = try await LiveActivityService.shared.start(memo: memo)
+                repository.setActivity(memo, activityId: activityId)
+                refresh()
+            } catch let error as LiveActivityError {
+                activityError = error
+            } catch {
+                activityError = .unknown(String(describing: type(of: error)))
+            }
         }
     }
 }
