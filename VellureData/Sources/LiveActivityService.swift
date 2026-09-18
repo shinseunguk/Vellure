@@ -84,6 +84,12 @@ public final class LiveActivityService {
             let running = Activity<MemoAttributes>.activities.count
             let mode = memo.displayMode.rawValue
             logger.notice("시작 성공 (실행 중 \(running, privacy: .public)개, 모드 \(mode, privacy: .public))")
+            ActivityHistory.recordStart(
+                memoId: attributes.memoId,
+                title: memo.content.isEmpty ? memo.renderType.displayName : memo.content,
+                displayMode: mode,
+                startedAt: startedAt
+            )
             return activity.id
         } catch {
             let mapped = Self.mapped(error)
@@ -169,6 +175,7 @@ public final class LiveActivityService {
         // 카드는 남지만 갱신은 멈추고 다이나믹 아일랜드에서는 바로 사라진다.
         let remaining = Int(clearDate.timeIntervalSinceNow)
         logger.notice("자동소멸 예약 (\(remaining, privacy: .public)초 뒤 제거)")
+        ActivityHistory.recordEnd(memoId: memo.id.uuidString, reason: .autoClear, at: clearDate)
         Task {
             await activity.end(content, dismissalPolicy: .after(clearDate))
         }
@@ -225,6 +232,7 @@ public final class LiveActivityService {
         for activity in Activity<MemoAttributes>.activities where activity.attributes.memoId == memoId {
             await activity.end(content, dismissalPolicy: .after(Date().addingTimeInterval(2)))
         }
+        ActivityHistory.recordEnd(memoId: memoId, reason: .autoClear)
         return true
     }
 
@@ -283,6 +291,7 @@ public final class LiveActivityService {
         for activity in Activity<MemoAttributes>.activities where activity.attributes.memoId == memoId {
             await activity.end(nil, dismissalPolicy: .immediate)
         }
+        ActivityHistory.recordEnd(memoId: memoId, reason: .user)
     }
 
     public func endAll() async {
@@ -331,6 +340,7 @@ public final class LiveActivityService {
                 let trigger = memo.clearTrigger?.rawValue ?? "none"
                 logger.notice("만료 정리로 종료 (기준 \(anchor, privacy: .public), 트리거 \(trigger, privacy: .public))")
                 logger.notice("만료 초과 \(overdue, privacy: .public)초")
+                ActivityHistory.recordEnd(memoId: memo.id.uuidString, reason: .expired)
                 Task { await end(memoId: memo.id.uuidString) }
                 repository.clearActivityId(memo)
             }
@@ -345,8 +355,10 @@ public final class LiveActivityService {
     private func logDisappearance(_ memo: Memo) {
         guard let startedAt = memo.activityStartedAt else {
             logger.notice("카드 사라짐 (시작 시각 기록 없음)")
+            ActivityHistory.recordEnd(memoId: memo.id.uuidString, reason: .disappeared)
             return
         }
+        ActivityHistory.recordEnd(memoId: memo.id.uuidString, reason: .disappeared)
         let lived = Int(Date().timeIntervalSince(startedAt) / 60)
         let expected = Int(Memo.systemActiveDuration / 60)
         let mode = memo.displayMode.rawValue

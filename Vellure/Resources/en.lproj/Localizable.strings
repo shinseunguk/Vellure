@@ -260,3 +260,12 @@ your lock screen for 8 hours.";
 "textScale.small" = "Small";
 "textScale.medium" = "Medium";
 "textScale.large" = "Large";
+
+"settings.section.history" = "Recent activity";
+"settings.history.hint" = "Items that vanished without the app ending them are marked in orange";
+"history.running" = "Posted %@ · showing";
+"history.ended" = "Posted %1$@ · lasted %2$d min · %3$@";
+"history.reason.user" = "Removed by you";
+"history.reason.expired" = "Display time expired";
+"history.reason.autoClear" = "Auto-cleared";
+"history.reason.disappeared" = "Vanished outside the app";

@@ -16,12 +16,15 @@ struct SettingsView: View {
     @Environment(MemoRepository.self) private var repository
 
     @State private var activitySupported = LiveActivityService.shared.isSupported
+    /// 화면을 열 때 한 번만 읽는다. 이력은 이 화면에 머무는 동안 바뀌지 않는다.
+    @State private var history: [ActivityRecord] = ActivityHistory.recent()
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 20) {
                     diagnosticsSection
+                    historySection
                     siriSection
                     automationSection
                     themeSection
@@ -48,6 +51,14 @@ struct SettingsView: View {
     }
 
     // MARK: - Diagnostics
+
+    /// 최근 게시 이력. 섹션 구성은 컴포넌트가 들고 있다.
+    @ViewBuilder
+    private var historySection: some View {
+        if !history.isEmpty {
+            ActivityHistoryView(records: history)
+        }
+    }
 
     private var diagnosticsSection: some View {
         VStack(alignment: .leading, spacing: 9) {
