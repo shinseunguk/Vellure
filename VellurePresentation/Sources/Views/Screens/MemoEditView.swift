@@ -36,14 +36,16 @@ struct MemoEditView: View {
     /// 실패하면 이유를 알럿으로 보여주고, 확인 후 화면을 닫는다.
     private func startActivity(for memo: Memo) {
         didAttemptStart = true
-        do {
-            let activityId = try LiveActivityService.shared.start(memo: memo)
-            repository.setActivity(memo, activityId: activityId)
-            dismiss()
-        } catch let error as LiveActivityError {
-            activityError = error
-        } catch {
-            activityError = .unknown(String(describing: type(of: error)))
+        Task {
+            do {
+                let activityId = try await LiveActivityService.shared.start(memo: memo)
+                repository.setActivity(memo, activityId: activityId)
+                dismiss()
+            } catch let error as LiveActivityError {
+                activityError = error
+            } catch {
+                activityError = .unknown(String(describing: type(of: error)))
+            }
         }
     }
 
@@ -375,9 +377,8 @@ struct MemoEditView: View {
         if vm.isEditing {
             Button(role: .destructive) {
                 if let memo {
-                    if let activityId = memo.activityId {
-                        Task { await LiveActivityService.shared.end(activityId: activityId) }
-                    }
+                    let memoId = memo.id.uuidString
+                    Task { await LiveActivityService.shared.end(memoId: memoId) }
                     repository.delete(memo)
                 }
                 dismiss()

@@ -260,3 +260,12 @@
 "textScale.small" = "小";
 "textScale.medium" = "中";
 "textScale.large" = "大";
+
+"settings.section.history" = "最近显示记录";
+"settings.history.hint" = "并非由 App 结束却消失的项目以橙色标示";
+"history.running" = "%@ 开始显示 · 显示中";
+"history.ended" = "%1$@ 开始显示 · 持续 %2$d 分钟 · %3$@";
+"history.reason.user" = "手动结束";
+"history.reason.expired" = "显示时间到期";
+"history.reason.autoClear" = "自动消失";
+"history.reason.disappeared" = "在 App 之外消失";

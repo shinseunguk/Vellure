@@ -23,18 +23,18 @@ final class LiveActivitySurfaceTests: XCTestCase {
 
     // MARK: - 차단
 
-    func test_start_forDDay_shouldThrowUnsupportedType() {
-        assertRejected(.dday)
+    func test_start_forDDay_shouldThrowUnsupportedType() async {
+        await assertRejected(.dday)
     }
 
-    func test_start_forProgress_shouldThrowUnsupportedType() {
-        assertRejected(.progress)
+    func test_start_forProgress_shouldThrowUnsupportedType() async {
+        await assertRejected(.progress)
     }
 
     /// 표면 분류를 바꿨을 때 이 규칙이 따라오는지 함께 본다.
-    func test_start_forEveryWidgetType_shouldBeRejected() {
+    func test_start_forEveryWidgetType_shouldBeRejected() async {
         for type in Surface.widget.renderTypes {
-            assertRejected(type)
+            await assertRejected(type)
         }
     }
 
@@ -44,15 +44,18 @@ final class LiveActivitySurfaceTests: XCTestCase {
         _ renderType: RenderType,
         file: StaticString = #filePath,
         line: UInt = #line
-    ) {
+    ) async {
         let memo = Memo(renderType: renderType, content: "테스트")
         container.mainContext.insert(memo)
 
-        XCTAssertThrowsError(try LiveActivityService.shared.start(memo: memo), file: file, line: line) { error in
+        do {
+            _ = try await LiveActivityService.shared.start(memo: memo)
+            XCTFail("\(renderType)이 잠금화면에 올라갔다", file: file, line: line)
+        } catch {
             XCTAssertEqual(
                 error as? LiveActivityError,
                 .unsupportedType,
-                "\(renderType)이 잠금화면에 올라갔다",
+                "\(renderType) 거부 사유가 다르다",
                 file: file,
                 line: line
             )

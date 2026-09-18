@@ -260,3 +260,12 @@
 "textScale.small" = "작게";
 "textScale.medium" = "보통";
 "textScale.large" = "크게";
+
+"settings.section.history" = "최근 게시 이력";
+"settings.history.hint" = "앱이 내리지 않았는데 사라진 항목은 주황색으로 표시돼요";
+"history.running" = "%@ 올림 · 표시 중";
+"history.ended" = "%1$@ 올림 · %2$d분 유지 · %3$@";
+"history.reason.user" = "직접 내림";
+"history.reason.expired" = "표시 시간 만료";
+"history.reason.autoClear" = "자동소멸";
+"history.reason.disappeared" = "앱 밖에서 사라짐";

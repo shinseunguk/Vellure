@@ -138,9 +138,7 @@ public struct HomeView: View {
     // MARK: - Memo List
 
     private func deleteMemo(_ memo: Memo, vm: MemoListViewModel) {
-        if let activityId = memo.activityId {
-            Task { await LiveActivityService.shared.end(activityId: activityId) }
-        }
+        // 내리는 기준은 memoId다. vm.delete가 같은 일을 하므로 여기서는 삭제만 맡긴다.
         vm.delete(memo)
     }
 

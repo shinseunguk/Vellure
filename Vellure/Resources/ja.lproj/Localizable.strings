@@ -260,3 +260,12 @@
 "textScale.small" = "小";
 "textScale.medium" = "中";
 "textScale.large" = "大";
+
+"settings.section.history" = "最近の表示履歴";
+"settings.history.hint" = "アプリが終了していないのに消えた項目はオレンジで表示されます";
+"history.running" = "%@ 表示開始 · 表示中";
+"history.ended" = "%1$@ 表示開始 · %2$d分維持 · %3$@";
+"history.reason.user" = "手動で終了";
+"history.reason.expired" = "表示時間の満了";
+"history.reason.autoClear" = "自動消滅";
+"history.reason.disappeared" = "アプリ外で消滅";
