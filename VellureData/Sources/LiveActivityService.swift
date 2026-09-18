@@ -7,6 +7,10 @@ public final class LiveActivityService {
     public static let shared = LiveActivityService()
 
     /// 릴리스 빌드에서도 남는 진단 로그. 메모 내용 등 민감정보는 담지 않는다.
+    ///
+    /// 레벨은 notice 이상만 쓴다.
+    /// info는 메모리 버퍼에만 있다가 사라져, 나중에 Console에서 꺼내볼 수 없다.
+    /// 이 로그는 대부분 "나중에 왜 그랬는지" 보려고 남기는 것이다.
     private let logger = Logger(subsystem: "dev.ukseung.Vellure", category: "LiveActivity")
 
     private init() {}
@@ -79,7 +83,7 @@ public final class LiveActivityService {
             // 동시 표시 한도에 걸려 실패하는 경우를 사후에 가려내려면 당시 개수가 필요하다.
             let running = Activity<MemoAttributes>.activities.count
             let mode = memo.displayMode.rawValue
-            logger.info("시작 성공 (실행 중 \(running, privacy: .public)개, 모드 \(mode, privacy: .public))")
+            logger.notice("시작 성공 (실행 중 \(running, privacy: .public)개, 모드 \(mode, privacy: .public))")
             return activity.id
         } catch {
             let mapped = Self.mapped(error)
@@ -93,7 +97,7 @@ public final class LiveActivityService {
         let duplicates = Activity<MemoAttributes>.activities.filter { $0.attributes.memoId == memoId }
         guard !duplicates.isEmpty else { return }
 
-        logger.info("같은 메모의 기존 카드 \(duplicates.count, privacy: .public)장을 내리고 다시 띄운다")
+        logger.notice("같은 메모의 기존 카드 \(duplicates.count, privacy: .public)장을 내리고 다시 띄운다")
         for activity in duplicates {
             await activity.end(nil, dismissalPolicy: .immediate)
         }
@@ -164,7 +168,7 @@ public final class LiveActivityService {
         // end는 지금 즉시 활동을 끝내고 제거 시각만 예약한다.
         // 카드는 남지만 갱신은 멈추고 다이나믹 아일랜드에서는 바로 사라진다.
         let remaining = Int(clearDate.timeIntervalSinceNow)
-        logger.info("자동소멸 예약 (\(remaining, privacy: .public)초 뒤 제거)")
+        logger.notice("자동소멸 예약 (\(remaining, privacy: .public)초 뒤 제거)")
         Task {
             await activity.end(content, dismissalPolicy: .after(clearDate))
         }
@@ -325,8 +329,8 @@ public final class LiveActivityService {
                 let anchor = memo.activityStartedAt == nil ? "updatedAt" : "activityStartedAt"
                 let overdue = Int(Date().timeIntervalSince(deadline))
                 let trigger = memo.clearTrigger?.rawValue ?? "none"
-                logger.info("만료 정리로 종료 (기준 \(anchor, privacy: .public), 트리거 \(trigger, privacy: .public))")
-                logger.info("만료 초과 \(overdue, privacy: .public)초")
+                logger.notice("만료 정리로 종료 (기준 \(anchor, privacy: .public), 트리거 \(trigger, privacy: .public))")
+                logger.notice("만료 초과 \(overdue, privacy: .public)초")
                 Task { await end(memoId: memo.id.uuidString) }
                 repository.clearActivityId(memo)
             }
@@ -340,13 +344,14 @@ public final class LiveActivityService {
     /// 둘을 가려내려면 생존 시간이 필요하다.
     private func logDisappearance(_ memo: Memo) {
         guard let startedAt = memo.activityStartedAt else {
-            logger.info("카드 사라짐 (시작 시각 기록 없음)")
+            logger.notice("카드 사라짐 (시작 시각 기록 없음)")
             return
         }
         let lived = Int(Date().timeIntervalSince(startedAt) / 60)
         let expected = Int(Memo.systemActiveDuration / 60)
         let mode = memo.displayMode.rawValue
-        logger.info("카드 사라짐 (\(lived, privacy: .public)분 생존 / 예상 \(expected, privacy: .public)분, 모드 \(mode, privacy: .public))")
+        logger.notice("카드 사라짐 (\(lived, privacy: .public)분 생존 / 예상 \(expected, privacy: .public)분)")
+        logger.notice("사라진 카드 모드 \(mode, privacy: .public)")
     }
 
     // MARK: - 실시간 동기화 (앱 사용 중 LA 제거 감지)
