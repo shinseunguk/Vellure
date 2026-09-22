@@ -92,8 +92,10 @@ public struct OnboardingView: View {
         )
 
         // 온보딩 흐름은 실패해도 막지 않는다. 사유는 LiveActivityService가 로그로 남긴다.
-        if let activityId = try? LiveActivityService.shared.start(memo: memo) {
-            repository.setActivity(memo, activityId: activityId)
+        Task {
+            if let activityId = try? await LiveActivityService.shared.start(memo: memo) {
+                repository.setActivity(memo, activityId: activityId)
+            }
         }
     }
 

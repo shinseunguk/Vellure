@@ -38,7 +38,7 @@ struct CreateMemoIntent: AppIntent {
         if startActivity {
             // 시리에서 만든 메모는 실패해도 메모 자체는 남긴다.
             // 실패 사유는 LiveActivityService가 로그로 남긴다.
-            if let activityId = try? LiveActivityService.shared.start(memo: memo) {
+            if let activityId = try? await LiveActivityService.shared.start(memo: memo) {
                 memo.activityId = activityId
                 memo.activityStartedAt = Date()
             }

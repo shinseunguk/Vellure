@@ -7,6 +7,10 @@ public final class LiveActivityService {
     public static let shared = LiveActivityService()
 
     /// 릴리스 빌드에서도 남는 진단 로그. 메모 내용 등 민감정보는 담지 않는다.
+    ///
+    /// 레벨은 notice 이상만 쓴다.
+    /// info는 메모리 버퍼에만 있다가 사라져, 나중에 Console에서 꺼내볼 수 없다.
+    /// 이 로그는 대부분 "나중에 왜 그랬는지" 보려고 남기는 것이다.
     private let logger = Logger(subsystem: "dev.ukseung.Vellure", category: "LiveActivity")
 
     private init() {}
@@ -33,7 +37,7 @@ public final class LiveActivityService {
     /// Live Activity를 띄우고 activityId를 돌려준다.
     /// 실패하면 이유를 담은 `LiveActivityError`를 던진다.
     /// (예전에는 nil을 반환해 호출부가 실패를 알 수 없었고, 사용자에게도 아무 안내가 없었다)
-    public func start(memo: Memo) throws -> String {
+    public func start(memo: Memo) async throws -> String {
         // 위젯 표면 타입(디데이·달성률)은 잠금화면에 올리지 않는다.
         // UI에서 막아뒀지만 시리·인텐트 등 다른 경로가 열려 있어 여기서 한 번 더 막는다.
         guard memo.renderType.surface == .memo else {
@@ -57,6 +61,11 @@ public final class LiveActivityService {
         // staleDate는 12시간(clearDate)이 아니라 8시간(activeDeadline)이어야 한다.
         // 8시간이 지나면 시스템이 활동을 종료해 갱신이 멈추므로, 그 시점에
         // isStale이 켜지며 뷰가 다시 그려져야 사용자에게 멈춤을 알릴 수 있다.
+        // 같은 메모의 카드가 이미 떠 있으면 먼저 내린다.
+        // 남겨두면 같은 메모가 두 장 뜨고, 시스템 동시 표시 한도를 그만큼 먼저 채워
+        // 다음 메모가 올라가지 못한다.
+        await endExisting(memoId: attributes.memoId)
+
         let startedAt = Date()
         let content = ActivityContent(
             state: buildState(from: memo, startedAt: startedAt),
@@ -71,12 +80,32 @@ public final class LiveActivityService {
                 pushType: nil
             )
             scheduleAutoDismissIfEligible(activity: activity, memo: memo, startedAt: startedAt)
-            logger.info("Live Activity 시작 성공")
+            // 동시 표시 한도에 걸려 실패하는 경우를 사후에 가려내려면 당시 개수가 필요하다.
+            let running = Activity<MemoAttributes>.activities.count
+            let mode = memo.displayMode.rawValue
+            logger.notice("시작 성공 (실행 중 \(running, privacy: .public)개, 모드 \(mode, privacy: .public))")
+            ActivityHistory.recordStart(
+                memoId: attributes.memoId,
+                title: memo.content.isEmpty ? memo.renderType.displayName : memo.content,
+                displayMode: mode,
+                startedAt: startedAt
+            )
             return activity.id
         } catch {
             let mapped = Self.mapped(error)
             logger.error("Live Activity 시작 실패: \(mapped.diagnosticCode, privacy: .public)")
             throw mapped
+        }
+    }
+
+    /// 같은 메모로 이미 떠 있는 카드를 내린다.
+    private func endExisting(memoId: String) async {
+        let duplicates = Activity<MemoAttributes>.activities.filter { $0.attributes.memoId == memoId }
+        guard !duplicates.isEmpty else { return }
+
+        logger.notice("같은 메모의 기존 카드 \(duplicates.count, privacy: .public)장을 내리고 다시 띄운다")
+        for activity in duplicates {
+            await activity.end(nil, dismissalPolicy: .immediate)
         }
     }
 
@@ -142,6 +171,11 @@ public final class LiveActivityService {
             staleDate: clearDate,
             relevanceScore: relevanceScore(for: memo)
         )
+        // end는 지금 즉시 활동을 끝내고 제거 시각만 예약한다.
+        // 카드는 남지만 갱신은 멈추고 다이나믹 아일랜드에서는 바로 사라진다.
+        let remaining = Int(clearDate.timeIntervalSinceNow)
+        logger.notice("자동소멸 예약 (\(remaining, privacy: .public)초 뒤 제거)")
+        ActivityHistory.recordEnd(memoId: memo.id.uuidString, reason: .autoClear, at: clearDate)
         Task {
             await activity.end(content, dismissalPolicy: .after(clearDate))
         }
@@ -198,6 +232,7 @@ public final class LiveActivityService {
         for activity in Activity<MemoAttributes>.activities where activity.attributes.memoId == memoId {
             await activity.end(content, dismissalPolicy: .after(Date().addingTimeInterval(2)))
         }
+        ActivityHistory.recordEnd(memoId: memoId, reason: .autoClear)
         return true
     }
 
@@ -246,6 +281,19 @@ public final class LiveActivityService {
         }
     }
 
+    /// 메모를 기준으로 내린다.
+    ///
+    /// 저장된 activityId는 요청이 성공했다는 기록일 뿐, 지금 떠 있는 카드와 같다는 보장이 없다.
+    /// (앱이 꺼진 사이 시스템이 활동을 바꾸거나, 정리 로직이 id만 비워두는 경우가 있다)
+    /// 화면에 보이는지 판정하는 기준이 memoId이므로, 내리는 기준도 memoId여야
+    /// "내리기"라고 쓰인 버튼이 실제로 내린다.
+    public func end(memoId: String) async {
+        for activity in Activity<MemoAttributes>.activities where activity.attributes.memoId == memoId {
+            await activity.end(nil, dismissalPolicy: .immediate)
+        }
+        ActivityHistory.recordEnd(memoId: memoId, reason: .user)
+    }
+
     public func endAll() async {
         for activity in Activity<MemoAttributes>.activities {
             await activity.end(nil, dismissalPolicy: .immediate)
@@ -263,24 +311,59 @@ public final class LiveActivityService {
     /// 8시간 정각에 내리지 못하는 것은 앱이 꺼져 있으면 코드가 돌지 않기 때문이다.
     /// 앱을 여는 시점이 로컬 앱이 개입할 수 있는 가장 이른 순간이다.
     public func cleanupExpired(repository: MemoRepository) {
-        let runningIds = Set(Activity<MemoAttributes>.activities.map(\.id))
+        let running = Activity<MemoAttributes>.activities
+        let runningIds = Set(running.map(\.id))
+        let runningMemoIds = Set(running.map(\.attributes.memoId))
         let activeMemos = repository.fetchActive()
 
         for memo in activeMemos {
             guard let activityId = memo.activityId else { continue }
 
             // 이미 사라진(목록에 없는) Activity → activityId만 정리
-            if !runningIds.contains(activityId) {
+            //
+            // 저장된 id가 안 보여도 같은 메모의 카드가 떠 있을 수 있다.
+            // 그때는 사라진 게 아니므로 만료 판정을 건너뛰지 않는다.
+            let isGone = !runningIds.contains(activityId)
+                && !runningMemoIds.contains(memo.id.uuidString)
+            if isGone {
+                logDisappearance(memo)
                 repository.clearActivityId(memo)
                 continue
             }
 
             // 갱신이 멈춘(8시간 경과) Activity → 잠금화면에서 내리고 기록도 정리
             if let deadline = memo.activeDeadline(), deadline <= Date() {
-                Task { await end(activityId: activityId) }
+                // "8시간이 안 됐는데 내려갔다"를 사후에 가려내려면
+                // 어떤 기준 시각으로 만료를 판정했는지가 필요하다.
+                let anchor = memo.activityStartedAt == nil ? "updatedAt" : "activityStartedAt"
+                let overdue = Int(Date().timeIntervalSince(deadline))
+                let trigger = memo.clearTrigger?.rawValue ?? "none"
+                logger.notice("만료 정리로 종료 (기준 \(anchor, privacy: .public), 트리거 \(trigger, privacy: .public))")
+                logger.notice("만료 초과 \(overdue, privacy: .public)초")
+                ActivityHistory.recordEnd(memoId: memo.id.uuidString, reason: .expired)
+                Task { await end(memoId: memo.id.uuidString) }
                 repository.clearActivityId(memo)
             }
         }
+    }
+
+    /// 앱이 내린 적 없는 카드가 사라졌을 때, 얼마나 버텼는지 남긴다.
+    ///
+    /// 고정(pinned) 메모를 앱이 8시간 전에 내리는 경로는 없다.
+    /// 그보다 일찍 사라졌다면 앱 밖(재설치·재부팅·시스템 한도)에서 벌어진 일이므로,
+    /// 둘을 가려내려면 생존 시간이 필요하다.
+    private func logDisappearance(_ memo: Memo) {
+        guard let startedAt = memo.activityStartedAt else {
+            logger.notice("카드 사라짐 (시작 시각 기록 없음)")
+            ActivityHistory.recordEnd(memoId: memo.id.uuidString, reason: .disappeared)
+            return
+        }
+        ActivityHistory.recordEnd(memoId: memo.id.uuidString, reason: .disappeared)
+        let lived = Int(Date().timeIntervalSince(startedAt) / 60)
+        let expected = Int(Memo.systemActiveDuration / 60)
+        let mode = memo.displayMode.rawValue
+        logger.notice("카드 사라짐 (\(lived, privacy: .public)분 생존 / 예상 \(expected, privacy: .public)분)")
+        logger.notice("사라진 카드 모드 \(mode, privacy: .public)")
     }
 
     // MARK: - 실시간 동기화 (앱 사용 중 LA 제거 감지)
@@ -322,11 +405,18 @@ public final class LiveActivityService {
     /// 실행 목록에 없는(사라진) 저장 activityId를 정리한다.
     @MainActor
     public func reconcileActiveMemos(repository: MemoRepository) {
-        let runningIds = Set(Activity<MemoAttributes>.activities.map(\.id))
+        let running = Activity<MemoAttributes>.activities
+        let runningIds = Set(running.map(\.id))
+        let runningMemoIds = Set(running.map(\.attributes.memoId))
+
         for memo in repository.fetchActive() {
-            if let activityId = memo.activityId, !runningIds.contains(activityId) {
-                repository.clearActivityId(memo)
-            }
+            guard let activityId = memo.activityId, !runningIds.contains(activityId) else { continue }
+            // 저장된 id가 안 보여도 같은 메모의 카드가 떠 있으면 사라진 게 아니다.
+            // 여기서 지우면 화면에는 카드가 있는데 목록은 "표시 안 함"이 된다.
+            guard !runningMemoIds.contains(memo.id.uuidString) else { continue }
+
+            logDisappearance(memo)
+            repository.clearActivityId(memo)
         }
     }
 
