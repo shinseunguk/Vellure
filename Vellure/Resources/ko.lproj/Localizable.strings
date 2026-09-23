@@ -270,3 +270,10 @@
 "history.reason.expired" = "표시 시간 만료";
 "history.reason.autoClear" = "자동소멸";
 "history.reason.disappeared" = "앱 밖에서 사라짐";
+
+/* 만료 예고 알림 */
+"settings.section.notice" = "알림";
+"settings.notice.expiry" = "만료 예고 알림";
+"settings.notice.expiry.desc" = "잠금화면 표시가 끝나는 시점에 알려줘요. 알림을 탭하면 다시 올라가요.";
+"notice.expiry.title" = "잠금화면 표시가 끝났어요";
+"notice.expiry.body" = "'%@' — 탭하면 다시 올려요.";

@@ -270,3 +270,10 @@ your lock screen for 8 hours.";
 "history.reason.expired" = "Display time expired";
 "history.reason.autoClear" = "Auto-cleared";
 "history.reason.disappeared" = "Vanished outside the app";
+
+/* Expiry notice */
+"settings.section.notice" = "Notifications";
+"settings.notice.expiry" = "Expiry reminder";
+"settings.notice.expiry.desc" = "Get notified when a memo stops showing on the Lock Screen. Tap the alert to publish it again.";
+"notice.expiry.title" = "No longer on your Lock Screen";
+"notice.expiry.body" = "\"%@\" — tap to publish it again.";

@@ -86,6 +86,7 @@ public final class LiveActivityService {
                 displayMode: mode,
                 startedAt: startedAt
             )
+            syncExpiryNotice(for: memo, memoId: attributes.memoId, startedAt: startedAt)
             return activity.id
         } catch {
             let mapped = (error as? LiveActivityError) ?? Self.mapped(error)
@@ -99,6 +100,40 @@ public final class LiveActivityService {
     /// 자리가 있는데도 동시 표시 한도에 걸릴 수 있다. 그 정리 시차만 흡수하면 되므로 짧게 잡는다.
     private static let maxStartRetries = 2
     private static let startRetryDelay: Duration = .milliseconds(300)
+
+    /// 게시 직후 만료 예고를 걸거나 거둔다.
+    private func syncExpiryNotice(for memo: Memo, memoId: String, startedAt: Date) {
+        let title = memo.content.isEmpty ? memo.renderType.displayName : memo.content
+        if let noticeDate = expiryNoticeDate(for: memo, startedAt: startedAt) {
+            Task { await ExpiryNoticeService.shared.schedule(memoId: memoId, memoTitle: title, at: noticeDate) }
+        } else {
+            ExpiryNoticeService.shared.cancel(memoId: memoId)
+        }
+    }
+
+    /// 만료 예고를 보낼 시각.
+    /// 시스템 8시간 상한이 카드 수명을 자르는 경우에만 값이 있다.
+    /// 사용자가 정한 소멸(자동소멸 N시간 등)이 먼저 오면 의도된 종료라 알리지 않는다.
+    public func expiryNoticeDate(for memo: Memo, startedAt: Date) -> Date? {
+        let activeCap = startedAt.addingTimeInterval(Memo.systemActiveDuration)
+        guard let clear = clearDate(for: memo, startedAt: startedAt) else { return activeCap }
+        return activeCap <= clear ? activeCap : nil
+    }
+
+    /// 설정에서 만료 예고를 켰을 때, 이미 떠 있는 카드에도 예약을 걸어준다.
+    /// staleDate가 곧 활성 상한이므로 그 시각을 그대로 쓴다.
+    public func scheduleExpiryNotices(repository: MemoRepository) async {
+        for activity in Activity<MemoAttributes>.activities where activity.activityState == .active {
+            guard let staleDate = activity.content.staleDate, staleDate > Date(),
+                  let uuid = UUID(uuidString: activity.attributes.memoId),
+                  let memo = repository.fetch(by: uuid) else { continue }
+            await ExpiryNoticeService.shared.schedule(
+                memoId: activity.attributes.memoId,
+                memoTitle: memo.content.isEmpty ? memo.renderType.displayName : memo.content,
+                at: staleDate
+            )
+        }
+    }
 
     /// `Activity.request`를 실행하되, 동시 표시 한도 초과에 한해 잠시 기다렸다 다시 시도한다.
     private func requestWithRetry(
@@ -313,12 +348,15 @@ public final class LiveActivityService {
             await activity.end(nil, dismissalPolicy: .immediate)
         }
         ActivityHistory.recordEnd(memoId: memoId, reason: .user)
+        // 카드가 내려갔으니 "표시가 끝났다"는 예고도 의미가 없다.
+        ExpiryNoticeService.shared.cancel(memoId: memoId)
     }
 
     public func endAll() async {
         for activity in Activity<MemoAttributes>.activities {
             await activity.end(nil, dismissalPolicy: .immediate)
         }
+        await ExpiryNoticeService.shared.cancelAll()
     }
 
     /// 앱 재진입 시 만료된 Activity 정리 + activityId 동기화.
