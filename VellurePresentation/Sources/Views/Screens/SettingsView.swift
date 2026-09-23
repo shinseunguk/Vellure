@@ -13,6 +13,7 @@ struct SettingsView: View {
     /// 확장과 함께 읽어야 해서 App Group 저장소를 쓴다.
     @AppStorage(TextScale.storageKey, store: TextScale.sharedDefaults)
     private var textScale: Double = Double(TextScale.default)
+    @AppStorage(ExpiryNoticeService.enabledKey) private var expiryNoticeEnabled = true
     @Environment(MemoRepository.self) private var repository
 
     @State private var activitySupported = LiveActivityService.shared.isSupported
@@ -25,6 +26,7 @@ struct SettingsView: View {
                 VStack(spacing: 20) {
                     diagnosticsSection
                     historySection
+                    noticeSection
                     siriSection
                     automationSection
                     themeSection
@@ -146,6 +148,42 @@ struct SettingsView: View {
         }
         .padding(15)
         .contentShape(Rectangle())
+    }
+
+    // MARK: - Notice
+
+    private var noticeSection: some View {
+        VStack(alignment: .leading, spacing: 9) {
+            sectionLabel(String(localized: "settings.section.notice"))
+            VStack(spacing: 0) {
+                Toggle(isOn: $expiryNoticeEnabled) {
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text("settings.notice.expiry")
+                            .scaledFont(14, weight: .bold)
+                            .foregroundStyle(Theme.textPrimary)
+                        Text("settings.notice.expiry.desc")
+                            .scaledFont(12)
+                            .foregroundStyle(Theme.textSecondary)
+                    }
+                }
+                .tint(Theme.accent)
+                .padding(15)
+            }
+            .background(Theme.cardBackground)
+            .clipShape(RoundedRectangle(cornerRadius: 20))
+            .overlay(
+                RoundedRectangle(cornerRadius: 20)
+                    .stroke(Theme.divider, lineWidth: 1)
+            )
+        }
+        .onChange(of: expiryNoticeEnabled) { _, enabled in
+            if enabled {
+                // 이미 떠 있는 카드에도 예약을 걸어준다. 다음 게시부터 적용되면 늦다.
+                Task { await LiveActivityService.shared.scheduleExpiryNotices(repository: repository) }
+            } else {
+                Task { await ExpiryNoticeService.shared.cancelAll() }
+            }
+        }
     }
 
     // MARK: - Siri

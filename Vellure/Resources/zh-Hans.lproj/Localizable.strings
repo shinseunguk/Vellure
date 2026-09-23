@@ -270,3 +270,10 @@
 "history.reason.expired" = "显示时间到期";
 "history.reason.autoClear" = "自动消失";
 "history.reason.disappeared" = "在 App 之外消失";
+
+/* 到期提醒 */
+"settings.section.notice" = "通知";
+"settings.notice.expiry" = "到期提醒";
+"settings.notice.expiry.desc" = "当备忘停止在锁屏显示时提醒你。点按通知即可重新显示。";
+"notice.expiry.title" = "已停止在锁屏显示";
+"notice.expiry.body" = "“%@” 点按即可重新显示。";

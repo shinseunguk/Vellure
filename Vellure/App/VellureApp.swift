@@ -13,10 +13,14 @@ struct VellureApp: App {
 
     private let container: ModelContainer
     private let repository: MemoRepository
+    /// 만료 예고 알림 탭을 받는 델리게이트.
+    /// 알림으로 앱이 켜지는 경우를 놓치지 않으려면 실행 직후에 등록해야 한다.
+    private let noticeResponder: ExpiryNoticeResponder
 
     init() {
         container = AppModelContainer.shared
         repository = MemoRepository(modelContext: container.mainContext)
+        noticeResponder = ExpiryNoticeResponder(repository: repository)
 
         #if DEBUG
         // UI 테스트는 기기에 남은 데이터에 기대면 안 된다.

@@ -270,3 +270,10 @@
 "history.reason.expired" = "表示時間の満了";
 "history.reason.autoClear" = "自動消滅";
 "history.reason.disappeared" = "アプリ外で消滅";
+
+/* 期限予告の通知 */
+"settings.section.notice" = "通知";
+"settings.notice.expiry" = "期限予告の通知";
+"settings.notice.expiry.desc" = "ロック画面の表示が終わるタイミングでお知らせします。通知をタップすると再表示されます。";
+"notice.expiry.title" = "ロック画面の表示が終了しました";
+"notice.expiry.body" = "「%@」 タップで再表示できます。";
