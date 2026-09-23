@@ -189,6 +189,7 @@
 
 /* Accessibility */
 "a11y.card.publish" = "ロック画面に表示";
+"a11y.card.publishing" = "ロック画面に表示中";
 "a11y.card.unpublish" = "ロック画面から外す";
 "a11y.card.delete" = "メモを削除";
 "a11y.card.hint" = "ダブルタップでメモを開きます";

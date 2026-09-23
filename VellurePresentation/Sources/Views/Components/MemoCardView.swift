@@ -10,6 +10,10 @@ struct MemoCardView: View {
     /// 실제로 잠금화면에 떠 있는지. 저장된 activityId가 아니라
     /// 실행 중인 Activity 목록에서 판정한 값을 주입받는다.
     var isActive: Bool = false
+    /// 게시 요청이 진행 중인지. 버튼을 스피너로 바꾸고 탭을 막는다.
+    /// 게시는 비동기라, 이 표시가 없으면 "눌렀으니 됐겠지"하고 바로 화면을 잠가
+    /// 요청이 실행되기 전에 앱이 멈추는 일이 생긴다.
+    var isPublishing: Bool = false
     /// 이 표면에서 잠금화면 게시를 허용하는지.
     /// 위젯 탭은 위젯을 다루는 자리라 게시 버튼을 두지 않는다.
     var allowsPublishing: Bool = true
@@ -183,22 +187,35 @@ struct MemoCardView: View {
                     HStack(spacing: 6) {
                         if showsActivityToggle {
                             Button(action: onToggleActivity) {
-                                Image(systemName: isActive ? "arrow.down" : "arrow.up")
-                                    .accessibilityHidden(true)
-                                    .scaledFont(13, weight: .bold)
-                                    .foregroundStyle(isActive ? .white : tintColor)
-                                    .frame(width: 34, height: 34)
-                                    // 흰 글리프를 얹을 때는 글자용 색을 그대로 쓸 수 없다.
-                                    // 다크 모드의 밝은 값 위에서는 흰색이 2.99:1로 읽히지 않는다.
-                                    .background(
-                                        isActive
-                                            ? Theme.memoSurface(for: memo.colorTag)
-                                            : tintColor.opacity(0.15)
-                                    )
-                                    .clipShape(Circle())
+                                Group {
+                                    if isPublishing {
+                                        ProgressView()
+                                            .controlSize(.small)
+                                            .tint(tintColor)
+                                    } else {
+                                        Image(systemName: isActive ? "arrow.down" : "arrow.up")
+                                            .scaledFont(13, weight: .bold)
+                                            .foregroundStyle(isActive ? .white : tintColor)
+                                    }
+                                }
+                                .accessibilityHidden(true)
+                                .frame(width: 34, height: 34)
+                                // 흰 글리프를 얹을 때는 글자용 색을 그대로 쓸 수 없다.
+                                // 다크 모드의 밝은 값 위에서는 흰색이 2.99:1로 읽히지 않는다.
+                                .background(
+                                    isActive
+                                        ? Theme.memoSurface(for: memo.colorTag)
+                                        : tintColor.opacity(0.15)
+                                )
+                                .clipShape(Circle())
                             }
                             .buttonStyle(.plain)
-                            .accessibilityLabel(isActive ? "a11y.card.unpublish" : "a11y.card.publish")
+                            .disabled(isPublishing)
+                            .accessibilityLabel(
+                                isPublishing
+                                    ? "a11y.card.publishing"
+                                    : (isActive ? "a11y.card.unpublish" : "a11y.card.publish")
+                            )
                         }
 
                         Button(action: onDelete) {

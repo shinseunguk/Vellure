@@ -189,6 +189,7 @@ your lock screen for 8 hours.";
 
 /* Accessibility */
 "a11y.card.publish" = "Show on Lock Screen";
+"a11y.card.publishing" = "Publishing to Lock Screen";
 "a11y.card.unpublish" = "Remove from Lock Screen";
 "a11y.card.delete" = "Delete note";
 "a11y.card.hint" = "Double tap to open the note";

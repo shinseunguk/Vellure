@@ -189,6 +189,7 @@
 
 /* Accessibility */
 "a11y.card.publish" = "잠금화면에 올리기";
+"a11y.card.publishing" = "잠금화면에 올리는 중";
 "a11y.card.unpublish" = "잠금화면에서 내리기";
 "a11y.card.delete" = "메모 삭제";
 "a11y.card.hint" = "두 번 탭하면 메모를 엽니다";

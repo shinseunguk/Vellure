@@ -74,11 +74,7 @@ public final class LiveActivityService {
         )
 
         do {
-            let activity = try Activity.request(
-                attributes: attributes,
-                content: content,
-                pushType: nil
-            )
+            let activity = try await requestWithRetry(attributes: attributes, content: content)
             scheduleAutoDismissIfEligible(activity: activity, memo: memo, startedAt: startedAt)
             // 동시 표시 한도에 걸려 실패하는 경우를 사후에 가려내려면 당시 개수가 필요하다.
             let running = Activity<MemoAttributes>.activities.count
@@ -92,9 +88,34 @@ public final class LiveActivityService {
             )
             return activity.id
         } catch {
-            let mapped = Self.mapped(error)
+            let mapped = (error as? LiveActivityError) ?? Self.mapped(error)
             logger.error("Live Activity 시작 실패: \(mapped.diagnosticCode, privacy: .public)")
             throw mapped
+        }
+    }
+
+    /// 한도 초과 재시도 횟수와 간격.
+    /// `endExisting`으로 방금 내린 카드를 시스템이 아직 정리하기 전에 재요청하면
+    /// 자리가 있는데도 동시 표시 한도에 걸릴 수 있다. 그 정리 시차만 흡수하면 되므로 짧게 잡는다.
+    private static let maxStartRetries = 2
+    private static let startRetryDelay: Duration = .milliseconds(300)
+
+    /// `Activity.request`를 실행하되, 동시 표시 한도 초과에 한해 잠시 기다렸다 다시 시도한다.
+    private func requestWithRetry(
+        attributes: MemoAttributes,
+        content: ActivityContent<MemoAttributes.ContentState>
+    ) async throws -> Activity<MemoAttributes> {
+        var attempt = 0
+        while true {
+            do {
+                return try Activity.request(attributes: attributes, content: content, pushType: nil)
+            } catch {
+                let mapped = Self.mapped(error)
+                guard mapped == .tooManyActivities, attempt < Self.maxStartRetries else { throw mapped }
+                attempt += 1
+                logger.notice("동시 표시 한도에 걸려 재시도 (\(attempt, privacy: .public)회차)")
+                try? await Task.sleep(for: Self.startRetryDelay)
+            }
         }
     }
 
