@@ -189,6 +189,7 @@
 
 /* Accessibility */
 "a11y.card.publish" = "显示到锁屏";
+"a11y.card.publishing" = "正在显示到锁屏";
 "a11y.card.unpublish" = "从锁屏移除";
 "a11y.card.delete" = "删除备忘";
 "a11y.card.hint" = "轻点两下打开备忘";

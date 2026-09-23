@@ -15,6 +15,10 @@ final class MemoListViewModel {
     var activityError: LiveActivityError?
     /// 실제로 잠금화면에 떠 있는 메모 id. "표시 중" 판정의 기준.
     private(set) var runningMemoIds: Set<String> = []
+    /// 게시 요청이 진행 중인 메모 id. 버튼에 스피너를 보여주고 중복 탭을 막는 기준.
+    private(set) var publishingMemoIds: Set<String> = []
+    /// 게시 성공 횟수. 뷰가 `sensoryFeedback` 트리거로 써서 성공 시점에 햅틱을 낸다.
+    private(set) var publishSuccessCount = 0
 
     /// 검색어. 본문과 체크리스트 항목 제목을 대상으로 한다.
     var searchText = ""
@@ -47,6 +51,11 @@ final class MemoListViewModel {
     /// 저장된 activityId가 아니라 실제 실행 중인 Activity를 기준으로 판정한다.
     func isActive(_ memo: Memo) -> Bool {
         runningMemoIds.contains(memo.id.uuidString)
+    }
+
+    /// 이 메모의 게시 요청이 아직 끝나지 않았는지.
+    func isPublishing(_ memo: Memo) -> Bool {
+        publishingMemoIds.contains(memo.id.uuidString)
     }
 
     func delete(_ memo: Memo) {
@@ -146,13 +155,21 @@ final class MemoListViewModel {
             return
         }
 
+        // 게시가 끝나기 전의 중복 탭은 무시한다.
+        // 같은 메모를 연달아 요청하면 기존 카드를 내리는 동작과 겹쳐 한도 레이스만 키운다.
+        let memoId = memo.id.uuidString
+        guard !publishingMemoIds.contains(memoId) else { return }
+        publishingMemoIds.insert(memoId)
+
         // 실패하면 이유를 알럿으로 알린다.
         // (예전에는 조용히 아무 일도 일어나지 않아 "눌러도 안 올라간다"로만 보였다)
         Task {
+            defer { publishingMemoIds.remove(memoId) }
             do {
                 let activityId = try await LiveActivityService.shared.start(memo: memo)
                 repository.setActivity(memo, activityId: activityId)
                 refresh()
+                publishSuccessCount += 1
             } catch let error as LiveActivityError {
                 activityError = error
             } catch {

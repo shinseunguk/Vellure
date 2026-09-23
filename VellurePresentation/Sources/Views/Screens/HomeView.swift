@@ -75,6 +75,9 @@ public struct HomeView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Theme.background)
             .navigationBarHidden(true)
+            // 게시는 비동기라 버튼 탭이 곧 완료가 아니다.
+            // 성공 시점에 햅틱을 내서 "이제 잠가도 된다"를 알린다.
+            .sensoryFeedback(.success, trigger: viewModel?.publishSuccessCount ?? 0)
             .liveActivityErrorAlert(
                 Binding(
                     get: { viewModel?.activityError },
@@ -204,6 +207,7 @@ public struct HomeView: View {
                     onToggleActivity: { vm.toggleActivity(for: memo) },
                     onDelete: { deleteMemo(memo, vm: vm) },
                     isActive: vm.isActive(memo),
+                    isPublishing: vm.isPublishing(memo),
                     allowsPublishing: vm.usesDisplayState
                 )
                 .frame(maxWidth: .infinity)

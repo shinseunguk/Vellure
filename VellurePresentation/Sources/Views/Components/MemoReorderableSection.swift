@@ -55,6 +55,7 @@ struct MemoReorderableSection: View {
                 onToggleActivity: { viewModel.toggleActivity(for: memo) },
                 onDelete: { onDelete(memo) },
                 isActive: viewModel.isActive(memo),
+                isPublishing: viewModel.isPublishing(memo),
                 allowsPublishing: viewModel.usesDisplayState
             )
             // 정렬 모드에서 드래그 핸들이 붙어도 행 전체 폭이 늘지 않도록
