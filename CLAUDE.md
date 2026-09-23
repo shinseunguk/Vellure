@@ -30,25 +30,17 @@ Vellure/
 ```
 main (프로덕션)
  └── develop (개발)
-      └── feature/#{이슈번호}-{기능명}
-      └── bugfix/#{이슈번호}-{버그명}
-      └── hotfix/#{이슈번호}-{긴급수정}
 ```
 
 - `main`: 릴리즈 가능한 안정 브랜치
-- `develop`: 개발 통합 브랜치
-- `feature/*`: 기능 개발 브랜치 (develop에서 파생)
-- `bugfix/*`: 버그 수정 브랜치 (develop에서 파생)
-- `hotfix/*`: 긴급 수정 브랜치 (main에서 파생)
+- `develop`: 개발 브랜치 — **모든 작업을 여기서 직접 진행한다** (feature/bugfix 브랜치를 만들지 않는다)
 
 ## 워크플로우
 
 1. GitHub 이슈 생성 (템플릿 기반)
-2. `develop`에서 브랜치 파생 (`feature/#{이슈번호}-{기능명}`)
-3. 코드 작업 + 커밋 (컨벤션에 맞게)
-4. `develop`에 rebase
-5. PR 작성 (`feature` -> `develop`)
-6. 머지 후 릴리즈 시 `develop` -> `main` PR
+2. `develop`에서 바로 코드 작업 + 커밋 (컨벤션에 맞게)
+3. `develop`에 push
+4. PR 작성 (`develop` -> `main`) 후 merge
 
 ## 커밋 컨벤션
 
@@ -115,12 +107,12 @@ chore: SwiftLint 설정 추가
 ## PR 규칙
 
 - GitHub PR 템플릿을 따른다 (`.github/PULL_REQUEST_TEMPLATE.md`)
-- `develop` 브랜치로의 PR은 rebase 후 생성한다
+- PR은 `develop` -> `main`으로 작성한다
 - PR 제목은 커밋 컨벤션과 동일한 형식을 따른다
 - 관련 이슈 번호를 반드시 연결한다 (`closes #이슈번호`)
 
 ## Git 규칙
 
-- `main`, `develop` 브랜치에 직접 push하지 않는다
+- 작업은 `develop`에서 직접 커밋·push한다
+- `main`에는 직접 push하지 않는다 (PR merge로만 반영)
 - force push는 사용하지 않는다
-- 머지 전 반드시 rebase로 히스토리를 정리한다
